@@ -6,40 +6,49 @@ AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
 AC_CONFIG_SRCDIR([stat.c])
 AC_CONFIG_HEADERS([config.h])
 
-########
+AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
+################
 # Utility functions
 
 AC_DEFUN([LINES],[m4_joinall(m4_newline,"$@")])
 AC_DEFUN([PREAMBLE],[LINES(AC_INCLUDES_DEFAULT(),$@)])
 
-########
+################
+# Standard sections
 
-# Checks for programs.
+#### Checks for programs.
 AC_PROG_CC
+AC_PROG_INSTALL
 
-# Checks for libraries.
+#### Checks for libraries.
 
-# Checks for header files.
+#### Checks for header files.
 AC_CHECK_HEADER_STDBOOL
-AC_CHECK_HEADERS([fcntl.h unistd.h linux/stat.h])
+AC_CHECK_HEADERS([
+  fcntl.h
+  linux/stat.h
+  stddef.h
+  unistd.h
+])
 
-# Checks for typedefs, structures, and compiler characteristics.
-
+#### Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_TYPE([struct statx], [have_statx=yes], [], [[#include <linux/stat.h>]])
 AC_CHECK_TYPE([struct stat], [have_stat=yes], [], [[#include <sys/stat.h>]])
 
-# Checks for library functions.
+#### Checks for library functions.
+AC_CHECK_FUNCS([
+  fstat
+  fstatat
+  lstat
+  stat
+  stat64
+  statx
+])
 
-AC_CHECK_FUNCS([stat fstat lstat])
-AC_CHECK_FUNCS([fstatat])
-AC_CHECK_FUNCS([stat64])
-AC_CHECK_FUNCS([statx])
+#### Checks for system services.
 
-# Checks for system services.
-
-########
-
+################
 # Populate `stat_fields` with data about the fields available in `struct stat` or `struct statx`
 
 stat_fields=
@@ -61,7 +70,7 @@ AC_DEFUN([CHECK_STAT],[
 ]) # CHECK_STAT
 
 AC_DEFUN([DEFUNX],[
-  AC_DEFUN([$1], [AS_IF([test "x$have_statx" = xyes], [$2], [$3])])
+  m4_define([$1], [AS_IF([test "x$have_statx" = xyes], [$2], [$3])])
 ]) # DEFUNX
 
 #### Unsigned integer fields
@@ -134,5 +143,5 @@ echo "<<$stat_fields>>"
 
 ########
 
-#AC_CONFIG_FILES([file…])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
