@@ -11,6 +11,7 @@ AM_INIT_AUTOMAKE([subdir-objects foreign -Wall -Werror])
 ################
 # Utility functions
 
+# TODO: eliminate?
 AC_DEFUN([LINES],[m4_joinall(m4_newline,"$@")])
 AC_DEFUN([PREAMBLE],[LINES(AC_INCLUDES_DEFAULT(),$@)])
 
@@ -67,6 +68,7 @@ AS_IF(
     [preamble=PREAMBLE([typedef struct stat struct_stat;])],
   [AC_MSG_ERROR([cannot find `struct stat`])])
 
+# TODO: document
 # STAT_FIELD(name)
 # --------------------------------------
 AC_DEFUN([CHECK_STAT],[
