@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -ex
+
+# Files created by autoscan
+rm -rf \
+  autom4te.cache/ \
+  autoscan.log \
+  configure.scan \
+
+# Files created by aclocal
+rm -rf \
+  aclocal.m4 \
+  autom4te.cache/ \
+
+# Files created by autoconf
+rm -rf \
+  configure \
+
+# Files created by autoheader
+rm -rf \
+  src/config.h.in \
+  src/config.h.in~ \
+
+# Files created by automake
+rm -rf \
+  build-aux/ \
+  Makefile.in \
+
+# Files created by configure
+rm -rf \
+  config.log \
+  config.status \
+  Makefile \
+  src/config.h \
+  src/stamp-h1 \
+
+# Files created by make
+rm -rf \
+  libstat.a \
+  src/.deps/ \
+  src/.dirstamp \
+  src/stat.o \

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -ex
+
+autoscan
+rm -rf autoscan.log configure.scan # Files created by autoscan that we don't need
+autoreconf --verbose --install --warnings=all

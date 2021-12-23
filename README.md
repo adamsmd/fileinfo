@@ -10,13 +10,12 @@ Backup, archival and change tracking
 
 ## Building
 
+    bin/bootstrap
     ./configure
     make
     make check
 
-The script `./autoclean.sh` removes all generated files.
-
-The script `./autogen.sh` generates all generated files.
+The script `bin/clean-all` removes all generated files.
 
 ## Supported Platforms
 

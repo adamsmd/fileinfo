@@ -1,2 +1,2 @@
 lib_LIBRARIES = libstat.a
-libstat_a_SOURCES = stat.c
+libstat_a_SOURCES = src/stat.c

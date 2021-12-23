@@ -3,10 +3,10 @@
 
 AC_PREREQ([2.69])
 AC_INIT([libstat], [0.1.0], [https://github.com/adamsmd/libstat])
-AC_CONFIG_SRCDIR([stat.c])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([src/stat.c])
+AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([foreign -Wall -Werror])
+AM_INIT_AUTOMAKE([subdir-objects foreign -Wall -Werror])
 
 ################
 # Utility functions
