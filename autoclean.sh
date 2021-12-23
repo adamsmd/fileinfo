@@ -3,8 +3,9 @@
 set -ex
 
 rm -rf \
+  .deps/ \
   aclocal.m4 \
-  ar-lib/ \
+  ar-lib \
   autom4te.cache/ \
   autoscan.log \
   compile \
@@ -15,8 +16,11 @@ rm -rf \
   config.status \
   configure \
   configure.scan \
+  depcomp \
   install-sh \
+  libstat.a \
   Makefile \
   Makefile.in \
   missing \
-  stamp-h1
+  stamp-h1 \
+  stat.o \
