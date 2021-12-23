@@ -2,10 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+AC_INIT([libstat], [0.1.0], [https://github.com/adamsmd/libstat])
 AC_CONFIG_SRCDIR([stat.c])
 AC_CONFIG_HEADERS([config.h])
-
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
 ################
@@ -18,18 +17,23 @@ AC_DEFUN([PREAMBLE],[LINES(AC_INCLUDES_DEFAULT(),$@)])
 # Standard sections
 
 #### Checks for programs.
+AM_PROG_AR
 AC_PROG_CC
 AC_PROG_INSTALL
+AC_PROG_RANLIB
 
 #### Checks for libraries.
 
 #### Checks for header files.
-AC_CHECK_HEADER_STDBOOL
-AC_CHECK_HEADERS([
-  fcntl.h
-  linux/stat.h
-  stddef.h
-  unistd.h
+AC_HEADER_MAJOR
+AC_HEADER_STDBOOL
+
+AC_CHECK_HEADERS([ \
+  fcntl.h \
+  linux/stat.h \
+  stddef.h \
+  sys/stat.h \
+  unistd.h \
 ])
 
 #### Checks for typedefs, structures, and compiler characteristics.
@@ -37,13 +41,13 @@ AC_CHECK_TYPE([struct statx], [have_statx=yes], [], [[#include <linux/stat.h>]])
 AC_CHECK_TYPE([struct stat], [have_stat=yes], [], [[#include <sys/stat.h>]])
 
 #### Checks for library functions.
-AC_CHECK_FUNCS([
-  fstat
-  fstatat
-  lstat
-  stat
-  stat64
-  statx
+AC_CHECK_FUNCS([ \
+  fstat \
+  fstatat \
+  lstat \
+  stat \
+  stat64 \
+  statx \
 ])
 
 #### Checks for system services.
@@ -62,6 +66,8 @@ AS_IF(
     [preamble=PREAMBLE([typedef struct stat struct_stat;])],
   [AC_MSG_ERROR([cannot find `struct stat`])])
 
+# STAT_FIELD(name)
+# --------------------------------------
 AC_DEFUN([CHECK_STAT],[
   AC_CHECK_MEMBER(struct_stat.$2,
     [AS_VAR_APPEND(stat_fields, LINES([ \\],[  $1($2, $3)]))],
@@ -72,6 +78,10 @@ AC_DEFUN([CHECK_STAT],[
 AC_DEFUN([DEFUNX],[
   m4_define([$1], [AS_IF([test "x$have_statx" = xyes], [$2], [$3])])
 ]) # DEFUNX
+
+#### File type and mode
+
+# TODO: st_mode is universal so we handle it specially
 
 #### Unsigned integer fields
 
@@ -134,14 +144,38 @@ CHECK_TIME_NSEC([b])
 CHECK_TIME_NSEC([c])
 CHECK_TIME_NSEC([m])
 
+#### Enumerated constant fields
+
+# STAT_FIELD(type) # AIX (vnode type, enum)
+# STAT_FIELD(vfstype) # AIX (enum)
+# STAT_FIELD(flag) # AIX (enum)
+
+#### Bit-flag fields
+
+# STAT_FIELD(flags) # macOS NetBSD OpenBSD FreeBSD (flags)
+
+# Solaris
+# char     st_fstype[_ST_FSTYPSZ]; /* Null-terminated type of filesystem */
+
+# TODO: linux mnt_id
+
+##### AC_CHECK_MEMBERS([struct statx.stx_mask], [], [], [[#include <linux/stat.h>]])
+    # AC_CHECK_MEMBERS([struct statx.stx_attributes], [], [], [[#include <linux/stat.h>]])
+
+# TODO typedef struct_stat
+# TODO: define stat_atime_sec stx_atime.tv_nsec
+
 # TODO: if HAVE_STATX make_dev(base)
 
 echo "<<$stat_fields>>"
 
 # TODO: NOTE: AC_COMPUTE_INT
 
+#### Move the info from `$stat_fields` to the CPP macro `STAT_FIELDS()`.
 
-########
+AC_DEFINE_UNQUOTED([STAT_FIELDS(F)], [$stat_fields], [TODO:description])
+
+################
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
