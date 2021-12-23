@@ -2,13 +2,12 @@
 
 set -ex
 
-rm -rf \
+rm -r \
   .deps/ \
   aclocal.m4 \
-  ar-lib \
   autom4te.cache/ \
   autoscan.log \
-  compile \
+  build-aux \
   config.h \
   config.h.in \
   config.h.in~ \
@@ -16,11 +15,8 @@ rm -rf \
   config.status \
   configure \
   configure.scan \
-  depcomp \
-  install-sh \
   libstat.a \
   Makefile \
   Makefile.in \
-  missing \
   stamp-h1 \
   stat.o \
