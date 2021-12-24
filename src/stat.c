@@ -28,10 +28,12 @@
 #include <linux/stat.h>
 #endif
 
-#if HAVE_STATX
+#if USE_STATX
 typedef struct statx struct_stat;
-#elif HAVE_STAT
+#elif USE_STAT
 typedef struct stat struct_stat;
+#else
+#error "unimplemented"
 #endif
 
 const int buffer_size = sizeof(struct_stat);
@@ -52,6 +54,9 @@ struct field const fields[] = {
   STAT_FIELDS(INT,DEV,TIME_SEC,TIME_NSEC)
 };
 
+// TODO: create struct of right shape
+// TODO: define field accessors
+
 void print_fields() {
 
 }
@@ -59,19 +64,21 @@ void print_fields() {
 int get_stat(const char *pathname, bool follow_symlink, void *buffer) {
 
   struct_stat *statxbuf = buffer;
-  #if HAVE_STATX
+  // TODO: implement get_stat
+  #if USE_STATX
     // statx(STATX_ALL, buffer);
-
-  #elif HAVE_STAT
+    // TODO: if use_statx make_dev(base)
+  #elif USE_STAT
     // int stat(pathname, statbuf);
-
+  #else
+  #error "unimplemented"
   #endif
 
   return 0;
 }
 
 void set_stat() {
-
+  // TODO: set_stat
 }
 
 // TODO: to_json

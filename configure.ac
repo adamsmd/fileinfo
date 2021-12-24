@@ -9,13 +9,6 @@ AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([subdir-objects foreign -Wall -Werror])
 
 ################
-# Utility functions
-
-# TODO: eliminate?
-AC_DEFUN([LINES],[m4_joinall(m4_newline,"$@")])
-AC_DEFUN([PREAMBLE],[LINES(AC_INCLUDES_DEFAULT(),$@)])
-
-################
 # Standard sections
 
 #### Checks for programs.
@@ -40,8 +33,8 @@ AC_CHECK_HEADERS([ \
 ])
 
 #### Checks for typedefs, structures, and compiler characteristics.
-AC_CHECK_TYPE([struct statx], [have_statx=yes], [], [[#include <linux/stat.h>]])
-AC_CHECK_TYPE([struct stat], [have_stat=yes], [], [[#include <sys/stat.h>]])
+AC_CHECK_TYPE([struct statx], [use_statx=yes], [], [[#include <linux/stat.h>]])
+AC_CHECK_TYPE([struct stat], [use_stat=yes], [], [[#include <sys/stat.h>]])
 
 #### Checks for library functions.
 AC_CHECK_FUNCS([ \
@@ -58,29 +51,46 @@ AC_CHECK_FUNCS([ \
 ################
 # Populate `stat_fields` with data about the fields available in `struct stat` or `struct statx`
 
+# Shell variable holding the CPP macro invocations to be added to the CPP macro `STAT_FIELDS()`
 stat_fields=
 
 #### Helpers
 
+AH_TEMPLATE([USE_STATX], [Define to 1 if we should use the `statx' function.])
+AH_TEMPLATE([USE_STAT], [Define to 1 if we should use the `stat' function.])
 AS_IF(
-  [test "x$have_statx" = xyes],
-    [preamble=PREAMBLE([#include <linux/stat.h>],[typedef struct statx struct_stat;])],
-  [test "x$have_stat" = xyes],
-    [preamble=PREAMBLE([typedef struct stat struct_stat;])],
+  [test "x$use_statx" = xyes], [
+    AC_DEFINE(USE_STATX, 1)
+    preamble="
+      AC_INCLUDES_DEFAULT
+      [#include <linux/stat.h>]
+      [typedef struct statx struct_stat;]
+      "],
+  [test "x$use_stat" = xyes], [
+    AC_DEFINE(USE_STAT, 1)
+    preamble="
+      AC_INCLUDES_DEFAULT
+      [typedef struct stat struct_stat;]
+      "],
   [AC_MSG_ERROR([cannot find `struct stat`])])
 
-# TODO: document
-# STAT_FIELD(name)
+# CHECK_STAT(MACRO, FIELD, ARGS...)
 # --------------------------------------
+# If FIELD is a member of `struct_stat`, add `MACRO(FIELD, ARGS...)` to
+# `stat_fields`.
 AC_DEFUN([CHECK_STAT],[
   AC_CHECK_MEMBER(struct_stat.$2,
-    [AS_VAR_APPEND(stat_fields, LINES([ \\],[  $1($2, $3)]))],
+    [AS_VAR_APPEND(stat_fields, "[ \\]m4_newline([  $1($2, $3)])")],
     [],
     [$preamble])
 ]) # CHECK_STAT
 
+# DEFUNX(NAME, STATX, STAT)
+# --------------------------------------
+# Define an autoconf macro NAME to call STATX if `struct statx` exists.
+# Otherwise, have it call STAT.
 AC_DEFUN([DEFUNX],[
-  m4_define([$1], [AS_IF([test "x$have_statx" = xyes], [$2], [$3])])
+  m4_define([$1], [AS_IF([test "x$use_statx" = xyes], [$2], [$3])])
 ]) # DEFUNX
 
 #### File type and mode
@@ -89,6 +99,11 @@ AC_DEFUN([DEFUNX],[
 
 #### Unsigned integer fields
 
+# CHECK_STATX(NAME)
+# --------------------------------------
+# Add one or none of the following to `stat_fields` based on what fields exist.
+# - F_INT(stx_NAME)
+# - F_INT(st_NAME)
 DEFUNX([CHECK_STATX],
   [CHECK_STAT([F_INT], stx_$1, [$1])],
   [CHECK_STAT([F_INT], st_$1, [$1])]
@@ -107,6 +122,11 @@ CHECK_STATX(access) # AIX: st_access 	Field is not implemented. All bits are ret
 
 #### Device fields
 
+# CHECK_DEV(NAME)
+# --------------------------------------
+# Add one or none of the following to `stat_fields` based on what fields exist.
+# - F_DEV(stx_NAME_major, NAME, stx_NAME_major, stx_NAME_minor)
+# - F_DEV(stx_NAME, NAME, stx_NAME, stx_NAME)
 DEFUNX([CHECK_DEV],
   [CHECK_STAT([F_DEV], stx_$1_major, [$1, stx_$1_major, stx_$1_minor])],
   [CHECK_STAT([F_DEV], st_$1,        [$1, st_$1, st_$1])],
@@ -117,6 +137,11 @@ CHECK_DEV(rdev)
 
 #### Time fields (seconds)
 
+# CHECK_TIME_SEC(PREFIX)
+# --------------------------------------
+# Add one or none of the following to `stat_fields` based on what fields exist.
+# - F_TIME_SEC(stx_PREFIXtime.tv_sec, PREFIXtime_sec)
+# - F_TIME_SEC(st_PREFIXtime, PREFIXtime_sec)
 DEFUNX([CHECK_TIME_SEC],
   [CHECK_STAT([F_TIME_SEC], stx_$1time.tv_sec, [$1time_sec])],
   [CHECK_STAT([F_TIME_SEC], st_$1time,         [$1time_sec])],
@@ -134,6 +159,11 @@ CHECK_TIME_SEC([m])
 
 #### Time fields (nanoseconds)
 
+# CHECK_TIME_NSEC(prefix)
+# --------------------------------------
+# Add one or none of the following to `stat_fields` based on what fields exist.
+# - F_TIME_SEC(stx_PREFIXtime.tv_sec, PREFIXtime_sec)
+# - F_TIME_SEC(st_PREFIXtime, PREFIXtime_sec)
 AC_DEFUN([CHECK_TIME_NSEC],[
   CHECK_STAT([F_TIME_NSEC], stx_$1time.tv_nsec, [$1time_nsec]) # linux
   CHECK_STAT([F_TIME_NSEC], st_$1tim.tv_nsec, [$1time_nsec]) # minix openbsd linux
@@ -150,34 +180,32 @@ CHECK_TIME_NSEC([m])
 
 #### Enumerated constant fields
 
-# STAT_FIELD(type) # AIX (vnode type, enum)
-# STAT_FIELD(vfstype) # AIX (enum)
-# STAT_FIELD(flag) # AIX (enum)
+# TODO: STAT_FIELD(type) # AIX (vnode type, enum)
+# TODO: STAT_FIELD(vfstype) # AIX (enum)
+# TODO: STAT_FIELD(flag) # AIX (enum)
 
 #### Bit-flag fields
 
-# STAT_FIELD(flags) # macOS NetBSD OpenBSD FreeBSD (flags)
+# TODO: STAT_FIELD(flags) # macOS NetBSD OpenBSD FreeBSD (flags)
 
-# Solaris
-# char     st_fstype[_ST_FSTYPSZ]; /* Null-terminated type of filesystem */
+# TODO: Solaris: char     st_fstype[_ST_FSTYPSZ]; /* Null-terminated type of filesystem */
 
 # TODO: linux mnt_id
 
-##### AC_CHECK_MEMBERS([struct statx.stx_mask], [], [], [[#include <linux/stat.h>]])
-    # AC_CHECK_MEMBERS([struct statx.stx_attributes], [], [], [[#include <linux/stat.h>]])
+# TODO: struct statx.stx_mask
+# TODO: struct statx.stx_attributes
 
-# TODO typedef struct_stat
-# TODO: define stat_atime_sec stx_atime.tv_nsec
+# TODO: some way to test if we missed any fields
+# TODO: non-stat_fields
 
-# TODO: if HAVE_STATX make_dev(base)
-
-echo "<<$stat_fields>>"
+AC_MSG_NOTICE([defining STAT_FIELDS() to be "$stat_fields"])
 
 # TODO: NOTE: AC_COMPUTE_INT
 
-#### Move the info from `$stat_fields` to the CPP macro `STAT_FIELDS()`.
+#### Move the info from the shell variable `stat_fields` to the CPP macro `STAT_FIELDS()`.
 
-AC_DEFINE_UNQUOTED([STAT_FIELDS(F_INT,F_DEV,F_TIME_SEC,F_TIME_NSEC)], [$stat_fields], [TODO:description])
+AH_TEMPLATE([STAT_FIELDS],[Define to to the fields in `struct statx` or `struct stat`.])
+AC_DEFINE_UNQUOTED([STAT_FIELDS(F_INT,F_DEV,F_TIME_SEC,F_TIME_NSEC)], [$stat_fields])
 
 ################
 
