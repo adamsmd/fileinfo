@@ -1,8 +1,8 @@
-# libstat
+# `libstat`
 
 ## What?
 
-Portable functions for collecting all of the meta-data stored about a file in a filesystem.
+Portable functions for collecting all the meta-data a file system has about a file.
 
 ## Why?
 
@@ -47,3 +47,8 @@ Windows:
 <https://hub.docker.com/search?type=image&category=os>
 
 <https://github.com/orgs/vmactions/repositories?type=source>
+
+## Similar Projects
+
+- Apache Portable Runtime (APR)
+  - e.g., <https://github.com/traviscross/apr/blob/05266ad52ef0c1848a81b21705b9f13fc8f7028b/file_io/unix/filestat.c>
