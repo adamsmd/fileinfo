@@ -27,6 +27,7 @@ AC_PROG_RANLIB
 #### Checks for libraries.
 
 #### Checks for header files.
+AC_HEADER_ASSERT
 AC_HEADER_MAJOR
 AC_HEADER_STDBOOL
 
@@ -176,7 +177,7 @@ echo "<<$stat_fields>>"
 
 #### Move the info from `$stat_fields` to the CPP macro `STAT_FIELDS()`.
 
-AC_DEFINE_UNQUOTED([STAT_FIELDS(F)], [$stat_fields], [TODO:description])
+AC_DEFINE_UNQUOTED([STAT_FIELDS(F_INT,F_DEV,F_TIME_SEC,F_TIME_NSEC)], [$stat_fields], [TODO:description])
 
 ################
 
