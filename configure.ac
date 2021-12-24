@@ -31,7 +31,7 @@ AC_HEADER_MAJOR
 AC_HEADER_STDBOOL
 
 AC_CHECK_HEADERS([ \
-  fcntl.h \
+  linux/fcntl.h \
   linux/stat.h \
   stddef.h \
   sys/stat.h \
