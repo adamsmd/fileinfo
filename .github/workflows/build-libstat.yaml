@@ -34,6 +34,7 @@ jobs:
         # TODO: build from make dist
         # TODO: WSLv1
         # TODO: test linux w/o statx
+        # TODO: compilers, icc, etc
 
     steps:
       - uses: actions/download-artifact@v2
@@ -67,7 +68,7 @@ jobs:
       - run: tar -xvf libstat.tar
       - uses: vmactions/solaris-vm@v0.0.3
         with:
-          prepare: pkgutil -y -i socat
+          prepare: pkgutil -y -i gcc
           run: |
             ./configure
             make
