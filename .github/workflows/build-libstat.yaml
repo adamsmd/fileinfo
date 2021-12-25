@@ -6,12 +6,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: bin/bootstrap
+      - run: tar -cvf ../libstat.tar --exclude .git .
       - uses: actions/upload-artifact@v2
         with:
           name: bootstrap-output
-          path: |
-            .
-            !.git
+          path: ../libstat.tar
   vm:
     needs: bootstrap
     runs-on: ${{ matrix.os }}
@@ -41,6 +40,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: bootstrap-output
+      - run: tar -xvf libstat.tar
       - run: ./configure
       - run: make
 
