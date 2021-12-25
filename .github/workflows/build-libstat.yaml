@@ -18,7 +18,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11, windows-2019, windows-2022]
+        os:
+          - ubuntu-18.04
+          - ubuntu-20.04
+          - macos-10.15
+          - macos-11
+          - windows-2019
+          - windows-2022
         # TODO: arch: ...
         # TODO: https://hub.docker.com/search?type=image&category=os
         # TODO: https://github.com/orgs/vmactions/repositories
@@ -30,14 +36,6 @@ jobs:
         # TODO: test linux w/o statx
 
     steps:
-      # TODO: cache macos installed autoconf/automake
-      # - if: ${{ runner.os == 'macOS' }}
-      #   run: |
-      #     brew install autoconf@2.69
-      #     brew install automake
-      #     which aclocal
-      # - uses: actions/checkout@v2
-      # - run: bin/bootstrap
       - uses: actions/download-artifact@v2
         with:
           name: bootstrap-output
@@ -45,18 +43,21 @@ jobs:
       - run: ./configure
       - run: make
 
-  # container:
-  #   runs-on: ubuntu-latest
-  #   container: debian:11
-  #   #runs-on: ${{ matrix.os }}
-  #   # strategy:
-  #   #   fail-fast: false
-  #   #   matrix:
-  #   #     os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11, windows-2019, windows-2022]
+  container:
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    container: debian:11
+    #runs-on: ${{ matrix.os }}
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11, windows-2019, windows-2022]
 
-  #   steps:
-  #     - run: uname -a
-  #     - uses: actions/checkout@v2
-  #     - run: bin/bootstrap
-  #     - run: ./configure
-  #     - run: make
+    steps:
+      - run: uname -a
+      - uses: actions/download-artifact@v2
+        with:
+          name: bootstrap-output
+      - run: tar -xvf libstat.tar
+      - run: ./configure
+      - run: make
