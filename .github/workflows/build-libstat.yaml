@@ -13,6 +13,7 @@ jobs:
             .
             !.git
   vm:
+    needs: bootstrap
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
