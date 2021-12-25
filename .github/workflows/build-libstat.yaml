@@ -46,19 +46,20 @@ jobs:
     runs-on: macos-10.15
     name: A job to run test FreeBSD
     steps:
-    - uses: actions/checkout@v2
-    - name: Test in FreeBSD
-      id: test
-      uses: vmactions/freebsd-vm@v0.1.5
-      with:
-        usesh: true
-        prepare: pkg install -y curl
-        run: |
-          pwd
-          ls -lah
-          whoami
-          env
-          freebsd-version
+      - uses: actions/download-artifact@v2
+        with:
+          name: bootstrap-output
+      - run: tar -xvf libstat.tar
+      - name: Test in FreeBSD
+      - uses: vmactions/freebsd-vm@v0.1.5
+        with:
+          prepare: |
+            pkg install -y gcc make
+          run: |
+            pwd
+            ls -lah
+            ./configure
+            make
 # setup-qemu
   container:
     needs: bootstrap
