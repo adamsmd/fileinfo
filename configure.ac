@@ -51,9 +51,6 @@ AC_CHECK_FUNCS([ \
 ################
 # Populate `stat_fields` with data about the fields available in `struct stat` or `struct statx`
 
-# Shell variable holding the CPP macro invocations to be added to the CPP macro `STAT_FIELDS()`
-stat_fields=
-
 #### Helpers
 
 AH_TEMPLATE([USE_STATX], [Define to 1 if we should use the `statx' function.])
@@ -74,13 +71,18 @@ AS_IF(
       "],
   [AC_MSG_ERROR([cannot find `struct stat`])])
 
+# Shell variable holding the CPP macro invocations to be added to the CPP macro `STAT_FIELDS()`
+stat_fields=
+stat_fields_count=0
+
 # CHECK_STAT(MACRO, FIELD, ARGS...)
 # --------------------------------------
 # If FIELD is a member of `struct_stat`, add `MACRO(FIELD, ARGS...)` to
 # `stat_fields`.
-AC_DEFUN([CHECK_STAT],[
-  AC_CHECK_MEMBER(struct_stat.$2,
-    [AS_VAR_APPEND(stat_fields, "[ \\]m4_newline([  $1($2, $3)])")],
+AC_DEFUN([CHECK_STAT], [
+  AC_CHECK_MEMBER([struct_stat.$2],
+    [AS_VAR_ARITH([stat_fields_count], [1 + $stat_fields_count])
+      AS_VAR_APPEND([stat_fields], "[ \\]m4_newline([  $1($2, $3)])")],
     [],
     [$preamble])
 ]) # CHECK_STAT
@@ -198,13 +200,16 @@ CHECK_TIME_NSEC([m])
 # TODO: some way to test if we missed any fields
 # TODO: non-stat_fields
 
-AC_MSG_NOTICE([defining STAT_FIELDS() to be "$stat_fields"])
+AC_MSG_NOTICE([defining STAT_FIELDS() with $stat_fields_count fields to be "$stat_fields"])
 
 # TODO: NOTE: AC_COMPUTE_INT
 
 #### Move the info from the shell variable `stat_fields` to the CPP macro `STAT_FIELDS()`.
 
-AH_TEMPLATE([STAT_FIELDS],[Define to to the fields in `struct statx` or `struct stat`.])
+AH_TEMPLATE([STAT_FIELDS_COUNT],[Define to be the number of fields in STAT_FIELDS().])
+AC_DEFINE_UNQUOTED([STAT_FIELDS_COUNT], [$stat_fields_count])
+
+AH_TEMPLATE([STAT_FIELDS],[Define to be the fields in `struct statx` or `struct stat`.])
 AC_DEFINE_UNQUOTED([STAT_FIELDS(F_INT,F_DEV,F_TIME_SEC,F_TIME_NSEC)], [$stat_fields])
 
 ################

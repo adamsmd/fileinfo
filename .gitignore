@@ -1,4 +1,7 @@
 /build-aux/
+/src/config.h
+/src/config.h.in
+/src/stamp-h1
 
 # Created by https://www.toptal.com/developers/gitignore/api/autotools,c,eclipse,emacs,jetbrains+all,macos,tags,vim,visualstudiocode,xcode,xcodeinjection
 # Edit at https://www.toptal.com/developers/gitignore?templates=autotools,c,eclipse,emacs,jetbrains+all,macos,tags,vim,visualstudiocode,xcode,xcodeinjection
