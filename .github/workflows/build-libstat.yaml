@@ -68,7 +68,9 @@ jobs:
       - run: tar -xvf libstat.tar
       - uses: vmactions/solaris-vm@v0.0.3
         with:
-          prepare: pkgutil -y -i gcc
+          prepare: |
+            pkgutil -U
+            pkgutil -y -i gcc5core
           run: |
             ./configure
             make
