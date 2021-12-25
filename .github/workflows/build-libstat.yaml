@@ -42,9 +42,9 @@ jobs:
       - run: tar -xvf libstat.tar
       - run: ./configure
       - run: make
-  testfreebsd:
+  vbox:
+    needs: bootstrap
     runs-on: macos-10.15
-    name: A job to run test FreeBSD
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -53,10 +53,13 @@ jobs:
       - uses: vmactions/freebsd-vm@v0.1.5
         with:
           prepare: |
-            pkg install -y gcc make
+            pkg install -y gcc gmake
           run: |
             pwd
             ls -lah
+            which make
+            which gmake
+            make --version
             ./configure
             make
 # setup-qemu
