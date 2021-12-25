@@ -10,21 +10,31 @@ Backup, archival and change tracking
 
 ## How?
 
-TODO
+TODO: How?
 
 ## Where?
 
-TODO
+TODO: Where?
 
 ## Who?
 
+TODO: Who?
+
 ## When?
+
+TODO: When?
 
 ## Examples
 
+TODO: examples
+
 ## Setup
 
+TODO: setup
+
 ### Dependencies
+
+TODO: dependencies
 
 ### Building
 
@@ -37,15 +47,15 @@ The script `bin/clean-all` removes all generated files.
 
 ### Testing
 
-TODO
+TODO: testing
 
-### Install
+### Installation
 
-TODO
+TODO: installation
 
 ## Usage
 
-TODO
+TODO: usage
 
 ## Supported Platforms
 
