@@ -50,7 +50,6 @@ jobs:
         with:
           name: bootstrap-output
       - run: tar -xvf libstat.tar
-      - name: Test in FreeBSD
       - uses: vmactions/freebsd-vm@v0.1.5
         with:
           prepare: |
