@@ -69,7 +69,7 @@ jobs:
       - uses: vmactions/solaris-vm@v0.0.3
         with:
           prepare: |
-            pkgutil -U
+            # pkgutil -U
             pkgutil -y -i gcc5core
           run: |
             ./configure
