@@ -1,7 +1,7 @@
 name: Build `libstat.a`
 on: [push]
 jobs:
-  build:
+  vm:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -9,17 +9,37 @@ jobs:
         os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11, windows-2019, windows-2022]
         # TODO: arch: ...
         # TODO: https://hub.docker.com/search?type=image&category=os
-        # TODO: https://github.com/orgs/vmactions/repositories?type=source
+        # TODO: https://github.com/orgs/vmactions/repositories
         # TODO: X86, X64, ARM, and ARM64
         # TODO: gcc, llvm
         # TODO: pre-statx linux (and other kernel implementations)
+        # TODO: build from make dist
+        # TODO: WSLv1
+        # TODO: test linux w/o statx
 
     steps:
+      # TODO: cache macos installed autoconf/automake
       - if: ${{ runner.os == 'macOS' }}
         run: |
           brew install autoconf@2.69
           brew install automake
           which aclocal
+      - uses: actions/checkout@v2
+      - run: bin/bootstrap
+      - run: ./configure
+      - run: make
+
+  container:
+    runs-on: ubuntu-latest
+    container: debian:11
+    #runs-on: ${{ matrix.os }}
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11, windows-2019, windows-2022]
+
+    steps:
+      - run: uname -a
       - uses: actions/checkout@v2
       - run: bin/bootstrap
       - run: ./configure
