@@ -1,6 +1,17 @@
-name: Build `libstat.a`
+name: Default Workflow for `libstat.a`
 on: [push]
 jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: bin/bootstrap
+      - uses: actions/upload@v2
+        with:
+          name: bootstrap-output
+          path: |
+            .
+            !.git
   vm:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -19,28 +30,31 @@ jobs:
 
     steps:
       # TODO: cache macos installed autoconf/automake
-      - if: ${{ runner.os == 'macOS' }}
-        run: |
-          brew install autoconf@2.69
-          brew install automake
-          which aclocal
-      - uses: actions/checkout@v2
-      - run: bin/bootstrap
+      # - if: ${{ runner.os == 'macOS' }}
+      #   run: |
+      #     brew install autoconf@2.69
+      #     brew install automake
+      #     which aclocal
+      # - uses: actions/checkout@v2
+      # - run: bin/bootstrap
+      - uses: actions/download@v2
+        with:
+          name: bootstrap-output
       - run: ./configure
       - run: make
 
-  container:
-    runs-on: ubuntu-latest
-    container: debian:11
-    #runs-on: ${{ matrix.os }}
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11, windows-2019, windows-2022]
+  # container:
+  #   runs-on: ubuntu-latest
+  #   container: debian:11
+  #   #runs-on: ${{ matrix.os }}
+  #   # strategy:
+  #   #   fail-fast: false
+  #   #   matrix:
+  #   #     os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11, windows-2019, windows-2022]
 
-    steps:
-      - run: uname -a
-      - uses: actions/checkout@v2
-      - run: bin/bootstrap
-      - run: ./configure
-      - run: make
+  #   steps:
+  #     - run: uname -a
+  #     - uses: actions/checkout@v2
+  #     - run: bin/bootstrap
+  #     - run: ./configure
+  #     - run: make
