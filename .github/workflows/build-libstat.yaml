@@ -100,33 +100,38 @@ jobs:
       matrix:
         container:
           # Images from https://hub.docker.com/search?type=image&image_filter=official&category=os
-          # - ubuntu:latest
-          - alpine:latest
+          - ubuntu:latest
+          # - alpine:latest
           # - centos:latest
           # - debian:latest
-          # - amazonlinux:latest
+          # - amazonlinux:latest # no node
           # - fedora:latest
-          # - oraclelinux:8
+          # - oraclelinux:8 # no tar
           # - ros:latest
           # - photon:latest
           # - clearlinux:latest
           # - cirros:latest
           # - mageia:latest
           # - clefos:latest
+
+          # TODO: nixos?
     steps:
-      - run: |
-          function note_using () { echo "::notice ::Using '$1' to install packages"; }
+      - name: Install dependencies
+        run: |
+          note_using="::notice ::Installing dependencies using"
           if apt --version >/dev/null 2>&1; then
-            note-using apt
+            echo $note_using apt
             export DEBIAN_FRONTEND=noninteractive
             apt update
             apt install --assume-yes nodejs gcc make
           elif yum --version >/dev/null 2>&1; then
-            note-using yum
+            echo $note_using yum
             yum install --assumeyes nodejs gcc make
           elif apk --version >/dev/null 2>&1; then
-            note_using apk
+            echo $note_using apk
             apk add --no-cache nodejs gcc libc-dev make
+          else
+            echo $note_using '<nothing>'
           fi
       - uses: actions/download-artifact@v2
         with:
