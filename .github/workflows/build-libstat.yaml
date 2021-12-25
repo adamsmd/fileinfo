@@ -62,6 +62,34 @@ jobs:
             make --version
             ./configure
             make
+  vmactions-solaris:
+    runs-on: macos-10.15
+    name: A job to run test Solaris
+    steps:
+    - uses: actions/checkout@v2
+    - name: Test in solaris
+      id: test
+      uses: vmactions/solaris-vm@v0.0.3
+      with:
+        prepare: pkgutil -y -i socat
+        nat: |
+          "8080": "80"
+          "8443": "443"
+          udp:"8081": "80"
+        run: |
+          if [ -n "test" ]; then
+            echo "false"
+          fi
+          if [ "test" ]; then
+            echo "test"
+          fi
+          pwd
+          ls -lah
+          whoami
+          env
+          psrinfo -vp
+          cat /etc/release
+          echo "OK"
 # setup-qemu
   container:
     needs: bootstrap
