@@ -42,22 +42,51 @@ jobs:
       - run: tar -xvf libstat.tar
       - run: ./configure
       - run: make
-
+# setup-qemu
   container:
     needs: bootstrap
     runs-on: ubuntu-latest
-    container: debian:11
-    #runs-on: ${{ matrix.os }}
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11, windows-2019, windows-2022]
-
+    container: ${{ matrix.container }}
+    strategy:
+      fail-fast: false
+      matrix:
+        container:
+          # Images from https://hub.docker.com/search?type=image&image_filter=official&category=os
+          # - ubuntu:latest
+          - alpine:latest
+          # - centos:latest
+          # - debian:latest
+          # - amazonlinux:latest
+          # - fedora:latest
+          # - oraclelinux:8
+          # - ros:latest
+          # - photon:latest
+          # - clearlinux:latest
+          # - cirros:latest
+          # - mageia:latest
+          # - clefos:latest
     steps:
-      - run: uname -a
+      - run: |
+          function note_using () { echo "::notice ::Using '$1' to install packages"; }
+          if apt --version >/dev/null 2>&1; then
+            note-using apt
+            export DEBIAN_FRONTEND=noninteractive
+            apt update
+            apt install --assume-yes nodejs gcc make
+          elif yum --version >/dev/null 2>&1; then
+            note-using yum
+            yum install --assumeyes nodejs gcc make
+          elif apk --version >/dev/null 2>&1; then
+            note_using apk
+            apk add --no-cache nodejs gcc libc-dev make
+          fi
       - uses: actions/download-artifact@v2
         with:
           name: bootstrap-output
       - run: tar -xvf libstat.tar
       - run: ./configure
       - run: make
+
+  #     --container-architecture string    Architecture which should be used to run containers, e.g.: linux/amd64. If not specified, will use host default architecture. Requires Docker server API Version 1.41+. Ignored on earlier Docker server platforms.
+  #     --privileged                       use privileged mode
+  #     --userns string                    user namespace to use
