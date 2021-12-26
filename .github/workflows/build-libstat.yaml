@@ -48,10 +48,11 @@ jobs:
     needs: bootstrap
     runs-on: macos-10.15
     strategy:
+      fail-fast: false
       matrix:
         os:
-          # - name: freebsd
-          #   version: '12.2'
+          - name: freebsd
+            version: '12.2'
           - name: openbsd
             version: '6.8'
           # - name: netbsd
@@ -59,7 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Test on ${{ matrix.os.name }}
-        uses: cross-platform-actions/action@v0.0.1
+        uses: cross-platform-actions/action@v0.3.1
         env:
           MY_ENV1: MY_ENV1
           MY_ENV2: MY_ENV2
