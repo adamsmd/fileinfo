@@ -1,6 +1,7 @@
-name: Default Workflow for `libstat.a`
+name: Default Workflow
 on: [push]
 jobs:
+
   bootstrap:
     runs-on: ubuntu-latest
     steps:
@@ -12,6 +13,7 @@ jobs:
         with:
           name: bootstrap-output
           path: libstat.tar
+
   vm:
     needs: bootstrap
     runs-on: ${{ matrix.os }}
@@ -34,7 +36,6 @@ jobs:
         # TODO: test linux w/o statx
         # setup-qemu
         # TODO: filesystems: zfs, btrfs, ext4
-
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -52,12 +53,10 @@ jobs:
             version: '12.2'
           - name: openbsd
             version: '6.8'
-          - name: netbsd
-            version: '9.2'
-
+          # - name: netbsd
+          #   version: '9.2'
     steps:
       - uses: actions/checkout@v2
-
       - name: Test on ${{ matrix.os.name }}
         uses: cross-platform-actions/action@v0.0.1
         env:
@@ -75,6 +74,7 @@ jobs:
             ls -lah
             whoami
             env | sort
+
   # vmactions-freebsd:
   #   needs: bootstrap
   #   runs-on: macos-10.15
@@ -216,8 +216,6 @@ jobs:
           # TODO: nixos?
           # TODO: busybox?
     steps:
-      # TODO: see if we can remove /work
-
       # Create a docker
       - run: |
           # TODO: can we remove --init?
@@ -225,15 +223,15 @@ jobs:
           echo "cont=$cont" >> $GITHUB_ENV
       - run: echo "::notice ::cont=$cont"
 
-      # Copy the artifact
+      # Create the working directory
       - run: echo "workdir=/workdir" >> $GITHUB_ENV
       - run: echo "::notice ::workdir=$workdir"
-      - uses: actions/download-artifact@v2
-        with:
-          name: bootstrap-output
-      - run: tar -xvf libstat.tar
       - run: docker exec "$cont" mkdir "$workdir"
-      - run: docker cp . "$cont":"$workdir"
+
+      # Copy the artifact to the working directory
+      - uses: actions/download-artifact@v2
+        with: { name: bootstrap-output }
+      - run: docker cp - <libstat.tar "$cont":"$workdir"
 
       # Install dependencies
       - run: docker exec --workdir="$workdir" "$cont" bin/install-deps
