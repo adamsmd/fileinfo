@@ -45,12 +45,13 @@ jobs:
       - run: make
 
   cross-platform-actions:
+    needs: bootstrap
     runs-on: macos-10.15
     strategy:
       matrix:
         os:
-          - name: freebsd
-            version: '12.2'
+          # - name: freebsd
+          #   version: '12.2'
           - name: openbsd
             version: '6.8'
           # - name: netbsd
