@@ -20,9 +20,9 @@ jobs:
       matrix:
         os:
           - ubuntu-20.04
-          # - ubuntu-18.04
-          # - macos-11
-          # - macos-10.15
+          - ubuntu-18.04
+          - macos-11
+          - macos-10.15
           # - windows-2022
           # - windows-2019
           # - windows-2016
@@ -42,6 +42,39 @@ jobs:
       - run: tar -xvf libstat.tar
       - run: ./configure
       - run: make
+
+  cross-platform-actions:
+    runs-on: macos-10.15
+    strategy:
+      matrix:
+        os:
+          - name: freebsd
+            version: '12.2'
+          - name: openbsd
+            version: '6.8'
+          - name: netbsd
+            version: '9.2'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Test on ${{ matrix.os.name }}
+        uses: cross-platform-actions/action@v0.0.1
+        env:
+          MY_ENV1: MY_ENV1
+          MY_ENV2: MY_ENV2
+        with:
+          environment_variables: MY_ENV1 MY_ENV2
+          operating_system: ${{ matrix.os.name }}
+          version: ${{ matrix.os.version }}
+          shell: bash
+          run: |
+            uname -a
+            echo $SHELL
+            pwd
+            ls -lah
+            whoami
+            env | sort
   # vmactions-freebsd:
   #   needs: bootstrap
   #   runs-on: macos-10.15
@@ -58,6 +91,7 @@ jobs:
   #           pkg install --help
   #           ./configure
   #           make
+
   # vmactions-solaris: # works but take a long time to run
   #   needs: bootstrap
   #   runs-on: macos-10.15
@@ -89,6 +123,12 @@ jobs:
 
           # Images from https://hub.docker.com/search?type=image&image_filter=official&category=os
 
+          - alpine:latest # works
+          - alpine:3.15 # works
+          - alpine:3.14 # works
+          - alpine:3.13 # works
+          - alpine:3.12 # works
+
           - ubuntu:latest # works
           - ubuntu:22.04 # works
           - ubuntu:21.10 # works
@@ -97,12 +137,6 @@ jobs:
           # - ubuntu:18.04 # compile error
           # - ubuntu:16.04 # compile error
           # - ubuntu:14.04 # compile error
-
-          - alpine:latest # works
-          - alpine:3.15 # works
-          - alpine:3.14 # works
-          - alpine:3.13 # works
-          - alpine:3.12 # works
 
           - centos:latest # works
           - centos:8 # works
@@ -186,28 +220,30 @@ jobs:
 
       # Create a docker
       - run: |
+          # TODO: can we remove --init?
           cont=$(docker run --pull=missing --init --detach ${{ matrix.container }} tail -f /dev/null)
           echo "cont=$cont" >> $GITHUB_ENV
       - run: echo "::notice ::cont=$cont"
-      - run: docker exec $cont mkdir /work
 
       # Copy the artifact
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "::notice ::workdir=$workdir"
       - uses: actions/download-artifact@v2
         with:
           name: bootstrap-output
       - run: tar -xvf libstat.tar
-      - run: docker cp . $cont:/work
+      - run: docker exec "$cont" mkdir "$workdir"
+      - run: docker cp . "$cont":"$workdir"
 
       # Install dependencies
-      - run: docker exec --workdir=/work $cont bin/install-deps
+      - run: docker exec --workdir="$workdir" "$cont" bin/install-deps
 
       # Build
-      - run: docker exec --workdir=/work $cont ./configure
-      - run: docker exec --workdir=/work $cont make
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" make
 
       # Cleanup
-      - run: docker stop $cont
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
 
-  #     --container-architecture string    Architecture which should be used to run containers, e.g.: linux/amd64. If not specified, will use host default architecture. Requires Docker server API Version 1.41+. Ignored on earlier Docker server platforms.
-  #     --privileged                       use privileged mode
-  #     --userns string                    user namespace to use
+# --container-architecture string    Architecture which should be used to run containers, e.g.: linux/amd64. If not specified, will use host default architecture. Requires Docker server API Version 1.41+. Ignored on earlier Docker server platforms.
