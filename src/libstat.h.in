@@ -1,8 +1,12 @@
 #ifndef LIBSTAT_H
 #define LIBSTAT_H
+
 // TODO: automake header conditionals
 
 #include <stddef.h>
+#include <stdint.h>
+
+// TODO: typedef stat_t
 
 #define FIELD_NAME_SIZE 64
 
@@ -13,5 +17,13 @@ struct field {
 };
 
 extern struct field const fields[];
+extern size_t const field_count;
+
+typedef struct {
+  ptrdiff_t const true_offset;
+  ptrdiff_t const present_offset;
+  int_fast8_t const true_mask;
+  int_fast8_t const present_mask;
+} flag;
 
 #endif // LIBSTAT_H
