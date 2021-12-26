@@ -220,7 +220,7 @@ jobs:
     steps:
       # Create a docker
       - run: |
-          cont=$(docker run --pull=missing --detach ${{ matrix.container }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach ${{ matrix.container }} tail -f /dev/null)
           echo "cont=$cont" >> $GITHUB_ENV
       - run: echo "::notice ::cont=$cont"
 
