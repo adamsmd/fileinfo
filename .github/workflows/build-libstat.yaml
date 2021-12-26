@@ -115,11 +115,11 @@ jobs:
       fail-fast: false
       matrix:
         container:
-          # Note that some symbolic names are duplicates of the numeric names.
-          # We keep both so that we automatically test new versions when those
-          # symbolic names get updated to newer versions.
+          ## Note that some symbolic names are duplicates of the numeric names.
+          ## We keep both so that we automatically test new versions when those
+          ## symbolic names get updated to newer versions.
 
-          # Images from https://hub.docker.com/search?type=image&image_filter=official&category=os
+          ## Images from https://hub.docker.com/search?type=image&image_filter=official&category=os
 
           - alpine:latest # works
           - alpine:3.15 # works
@@ -167,16 +167,16 @@ jobs:
           # - oraclelinux:7 # compile error
 
           - ros:latest # works
-          # Rolling release
+          ## Rolling release
           - ros:rolling # works
-          # ROS 2
+          ## ROS 2
           - ros:galactic # works
           - ros:foxy # works
-          # ROS 1
+          ## ROS 1
           - ros:noetic # works
           - ros:melodic # works
 
-          # VmWare Photon
+          ## VmWare Photon
           # - photon:latest # needs coreutils but is also missing `as`
 
           # - clearlinux:latest # slow install
@@ -186,33 +186,38 @@ jobs:
           # - mageia:8 # slow install
           # - mageia:7 # slow install
 
-          # - rockylinux:latest
-          # - rockylinux:8
+          - rockylinux:latest # works
+          - rockylinux:8 # works
 
-          # - sl:latest # Scientific Linux
-          # - sl:7
+          ## Scientific Linux
+          # - sl:latest # compile error
+          # - sl:7 # compile error
 
-          # - clefos:latest # For IBM Z
+          ## For IBM Z
+          # - clefos:latest
           # - clefos:7
 
-          # - almalinux:latest
-          # - almalinux:minimal
-          # - almalinux:8
-          # - almalinux:8-minimal
+          - almalinux:latest # works
+          # - almalinux:minimal # no c compiler
+          - almalinux:8 # works
+          # - almalinux:8-minimal # no c compiler
 
-          # - alt:latest
-          # - alt:sisyphus
-          # - alt:p10
-          # - alt:p9
+          # - alt:latest # no c compiler
+          # - alt:sisyphus # no c compiler
+          # - alt:p10 # no c compiler
+          # - alt:p9 # no c compiler
 
-          # - archlinux:latest
-          # - archlinux:base
-          # - archlinux:base-devel
+          # - archlinux:latest # no c compiler
+          # - archlinux:base # no c compiler
+          - archlinux:base-devel # works
+
+          ## TODO: nixos?
+          ## TODO: busybox?
+
+          ## Unsupported
 
           # - cirros:latest # does not have a package manager
 
-          # TODO: nixos?
-          # TODO: busybox?
     steps:
       # Create a docker
       - run: |
@@ -241,4 +246,4 @@ jobs:
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
 
-# --container-architecture string    Architecture which should be used to run containers, e.g.: linux/amd64. If not specified, will use host default architecture. Requires Docker server API Version 1.41+. Ignored on earlier Docker server platforms.
+# act --container-architecture string    Architecture which should be used to run containers, e.g.: linux/amd64. If not specified, will use host default architecture. Requires Docker server API Version 1.41+. Ignored on earlier Docker server platforms.
