@@ -51,11 +51,15 @@ jobs:
       matrix:
         os:
           - name: freebsd
+            version: '13.0'
+          - name: freebsd
             version: '12.2'
-          - name: openbsd
-            version: '6.8'
-          - name: netbsd
-            version: '9.2'
+          # - name: openbsd # compiler flag error
+          #   version: '6.9'
+          # - name: openbsd # compiler flag error
+          #   version: '6.8'
+          # - name: netbsd # action fails
+          #   version: '9.2'
     steps:
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
