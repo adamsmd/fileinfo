@@ -43,7 +43,7 @@ TODO: dependencies
     make
     make check
 
-The script `bin/clean-all` removes all generated files.
+The script `bin/clean` removes all generated files.
 
 ### Testing
 
