@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Ensure that a c compiler and make are installed.  (This script is mostly to
+# for Docker containers, which often don't have these already installed.)
+
 note_using="::notice ::Installing dependencies using"
 
 if apt --version >/dev/null 2>&1; then
@@ -13,6 +16,12 @@ elif yum --version >/dev/null 2>&1; then
 elif apk --version >/dev/null 2>&1; then
   echo "$note_using" apk
   apk add --no-cache gcc libc-dev make
+elif swupd --version >/dev/null 2>&1; then
+  echo "$note_using" swupd
+  swupd bundle-add --assume=yes c-basic make
+elif urpmi --version >/dev/null 2>&1; then
+  echo "$note_using" swupd
+  urpmi --auto gcc make
 else
   echo "$note_using" '<nothing>'
 fi

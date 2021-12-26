@@ -76,7 +76,7 @@ jobs:
   #           ./configure
   #           make
 
-  container3:
+  docker:
     needs: bootstrap
     runs-on: ubuntu-latest
     strategy:
@@ -144,19 +144,49 @@ jobs:
           - ros:noetic # works
           - ros:melodic # works
 
-          # - photon:latest # docker exits early
-          # - clearlinux:latest # no c compiler
-          # - cirros:latest # docker exits early
-          # - mageia:latest # no c compiler
+          # VmWare Photon
+          # - photon:latest # needs coreutils but is also missing `as`
+
+          # - clearlinux:latest # slow install
+
+          # - mageia:latest # slow install
+          # - mageia:cauldron # slow install
+          # - mageia:8 # slow install
+          # - mageia:7 # slow install
+
+          # - rockylinux:latest
+          # - rockylinux:8
+
+          # - sl:latest # Scientific Linux
+          # - sl:7
+
+          # - clefos:latest # For IBM Z
+          # - clefos:7
+
+          # - almalinux:latest
+          # - almalinux:minimal
+          # - almalinux:8
+          # - almalinux:8-minimal
+
+          # - alt:latest
+          # - alt:sisyphus
+          # - alt:p10
+          # - alt:p9
+
+          # - archlinux:latest
+          # - archlinux:base
+          # - archlinux:base-devel
+
+          # - cirros:latest # does not have a package manager
 
           # TODO: nixos?
+          # TODO: busybox?
     steps:
-      # - name: Checkout 
-      #   uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
+      # TODO: see if we can remove /work
 
       # Create a docker
       - run: |
-          cont=$(docker run --pull=missing --init --detach ${{ matrix.container }} sleep infinity)
+          cont=$(docker run --pull=missing --init --detach ${{ matrix.container }} tail -f /dev/null)
           echo "cont=$cont" >> $GITHUB_ENV
       - run: echo "::notice ::cont=$cont"
       - run: docker exec $cont mkdir /work
