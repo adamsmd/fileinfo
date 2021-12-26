@@ -1,6 +1,6 @@
 AM_CFLAGS = -std=c11 -pedantic -Wall -Wextra
-lib_LIBRARIES = libstat.a
-libstat_a_SOURCES = src/stat.c src/libstat.h
+lib_LIBRARIES = libfileinfo.a
+libfileinfo_a_SOURCES = src/fileinfo.c src/fileinfo/static.h src/fileinfo/dynamic.h
 # TODO: include_HEADERS
 # TODO: dist files
 # TODO: -O3
@@ -9,5 +9,5 @@ libstat_a_SOURCES = src/stat.c src/libstat.h
 # TESTS = $(check_PROGRAMS)
 check_PROGRAMS = print-fields
 
-print_fields_SOURCES = tests/print-fields.c src/libstat.h
-print_fields_LDADD = libstat.a
+print_fields_SOURCES = tests/print-fields.c src/fileinfo/dynamic.h
+print_fields_LDADD = libfileinfo.a

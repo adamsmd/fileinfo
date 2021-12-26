@@ -2,9 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([libstat], [0.1.0], [https://github.com/adamsmd/libstat])
-AC_CONFIG_SRCDIR([src/stat.c])
-AC_CONFIG_HEADERS([src/config.h src/libstat.h])
+AC_INIT([fileinfo], [0.1.0], [https://github.com/adamsmd/fileinfo])
+AC_CONFIG_SRCDIR([src/fileinfo.c])
+AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([subdir-objects foreign -Wall -Werror])
 
@@ -211,6 +211,10 @@ AC_DEFINE_UNQUOTED([STAT_FIELDS_COUNT], [$stat_fields_count])
 
 AH_TEMPLATE([STAT_FIELDS],[Define to be the fields in `struct statx` or `struct stat`.])
 AC_DEFINE_UNQUOTED([STAT_FIELDS(F_INT,F_DEV,F_TIME_SEC,F_TIME_NSEC)], [$stat_fields])
+
+for i in src/fileinfo/*.h.in; do
+  AC_CONFIG_FILES(${i%.in})
+done
 
 ################
 

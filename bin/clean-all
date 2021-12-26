@@ -1,43 +1,52 @@
 #!/bin/bash
 
 set -ex
+shopt -s globstar
 
 # Files created by autoscan
-rm -rf \
+rm -rf -- \
   autom4te.cache/ \
   autoscan.log \
   configure.scan \
 
 # Files created by aclocal
-rm -rf \
+rm -rf -- \
   aclocal.m4 \
   autom4te.cache/ \
 
 # Files created by autoconf
-rm -rf \
+rm -rf -- \
   configure \
 
+# Files created by configure
+rm -rf -- \
+  config.log \
+  config.status \
+  **/stamp-h* \
+
+for file in **/*.in; do
+  echo $file
+  rm -rf -- "${file%.in}"
+done
+
 # Files created by autoheader
-rm -rf \
+rm -rf -- \
   src/config.h.in \
   src/config.h.in~ \
 
 # Files created by automake
-rm -rf \
+rm -rf -- \
   build-aux/ \
   Makefile.in \
 
-# Files created by configure
-rm -rf \
-  config.log \
-  config.status \
-  Makefile \
-  src/config.h \
-  src/stamp-h1 \
-
 # Files created by make
-rm -rf \
-  libstat.a \
-  src/.deps/ \
-  src/.dirstamp \
-  src/stat.o \
+rm -rf -- \
+  **/.deps/ \
+  **/.dirstamp \
+  **/*.o \
+  **/lib*.a \
+  print-fields \
+
+# Files created by act
+rm -rf -- \
+  .act-artifact-server \

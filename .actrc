@@ -1,1 +1,2 @@
+# Default flags for running GitHub Actions locally via `act` (https://github.com/nektos/act)
 --artifact-server-path .act-artifact-server

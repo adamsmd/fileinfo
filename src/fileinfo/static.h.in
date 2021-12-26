@@ -1,0 +1,19 @@
+#ifndef FILEINFO_STATIC_H
+#define FILEINFO_STATIC_H
+
+#include <fileinfo/types.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// TODO: automake header conditionals
+
+// TODO: extern fileinfo_field const fileinfo_fields[];
+// TODO: extern size_t const fileinfo_fields_length;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // FILEINFO_STATIC_H

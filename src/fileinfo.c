@@ -1,4 +1,5 @@
-#include "libstat.h"
+#include "fileinfo/static.h"
+#include "fileinfo/dynamic.h"
 
 #include "config.h"
 
@@ -48,20 +49,15 @@ const int buffer_size = sizeof(struct_stat);
 #define DEV(field,name,major,minor) INT(field,name)
 #define TIME_SEC(field,name) INT(field,name)
 #define TIME_NSEC(field,name) INT(field,name)
-struct field const fields[] = { // TODO: put in ro memory
+fileinfo_field const fileinfo_fields[] = { // TODO: put in ro memory
   STAT_FIELDS(INT,DEV,TIME_SEC,TIME_NSEC)
 };
-
-// TODO: explort number of fields in `fields`
-// TODO: true, false, undef (negative)?
-struct flags {
-  bool flag1 : 1;
-};
+size_t const fileinfo_fields_length = STAT_FIELDS_COUNT;
 
 // TODO: create struct of right shape
 // TODO: define field accessors
 
-int libstat_stat(const char *pathname, bool follow_symlink, void *buffer) {
+int fileinfo_stat(const char *pathname, bool follow_symlink, void *buffer) {
 
   struct_stat *statxbuf = buffer;
   // TODO: implement get_stat
@@ -77,9 +73,6 @@ int libstat_stat(const char *pathname, bool follow_symlink, void *buffer) {
   return 0;
 }
 
-void print_fields() {
-
-}
 
 // void set_stat() {
 //   // TODO: set_stat

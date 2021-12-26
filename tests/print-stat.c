@@ -1,20 +1,21 @@
-#include <liststat.h>
+#include <fileinfo/dynamic.h>
 
 #include <inttypes.h>
 #include <stdio.h>
 
 // print by offset
 // print by macros
-int main(int argc, char **argc) {
+int main(int argc, char **argv) {
 
   for (int arg = 1; arg < argc; arg++) {
     struct_stat stat;
-    libstat_stat(argv[i], &stat);
+    libstat_stat(argv[arg], &stat);
     char *buffer = &stat;
-    for (int i = 0; i < 17; i++) {
+    for (int field_index = 0; field_index < 17; i++) {
+      fileinfo_field field = fileinfo_fields[field_index];
       uintmax_t value;
-      char *base = buffer + fields[i].offset;
-      switch (8 * fields[i].size) {
+      char *base = buffer + field.offset;
+      switch (8 * field.size) {
         case   8: value = *(uint8_t*)  base;
         case  16: value = *(uint16_t*) base;
         case  32: value = *(uint32_t*) base;
@@ -24,7 +25,7 @@ int main(int argc, char **argc) {
           fprintf(stderr, "TODO\n");
           exit(1);
       }
-      printf("name: %s value: "PRIuMAX"\n", fields[i].name, value);
+      printf("name: %s value: "PRIuMAX"\n", field.name, value);
     }
 
   return 0;
