@@ -1,0 +1,18 @@
+#!/bin/sh
+
+note_using="::notice ::Installing dependencies using"
+
+if apt --version >/dev/null 2>&1; then
+  echo "$note_using" apt
+  export DEBIAN_FRONTEND=noninteractive
+  apt update
+  apt install --assume-yes gcc make
+elif yum --version >/dev/null 2>&1; then
+  echo "$note_using" yum
+  yum install --assumeyes gcc make
+elif apk --version >/dev/null 2>&1; then
+  echo "$note_using" apk
+  apk add --no-cache gcc libc-dev make
+else
+  echo "$note_using" '<nothing>'
+fi
