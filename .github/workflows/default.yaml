@@ -27,14 +27,12 @@ jobs:
           # - windows-2022
           # - windows-2019
           # - windows-2016
-        # TODO: arch: TODO: X86, X64, ARM, and ARM64
-        # TODO: gcc, llvm, icc
+        # TODO: arch: X86, X64, ARM, and ARM64
+        # TODO: compiler: gcc, llvm, icc
         # TODO: pre-statx linux (and other kernel implementations)
-        # TODO: build from make dist
         # TODO: WSLv1, WSLv2, different bash ports (MSYS,MingW,Cygwin,GitBash)
-        # TODO: test linux w/o statx
-        # setup-qemu
         # TODO: filesystems: zfs, btrfs, ext4
+        # TODO: setup-qemu
     steps:
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
