@@ -35,6 +35,9 @@ AC_CHECK_HEADERS([ \
 #### Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_TYPE([struct statx], [use_statx=yes], [], [[#include <linux/stat.h>]])
 AC_CHECK_TYPE([struct stat], [use_stat=yes], [], [[#include <sys/stat.h>]])
+AC_CHECK_TYPES([ \
+  ptrdiff_t \
+])
 
 #### Checks for library functions.
 AC_CHECK_FUNCS([ \
@@ -115,13 +118,14 @@ DEFUNX([CHECK_STATX],
   [CHECK_STAT([F_INT], st_$1, [$1])]
 ) # CHECK_STATX
 
-CHECK_STATX(ino)
-CHECK_STATX(nlink)
-CHECK_STATX(uid)
-CHECK_STATX(gid)
-CHECK_STATX(size)
-CHECK_STATX(blksize)
-CHECK_STATX(blocks)
+CHECK_STATX(ino)     # Inode number
+CHECK_STATX(nlink)   # Number of hard links
+CHECK_STATX(uid)     # User ID of owner
+CHECK_STATX(gid)     # Group ID of owner
+CHECK_STATX(size)    # Total size, in bytes
+CHECK_STATX(blksize) # Block size for filesystem I/O
+CHECK_STATX(blocks)  # Number of 512B blocks allocated
+
 CHECK_STATX(gen) # AIX macOS NetBSD OpenBSD
 CHECK_STATX(vfs) # AIX
 CHECK_STATX(access) # AIX: st_access 	Field is not implemented. All bits are returned as zero.
@@ -138,8 +142,8 @@ DEFUNX([CHECK_DEV],
   [CHECK_STAT([F_DEV], st_$1,        [$1, st_$1, st_$1])],
 ) # CHECK_DEV
 
-CHECK_DEV(dev)
-CHECK_DEV(rdev)
+CHECK_DEV(dev)  # ID of device containing file
+CHECK_DEV(rdev) # Device ID (if special file)
 
 #### Time fields (seconds)
 
@@ -216,11 +220,10 @@ AC_DEFINE_UNQUOTED([STAT_FIELDS_COUNT], [$stat_fields_count])
 AH_TEMPLATE([STAT_FIELDS],[Define to be the fields in `struct statx` or `struct stat`.])
 AC_DEFINE_UNQUOTED([STAT_FIELDS(F_INT,F_DEV,F_TIME_SEC,F_TIME_NSEC)], [$stat_fields])
 
+################
+
 for i in src/fileinfo/*.h.in; do
   AC_CONFIG_FILES(${i%.in})
 done
-
-################
-
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
