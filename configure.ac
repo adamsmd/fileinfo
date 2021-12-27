@@ -68,6 +68,7 @@ AS_IF(
   [test "x$use_stat" = xyes], [
     AC_DEFINE(USE_STAT, 1)
     declare_fileinfo_stat="
+[#include <sys/stat.h>]
 [typedef struct stat fileinfo_stat;]
       "],
   [AC_MSG_ERROR([cannot find `struct stat`])])
