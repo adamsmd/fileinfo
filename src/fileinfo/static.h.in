@@ -12,6 +12,12 @@ extern "C" {
 // TODO: extern fileinfo_field const fileinfo_fields[];
 // TODO: extern size_t const fileinfo_fields_length;
 
+@DECLARE_FILEINFO_STAT@
+
+typedef struct {
+  fileinfo_stat stat;
+} fileinfo_struct;
+
 #ifdef __cplusplus
 }
 #endif

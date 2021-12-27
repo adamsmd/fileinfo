@@ -24,28 +24,20 @@
 #endif
 
 #if HAVE_LINUX_FCNTL_H
-#include <fcntl.h>           /* Definition of AT_* constants */
+#include <linux/fcntl.h>           /* Definition of AT_* constants */
 #endif
 
 #if HAVE_LINUX_STAT_H
 #include <linux/stat.h>
 #endif
 
-#if USE_STATX
-typedef struct statx struct_stat;
-#elif USE_STAT
-typedef struct stat struct_stat;
-#else
-#error "unimplemented"
-#endif
-
-const int buffer_size = sizeof(struct_stat);
+const int buffer_size = sizeof(fileinfo_stat);
 
 // TODO: test to check that .data is empty
 
-#define sizeof_field(field) (sizeof(((struct_stat*)NULL)->field))
+#define sizeof_field(field) (sizeof(((fileinfo_stat*)NULL)->field))
 
-#define INT(field,name) { offsetof(struct_stat,field), sizeof_field(field), #name },
+#define INT(field,name) { offsetof(fileinfo_stat,field), sizeof_field(field), #name },
 #define DEV(field,name,major,minor) INT(field,name)
 #define TIME_SEC(field,name) INT(field,name)
 #define TIME_NSEC(field,name) INT(field,name)
@@ -57,9 +49,9 @@ size_t const fileinfo_fields_length = STAT_FIELDS_COUNT;
 // TODO: create struct of right shape
 // TODO: define field accessors
 
-int fileinfo_stat(const char *pathname, bool follow_symlink, void *buffer) {
+int fileinfo_get_stat(const char *pathname, bool follow_symlink, void *buffer) {
 
-  struct_stat *statxbuf = buffer;
+  fileinfo_stat *stat = buffer;
   // TODO: implement get_stat
   #if USE_STATX
     // statx(STATX_ALL, buffer);

@@ -58,18 +58,22 @@ AH_TEMPLATE([USE_STAT], [Define to 1 if we should use the `stat' function.])
 AS_IF(
   [test "x$use_statx" = xyes], [
     AC_DEFINE(USE_STATX, 1)
-    preamble="
-      AC_INCLUDES_DEFAULT
-      [#include <linux/stat.h>]
-      [typedef struct statx struct_stat;]
+    declare_fileinfo_stat="
+[#include <linux/stat.h>]
+[typedef struct statx fileinfo_stat;]
       "],
   [test "x$use_stat" = xyes], [
     AC_DEFINE(USE_STAT, 1)
-    preamble="
-      AC_INCLUDES_DEFAULT
-      [typedef struct stat struct_stat;]
+    declare_fileinfo_stat="
+[typedef struct stat fileinfo_stat;]
       "],
   [AC_MSG_ERROR([cannot find `struct stat`])])
+AC_SUBST([DECLARE_FILEINFO_STAT],["$declare_fileinfo_stat"])
+AM_SUBST_NOTMAKE([DECLARE_FILEINFO_STAT])
+preamble="
+AC_INCLUDES_DEFAULT
+$declare_fileinfo_stat
+"
 
 # Shell variable holding the CPP macro invocations to be added to the CPP macro `STAT_FIELDS()`
 stat_fields=
@@ -77,10 +81,10 @@ stat_fields_count=0
 
 # CHECK_STAT(MACRO, FIELD, ARGS...)
 # --------------------------------------
-# If FIELD is a member of `struct_stat`, add `MACRO(FIELD, ARGS...)` to
+# If FIELD is a member of `fileinfo_stat`, add `MACRO(FIELD, ARGS...)` to
 # `stat_fields`.
 AC_DEFUN([CHECK_STAT], [
-  AC_CHECK_MEMBER([struct_stat.$2],
+  AC_CHECK_MEMBER([fileinfo_stat.$2],
     [AS_VAR_ARITH([stat_fields_count], [1 + $stat_fields_count])
       AS_VAR_APPEND([stat_fields], "[ \\]m4_newline([  $1($2, $3)])")],
     [],

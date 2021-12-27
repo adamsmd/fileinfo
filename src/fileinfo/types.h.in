@@ -10,7 +10,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
-// TODO: typedef stat_t
+typedef struct fileinfo_struct fileinfo;
 
 #define FIELD_NAME_SIZE 64
 
