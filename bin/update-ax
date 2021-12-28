@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# WARNING: This script takes a long time to run (~2 hours)
+
 set -e
 shopt -s nullglob
 
@@ -18,7 +20,7 @@ for i in m4/ax_*.m4; do
   echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   mv $i $i.hide
   bin/clean
-  if bin/bootstrap; then
+  if bin/bootstrap && ./configure; then
     echo ''
     echo !!!! Hiding $i
     echo ''
