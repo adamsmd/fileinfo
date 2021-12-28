@@ -1,45 +1,46 @@
 #!/bin/bash
 
-set -ex
+set -e
 shopt -s globstar
 
-# Files created by autoscan
+echo "Removing files created by autoscan"
 rm -rf -- \
   autom4te.cache/ \
   autoscan.log \
   configure.scan \
 
-# Files created by aclocal
+echo "Removing files created by aclocal"
 rm -rf -- \
   aclocal.m4 \
   autom4te.cache/ \
 
-# Files created by autoconf
+echo "Removing files created by autoconf"
 rm -rf -- \
   configure \
 
-# Files created by configure
+echo "Removing files created by configure"
 rm -rf -- \
   config.log \
   config.status \
   **/stamp-h* \
 
+echo "Removing files that have a .in file:"
 for file in **/*.in; do
-  echo $file
+  echo "- ${file%.in}"
   rm -rf -- "${file%.in}"
 done
 
-# Files created by autoheader
+echo "Removing files created by autoheader"
 rm -rf -- \
   src/config.h.in \
   src/config.h.in~ \
 
-# Files created by automake
+echo "Removing files created by automake"
 rm -rf -- \
   build-aux/ \
   Makefile.in \
 
-# Files created by make
+echo "Removing files created by make"
 rm -rf -- \
   **/.deps/ \
   **/.dirstamp \
@@ -47,6 +48,7 @@ rm -rf -- \
   **/lib*.a \
   print-fields \
 
+echo "Removing files created by act"
 # Files created by act
 rm -rf -- \
   .act-artifact-server \
