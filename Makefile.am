@@ -1,5 +1,13 @@
-AM_CFLAGS = -std=c11 -pedantic -Wall -Wextra
+AM_CPPFLAGS=@AM_CPPFLAGS@
+AM_CFLAGS=@AM_CFLAGS@
+AM_CXXFLAGS=@AM_CXXFLAGS@
+AM_LDFLAGS=@AM_LDFLAGS@
+
+# AM_CFLAGS = -std=c11
+# AM_LDFLAGS = -std=c11
 lib_LIBRARIES = libfileinfo.a
+# TODO: test to check that .data is empty
+
 libfileinfo_a_SOURCES = src/fileinfo.c src/fileinfo/static.h src/fileinfo/dynamic.h
 # TODO: include_HEADERS
 # TODO: dist files
