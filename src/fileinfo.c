@@ -33,41 +33,32 @@
 
 const int buffer_size = sizeof(fileinfo_stat);
 
-// TODO: test to check that .data is empty
-
 #define sizeof_field(field) (sizeof(((fileinfo_stat*)NULL)->field))
 
 #define INT(field,name) { offsetof(fileinfo_stat,field), sizeof_field(field), #name },
 #define DEV(field,name,major,minor) INT(field,name)
 #define TIME_SEC(field,name) INT(field,name)
 #define TIME_NSEC(field,name) INT(field,name)
-fileinfo_field const fileinfo_fields[] = { // TODO: put in ro memory
+fileinfo_field const fileinfo_fields[] = { /* TODO: put in ro memory */
   STAT_FIELDS(INT,DEV,TIME_SEC,TIME_NSEC)
 };
 size_t const fileinfo_fields_length = STAT_FIELDS_COUNT;
 
-// TODO: create struct of right shape
-// TODO: define field accessors
+/* TODO: create struct of right shape */
+/* TODO: define field accessors */
 
 int fileinfo_get_stat(const char *pathname, bool follow_symlink, void *buffer) {
 
   fileinfo_stat *stat = buffer;
-  // TODO: implement get_stat
+  /* TODO: implement get_stat */
   #if USE_STATX
-    // statx(STATX_ALL, buffer);
-    // TODO: if use_statx make_dev(base)
+    /* statx(STATX_ALL, buffer); */
+    /* TODO: if use_statx make_dev(base) */
   #elif USE_STAT
-    // int stat(pathname, statbuf);
+    /* int stat(pathname, statbuf); */
   #else
   #error "unimplemented"
   #endif
 
   return 0;
 }
-
-
-// void set_stat() {
-//   // TODO: set_stat
-// }
-
-// TODO: to_json

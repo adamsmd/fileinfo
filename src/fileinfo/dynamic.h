@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-// TODO: automake header conditionals
+/* TODO: automake header conditionals */
 
 extern size_t const fileinfo_size;
 
@@ -18,4 +18,4 @@ extern size_t const fileinfo_fields_length;
 }
 #endif
 
-#endif // FILEINFO_DYNAMIC_H
+#endif /* FILEINFO_DYNAMIC_H */

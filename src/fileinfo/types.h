@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-// TODO: automake header conditionals
+/* TODO: automake header conditionals */
 
 #include <stddef.h>
 #include <stdint.h>
@@ -17,10 +17,10 @@ typedef struct fileinfo_struct fileinfo;
 typedef struct {
   ptrdiff_t const offset;
   size_t const size;
-  char const name[FIELD_NAME_SIZE]; // not `char *` so fields ends up in .rodata
+  char const name[FIELD_NAME_SIZE]; /* not `char *` so fields ends up in .rodata */
 } fileinfo_field;
 
-// TODO: true, false, undef (negative)?
+/* TODO: true, false, undef (negative)? */
 typedef struct {
   ptrdiff_t const true_offset;
   ptrdiff_t const present_offset;
@@ -32,4 +32,4 @@ typedef struct {
 }
 #endif
 
-#endif // FILEINFO_TYPES_H
+#endif /* FILEINFO_TYPES_H */
