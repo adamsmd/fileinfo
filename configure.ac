@@ -476,6 +476,83 @@ CHECK_TIME_NSEC([m])
 # TODO: some way to test if we missed any fields
 # TODO: non-stat_fields
 
+#### TODO fields
+
+# stx_mask;       /* Mask of bits indicating filled fields */
+# stx_attributes; /* Extra file attribute indicators */
+# stx_attributes_mask; /* Mask to show what's supported in stx_attributes */
+
+# st_flags;
+
+# string user
+# string group
+
+# struct file_type const file_types = {
+#   { "blk", S_IFBLK, BlockSpecial },
+# };
+
+# file_modes = {
+#   { "rusr", S_IRUSR },
+#   ...
+# }
+
+# enum flag_shift {
+#   FLAG_SHIFT_COMPRESSED,
+#   FLAG_SHIFT_END,
+# };
+
+# struct file_flag const file_flags = {
+#   { "compressed", 1 << FLAG_SHIFT_COMPRESSED }
+# };
+
+# #if FLAG_SHIFT_END > 64
+#   #error FOO
+# #endif
+
+#   STATX_ATTR_COMPRESSED
+#   STATX_ATTR_IMMUTABLE
+#   STATX_ATTR_APPEND
+#   STATX_ATTR_NODUMP
+#   STATX_ATTR_ENCRYPTED
+#   STATX_ATTR_VERITY
+#   STATX_ATTR_DAX
+
+###
+
+###chattr
+
+# record file system type (btrfs,ext4,xfs)
+# btrfs.5
+#  attributes: chattr(1) or lsattr(1) utilities (the ioctls are FS_IOC_GETFLAGS and FS_IOC_SETFLAGS), due to the ioctl names the attributes are also called flags
+# xflags: to distinguish from the previous, it’s extended flags, with tunable bits similar to the attributes but extensible and new bits will be added in the future (the ioctls are
+#           FS_IOC_FSGETXATTR and FS_IOC_FSSETXATTR but they are not related to extended attributes that are also called xattrs), there’s no standard tool to change the bits, there’s support in xfs_io(8) as
+#           command xfs_io -c chattr
+
+# ext4.5
+# xfs.5
+
+#bsm/macos: chflags, specific ls flags
+#Solaris: chmod[1] and ls[2]
+#similar-sounding but unrelated commands: chatr (from HP-UX) and lsattr (from AIX)
+
+#   ExtendedAttributes []ExtendedAttribute json:"extended_attributes,omitempty"
+#     %C     SELinux security context string
+#     chattr
+#       ioctl_iflags
+#       chflags
+#     https://en.wikipedia.org/wiki/File_attribute
+#     getfattr
+#     getxattr
+#     getfacl
+#     https://www.gnu.org/software/libc/manual/html_node/File-Attributes.html
+#     https://docs.python.org/3/library/os.html#os.chflags
+#     https://docs.python.org/3/library/os.html#os.chmod
+#     Extend the "POSIX 1003.1e draft standard 17" format with an additional uid/gid field
+#     Replace the "POSIX 1003.1e draft standard 17" user/group field with uid/gid
+#     Replace the user/group field with the stored uid/gid
+#     https://manpages.debian.org/jessie/freebsd-manpages/chflags.2freebsd.en.html
+
+#   Error string json:"error,omitempty"
 
 #### Move the info from the shell variable `stat_fields` to the CPP macro `STAT_FIELDS()`.
 
