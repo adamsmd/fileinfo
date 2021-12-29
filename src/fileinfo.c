@@ -29,9 +29,19 @@
 
 #if HAVE_LINUX_STAT_H
 #include <linux/stat.h>
+
+#if HAVE_STATX
 /* Taken from `man statx` as the headers don't have this function.*/
 extern int statx(
   int dirfd, const char *pathname, int flags, unsigned int mask, struct statx *statxbuf);
+#else
+#include <sys/syscall.h>
+/* Older glibc didn't have a statx function, so we use syscall */
+static int statx(
+    int dirfd, const char *pathname, int flags, unsigned int mask, struct statx *statxbuf) {
+	return (int)syscall(SYS_statx, dirfd, pathname, flags, mask, statxbuf);
+}
+#endif
 #endif
 
 const int buffer_size = sizeof(fileinfo_stat);
