@@ -298,7 +298,7 @@ AX_APPEND_COMPILE_FLAGS([-Wtrampolines], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wtrigraphs], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wtsan], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wtype-limits], [AM_CFLAGS])
-AX_APPEND_COMPILE_FLAGS([-Wundef], [AM_CFLAGS])
+## AX_APPEND_COMPILE_FLAGS([-Wundef], [AM_CFLAGS]) # Allow #if on undefined vars
 AX_APPEND_COMPILE_FLAGS([-Wuninitialized], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wunknown-pragmas], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wunsuffixed-float-constants], [AM_CFLAGS])
