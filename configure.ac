@@ -337,28 +337,28 @@ AS_IF(
   [test "x$use_statx" = xyes], [
     AC_DEFINE(USE_STATX, 1)
     declare_fileinfo_stat="
-[#include <linux/stat.h>]
-[typedef struct statx fileinfo_stat;]
+      [#include <linux/stat.h>]
+      [typedef struct statx fileinfo_stat;]
       "],
   [test "x$use_stat64" = xyes], [
     AC_DEFINE(USE_STAT64, 1)
     declare_fileinfo_stat="
-[#include <linux/stat.h>]
-[typedef struct stat64 fileinfo_stat;]
+      [#include <sys/stat.h>]
+      [typedef struct stat64 fileinfo_stat;]
       "],
   [test "x$use_stat" = xyes], [
     AC_DEFINE(USE_STAT, 1)
     declare_fileinfo_stat="
-[#include <sys/stat.h>]
-[typedef struct stat fileinfo_stat;]
+      [#include <sys/stat.h>]
+      [typedef struct stat fileinfo_stat;]
       "],
   [AC_MSG_ERROR([cannot find `struct stat`])])
-AC_SUBST([DECLARE_FILEINFO_STAT],["$declare_fileinfo_stat"])
+AC_SUBST([DECLARE_FILEINFO_STAT], ["$declare_fileinfo_stat"])
 AM_SUBST_NOTMAKE([DECLARE_FILEINFO_STAT])
 preamble="
-AC_INCLUDES_DEFAULT
-$declare_fileinfo_stat
-"
+  AC_INCLUDES_DEFAULT
+  $declare_fileinfo_stat
+  "
 
 # Shell variable holding the CPP macro invocations to be added to the CPP macro `STAT_FIELDS()`
 stat_fields=
@@ -380,7 +380,7 @@ AC_DEFUN([CHECK_STAT], [
 # --------------------------------------
 # Define an autoconf macro NAME to call STATX if `struct statx` exists.
 # Otherwise, have it call STAT.
-AC_DEFUN([DEFUNX],[
+AC_DEFUN([DEFUNX], [
   m4_define([$1], [AS_IF([test "x$use_statx" = xyes], [$2], [$3])])
 ]) # DEFUNX
 
@@ -463,7 +463,7 @@ CHECK_TIME_SEC([m])
 # Add one or none of the following to `stat_fields` based on what fields exist.
 # - F_TIME_SEC(stx_PREFIXtime.tv_sec, PREFIXtime_sec)
 # - F_TIME_SEC(st_PREFIXtime, PREFIXtime_sec)
-AC_DEFUN([CHECK_TIME_NSEC],[
+AC_DEFUN([CHECK_TIME_NSEC], [
   CHECK_STAT([F_TIME_NSEC], stx_$1time.tv_nsec, [$1time_nsec]) # linux
   CHECK_STAT([F_TIME_NSEC], st_$1tim.tv_nsec, [$1time_nsec]) # minix openbsd linux
   CHECK_STAT([F_TIME_NSEC], st_$1tim.st__tim.tv_nsec, [$1time_nsec]) # unknown
@@ -598,10 +598,10 @@ CHECK_TIME_NSEC([m])
 
 AC_MSG_NOTICE([defining STAT_FIELDS() with $stat_fields_count fields to be "$stat_fields"])
 
-AH_TEMPLATE([STAT_FIELDS_COUNT],[Define to be the number of fields in STAT_FIELDS().])
+AH_TEMPLATE([STAT_FIELDS_COUNT], [Define to be the number of fields in STAT_FIELDS().])
 AC_DEFINE_UNQUOTED([STAT_FIELDS_COUNT], [$stat_fields_count])
 
-AH_TEMPLATE([STAT_FIELDS],[Define to be the fields in `struct statx` or `struct stat`.])
+AH_TEMPLATE([STAT_FIELDS], [Define to be the fields in `struct statx` or `struct stat`.])
 AC_DEFINE_UNQUOTED([STAT_FIELDS(F_INT,F_DEV,F_TIME_SEC,F_TIME_NSEC)], [$stat_fields])
 
 ################
