@@ -6,12 +6,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: bin/bootstrap
-      - run: tar -cvf ../libstat.tar --exclude .git .
-      - run: mv ../libstat.tar .
+      - run: tar -cvf ../fileinfo.tar --exclude .git .
+      - run: mv ../fileinfo.tar .
       - uses: actions/upload-artifact@v2
         with:
           name: bootstrap-output
-          path: libstat.tar
+          path: fileinfo.tar
 
   vm:
     needs: bootstrap
@@ -36,9 +36,10 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
-      - run: tar -xvf libstat.tar
+      - run: tar -xvf fileinfo.tar
       - run: ./configure
       - run: make
+      - run: make check
 
   cross-platform-actions:
     needs: bootstrap
@@ -60,7 +61,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
-      - run: tar -xvf libstat.tar
+      - run: tar -xvf fileinfo.tar
       - name: Test on ${{ matrix.os.name }}
         uses: cross-platform-actions/action@v0.3.1
         with:
@@ -68,7 +69,7 @@ jobs:
           version: ${{ matrix.os.version }}
           shell: bash
           run: |
-            ./configure && make
+            ./configure && make && make check
 
   # vmactions-freebsd:
   #   needs: bootstrap
@@ -77,7 +78,7 @@ jobs:
   #     - uses: actions/download-artifact@v2
   #       with:
   #         name: bootstrap-output
-  #     - run: tar -xvf libstat.tar
+  #     - run: tar -xvf fileinfo.tar
   #     - uses: vmactions/freebsd-vm@v0.1.5
   #       with:
   #         # prepare: |
@@ -94,7 +95,7 @@ jobs:
   #     - uses: actions/download-artifact@v2
   #       with:
   #         name: bootstrap-output
-  #     - run: tar -xvf libstat.tar
+  #     - run: tar -xvf fileinfo.tar
   #     - uses: vmactions/solaris-vm@v0.0.3
   #       with:
   #         prepare: |
@@ -230,7 +231,7 @@ jobs:
       # Copy the artifact to the working directory
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
-      - run: docker cp - <libstat.tar "$cont":"$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
 
       # Install dependencies
       - run: docker exec --workdir="$workdir" "$cont" bin/install-deps
@@ -238,6 +239,7 @@ jobs:
       # Build
       - run: docker exec --workdir="$workdir" "$cont" ./configure
       - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
 
       # Cleanup
       - run: docker stop "$cont"
