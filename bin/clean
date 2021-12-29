@@ -3,6 +3,13 @@
 set -e
 shopt -s globstar
 
+echo "Removing files that have a .in file:"
+# Must be done before removing any `.in` files
+for file in **/*.in; do
+  echo "- ${file%.in}"
+  rm -rf -- "${file%.in}"
+done
+
 echo "Removing files created by autoscan"
 rm -rf -- \
   autom4te.cache/ \
@@ -12,24 +19,12 @@ rm -rf -- \
 echo "Removing files created by aclocal"
 rm -rf -- \
   aclocal.m4 \
+  aminclude_static.am \
   autom4te.cache/ \
 
 echo "Removing files created by autoconf"
 rm -rf -- \
   configure \
-
-echo "Removing files created by configure"
-rm -rf -- \
-  config.log \
-  config.status \
-  **/stamp-h* \
-
-echo "Removing files that have a .in file:"
-# Must be before removing `config.h.in`
-for file in **/*.in; do
-  echo "- ${file%.in}"
-  rm -rf -- "${file%.in}"
-done
 
 echo "Removing files created by autoheader"
 rm -rf -- \
@@ -41,6 +36,15 @@ rm -rf -- \
   build-aux/ \
   Makefile.in \
 
+echo "Removing files created by configure"
+rm -rf -- \
+  **/stamp-h* \
+  config.log \
+  config.status \
+  fileinfo-uninstalled.pc \
+  fileinfo-uninstalled.sh \
+  fileinfo.pc.in \
+
 echo "Removing files created by make"
 rm -rf -- \
   **/.deps/ \
@@ -48,6 +52,7 @@ rm -rf -- \
   **/*.o \
   **/lib*.a \
   print-fields \
+  print-stat \
 
 echo "Removing files created by act"
 # Files created by act
