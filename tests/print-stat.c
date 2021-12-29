@@ -1,25 +1,24 @@
 #include <fileinfo/dynamic.h>
-#include <fileinfo/static.h>
 #include <fileinfo/functions.h>
+#include <fileinfo/static.h>
 
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
-/* print by offset */
-/* print by macros */
+/* TODO: print by offset */
+/* TODO: print by macros */
 int main(int argc, char **argv) {
   int arg;
   for (arg = 1; arg < argc; arg++) {
     fileinfo stat;
-    char *buffer;
+    char *buffer = (char*)&stat;
     int field_index;
 
     fileinfo_get_stat(argv[arg], false, &stat);
-    buffer = (char*)&stat;
 
-    for (field_index = 0; field_index < 17; field_index++) {
+    for (field_index = 0; field_index < fileinfo_fields_length; field_index++) {
       fileinfo_field field = fileinfo_fields[field_index];
       uintmax_t value;
       void *base = buffer + field.offset;
