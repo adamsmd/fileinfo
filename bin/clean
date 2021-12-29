@@ -25,6 +25,7 @@ rm -rf -- \
   **/stamp-h* \
 
 echo "Removing files that have a .in file:"
+# Must be before removing `config.h.in`
 for file in **/*.in; do
   echo "- ${file%.in}"
   rm -rf -- "${file%.in}"
