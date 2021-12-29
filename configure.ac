@@ -35,6 +35,12 @@ AC_CHECK_HEADERS([ \
 ])
 
 #### Checks for typedefs, structures, and compiler characteristics.
+AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_TYPE_SIZE_T
+
 AC_CHECK_TYPE([struct statx], [use_statx=yes], [], [[#include <linux/stat.h>]])
 AC_CHECK_TYPE([struct stat], [use_stat=yes], [], [[#include <sys/stat.h>]])
 AC_CHECK_TYPES([ \
