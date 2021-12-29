@@ -72,14 +72,13 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
       #else
         #error "TODO"
       #endif
-      (AT_FDCWD, pathconf, output, follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW)) {
+      (AT_FDCWD, pathconf, &output->stat, follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW)) {
       return true;
     } else {
       return false;
       /* TODO: error based on errno */
     }
   #elif defined(USE_STAT64) || defined(USE_STAT)
-    int ret =
     if (0 ==
       follow_symlink ?
         #if USE_STAT64
@@ -89,7 +88,7 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
         #else
           #error "TODO"
         #endif
-        (pathname, &output) :
+        (pathname, &output->stat) :
         #if USE_STAT64
           lstat64
         #elif USE_STAT
@@ -97,13 +96,13 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
         #else
           #error "TODO"
         #endif
-        (pathname, output)) {
+        (pathname, &output->stat)) {
       return true;
     } else {
       return false;
     }
   #else
-  #error "unimplemented"
+    #error "unimplemented"
   #endif
 
   return 0;
