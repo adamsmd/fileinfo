@@ -63,7 +63,7 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
       /* TODO: error based on errno */
     }
     /* TODO: if use_statx make_dev(base) */
-  #elif USE_FSTATAT64 || USE_FSTATAT
+  #elif defined(USE_FSTATAT64) || defined(USE_FSTATAT)
     if (0 ==
       #if USE_FSTATAT64
         fstatat64
@@ -78,8 +78,7 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
       return false;
       /* TODO: error based on errno */
     }
-  #elif USE_STAT64 || USE_STAT
-  #elif USE_STAT
+  #elif defined(USE_STAT64) || defined(USE_STAT)
     int ret =
     if (0 ==
       follow_symlink ?
