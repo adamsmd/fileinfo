@@ -17,7 +17,7 @@ AM_PROG_AR
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_RANLIB
-AC_PROG_CXX
+AC_PROG_CXX # TODO: optional
 
 #### Checks for libraries.
 
@@ -42,6 +42,7 @@ AC_TYPE_UINT64_T
 AC_TYPE_SIZE_T
 
 AC_CHECK_TYPE([struct statx], [use_statx=yes], [], [[#include <linux/stat.h>]])
+AC_CHECK_TYPE([struct stat64], [use_stat64=yes], [], [[#include <sys/stat.h>]])
 AC_CHECK_TYPE([struct stat], [use_stat=yes], [], [[#include <sys/stat.h>]])
 AC_CHECK_TYPES([ \
   ptrdiff_t \
@@ -116,8 +117,8 @@ AX_APPEND_COMPILE_FLAGS([-Wpedantic], [AM_CFLAGS])
 #### AX_APPEND_COMPILE_FLAGS([-w], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wextra], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wall], [AM_CFLAGS])
-AX_APPEND_COMPILE_FLAGS([-Wabi], [AM_CFLAGS])
-##AX_APPEND_COMPILE_FLAGS([-Wabi=n], [AM_CFLAGS])
+## AX_APPEND_COMPILE_FLAGS([-Wabi], [AM_CFLAGS])
+## AX_APPEND_COMPILE_FLAGS([-Wabi=n], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Waddress], [AM_CFLAGS])
 #### AX_APPEND_COMPILE_FLAGS([-Wno-address-of-packed-member], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Waggregate-return], [AM_CFLAGS])
@@ -140,11 +141,11 @@ AX_APPEND_COMPILE_FLAGS([-Wno-builtin-declaration-mismatch], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wc90-c99-compat], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wc99-c11-compat], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wc11-c2x-compat], [AM_CFLAGS])
-AX_APPEND_COMPILE_FLAGS([-Wc++-compat], [AM_CFLAGS])
-AX_APPEND_COMPILE_FLAGS([-Wc++11-compat], [AM_CFLAGS])
-AX_APPEND_COMPILE_FLAGS([-Wc++14-compat], [AM_CFLAGS])
-AX_APPEND_COMPILE_FLAGS([-Wc++17-compat], [AM_CFLAGS])
-AX_APPEND_COMPILE_FLAGS([-Wc++20-compat], [AM_CFLAGS])
+AX_APPEND_COMPILE_FLAGS([-Wc++-compat], [AM_CXXFLAGS])
+AX_APPEND_COMPILE_FLAGS([-Wc++11-compat], [AM_CXXFLAGS])
+AX_APPEND_COMPILE_FLAGS([-Wc++14-compat], [AM_CXXFLAGS])
+AX_APPEND_COMPILE_FLAGS([-Wc++17-compat], [AM_CXXFLAGS])
+AX_APPEND_COMPILE_FLAGS([-Wc++20-compat], [AM_CXXFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wcast-align], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wcast-align=strict], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wcast-function-type], [AM_CFLAGS])
@@ -290,7 +291,7 @@ AX_APPEND_COMPILE_FLAGS([-Wswitch-enum], [AM_CFLAGS])
 #### AX_APPEND_COMPILE_FLAGS([-Wno-switch-outside-range], [AM_CFLAGS])
 #### AX_APPEND_COMPILE_FLAGS([-Wno-switch-unreachable], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wsync-nand], [AM_CFLAGS])
-AX_APPEND_COMPILE_FLAGS([-Wsystem-headers], [AM_CFLAGS])
+## AX_APPEND_COMPILE_FLAGS([-Wsystem-headers], [AM_CFLAGS]) # Don't warn from system headers
 AX_APPEND_COMPILE_FLAGS([-Wtautological-compare], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wtrampolines], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wtrigraphs], [AM_CFLAGS])
@@ -329,6 +330,7 @@ AX_APPEND_COMPILE_FLAGS([-Wzero-length-bounds], [AM_CFLAGS])
 #### Helpers
 
 AH_TEMPLATE([USE_STATX], [Define to 1 if we should use the `statx' function.])
+AH_TEMPLATE([USE_STAT64], [Define to 1 if we should use the `stat64' function.])
 AH_TEMPLATE([USE_STAT], [Define to 1 if we should use the `stat' function.])
 AS_IF(
   [test "x$use_statx" = xyes], [
@@ -336,6 +338,12 @@ AS_IF(
     declare_fileinfo_stat="
 [#include <linux/stat.h>]
 [typedef struct statx fileinfo_stat;]
+      "],
+  [test "x$use_stat64" = xyes], [
+    AC_DEFINE(USE_STAT64, 1)
+    declare_fileinfo_stat="
+[#include <linux/stat.h>]
+[typedef struct stat64 fileinfo_stat;]
       "],
   [test "x$use_stat" = xyes], [
     AC_DEFINE(USE_STAT, 1)
@@ -378,6 +386,8 @@ AC_DEFUN([DEFUNX],[
 #### File type and mode
 
 # TODO: stx_mode/st_mode is handled specially
+# TODO: human_access (stat.c)
+# TODO: file_type (stat.c)
 
 #### Unsigned integer fields
 
@@ -402,6 +412,11 @@ CHECK_STATX(blocks)  # Number of 512B blocks allocated
 CHECK_STATX(gen) # AIX macOS NetBSD OpenBSD
 CHECK_STATX(vfs) # AIX
 CHECK_STATX(access) # AIX: st_access 	Field is not implemented. All bits are returned as zero.
+
+# TODO: getpwuid (stat.c)
+# TODO: getgruid (stat.c)
+
+# TODO: out_mount_point (stat.c)
 
 #### Device fields
 
@@ -523,9 +538,9 @@ CHECK_TIME_NSEC([m])
 #   STATX_ATTR_VERITY
 #   STATX_ATTR_DAX
 
-###
+####
 
-###chattr
+#### chattr
 
 # record file system type (btrfs,ext4,xfs)
 # btrfs.5
@@ -541,24 +556,42 @@ CHECK_TIME_NSEC([m])
 #Solaris: chmod[1] and ls[2]
 #similar-sounding but unrelated commands: chatr (from HP-UX) and lsattr (from AIX)
 
-#   ExtendedAttributes []ExtendedAttribute json:"extended_attributes,omitempty"
-#     %C     SELinux security context string
-#     chattr
-#       ioctl_iflags
-#       chflags
-#     https://en.wikipedia.org/wiki/File_attribute
-#     getfattr
-#     getxattr
-#     getfacl
-#     https://www.gnu.org/software/libc/manual/html_node/File-Attributes.html
-#     https://docs.python.org/3/library/os.html#os.chflags
-#     https://docs.python.org/3/library/os.html#os.chmod
-#     Extend the "POSIX 1003.1e draft standard 17" format with an additional uid/gid field
-#     Replace the "POSIX 1003.1e draft standard 17" user/group field with uid/gid
-#     Replace the user/group field with the stored uid/gid
-#     https://manpages.debian.org/jessie/freebsd-manpages/chflags.2freebsd.en.html
+#### SELinux
 
-#   Error string json:"error,omitempty"
+#     %C     SELinux security context string
+# getfilecon
+
+#### Extended attributes
+
+# listxattr(2)
+
+#### ACLs
+
+# getfacl(1)
+
+#### Alternate Data Streams
+
+# NTFS
+# MacOS?
+
+#### other
+
+# https://en.wikipedia.org/wiki/File_attribute
+# https://www.gnu.org/software/libc/manual/html_node/File-Attributes.html
+# https://docs.python.org/3/library/os.html#os.chflags
+# https://docs.python.org/3/library/os.html#os.chmod
+# https://savannah.nongnu.org/projects/attr/
+# Extend the "POSIX 1003.1e draft standard 17" format with an additional uid/gid field
+# Replace the "POSIX 1003.1e draft standard 17" user/group field with uid/gid
+# Replace the user/group field with the stored uid/gid
+# https://manpages.debian.org/jessie/freebsd-manpages/chflags.2freebsd.en.html
+
+# https://www.gnu.org/software/gnulib/manual/gnulib.html#stat
+# ST_NBLOCKSIZE ST_NBLOCKS (gnulib)
+# get_birthtime (stat.c)
+# get_stat_atime (stat.c)
+
+#### Error string json:"error,omitempty"
 
 #### Move the info from the shell variable `stat_fields` to the CPP macro `STAT_FIELDS()`.
 

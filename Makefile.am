@@ -15,7 +15,10 @@ libfileinfo_a_SOURCES = src/fileinfo.c src/fileinfo/static.h src/fileinfo/dynami
 # TESTS=...
 # check_PROGRAMS=...
 # TESTS = $(check_PROGRAMS)
-check_PROGRAMS = print-fields
+check_PROGRAMS = print-fields print-stat
 
 print_fields_SOURCES = tests/print-fields.c src/fileinfo/dynamic.h
 print_fields_LDADD = libfileinfo.a
+
+print_stat_SOURCES = tests/print-stat.c src/fileinfo/dynamic.h
+print_stat_LDADD = libfileinfo.a

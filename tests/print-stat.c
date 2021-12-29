@@ -1,32 +1,42 @@
 #include <fileinfo/dynamic.h>
+#include <fileinfo/static.h>
+#include <fileinfo/functions.h>
 
 #include <inttypes.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
 
-// print by offset
-// print by macros
+/* print by offset */
+/* print by macros */
 int main(int argc, char **argv) {
+  int arg;
+  for (arg = 1; arg < argc; arg++) {
+    fileinfo stat;
+    char *buffer;
+    int field_index;
 
-  for (int arg = 1; arg < argc; arg++) {
-    struct_stat stat;
-    libstat_stat(argv[arg], &stat);
-    char *buffer = &stat;
-    for (int field_index = 0; field_index < 17; i++) {
+    fileinfo_get_stat(argv[arg], false, &stat);
+    buffer = (char*)&stat;
+
+    for (field_index = 0; field_index < 17; field_index++) {
       fileinfo_field field = fileinfo_fields[field_index];
       uintmax_t value;
-      char *base = buffer + field.offset;
+      void *base = buffer + field.offset;
       switch (8 * field.size) {
-        case   8: value = *(uint8_t*)  base;
-        case  16: value = *(uint16_t*) base;
-        case  32: value = *(uint32_t*) base;
-        case  64: value = *(uint64_t*) base;
-        // case 128: value = *(uint128_t*)base;
+        case   8: value = *(uint8_t*)  base; break;
+        case  16: value = *(uint16_t*) base; break;
+        case  32: value = *(uint32_t*) base; break;
+        case  64: value = *(uint64_t*) base; break;
+        /* case 128: value = *(uint128_t*)base; */
         default:
-          fprintf(stderr, "TODO\n");
+          fprintf(stderr, "error: unknown field size: %zu\n", field.size);
           exit(1);
+          break;
       }
-      printf("name: %s value: "PRIuMAX"\n", field.name, value);
+      printf("%-12s = %12"PRIuMAX"\n", field.name, value);
     }
+  }
 
   return 0;
 }

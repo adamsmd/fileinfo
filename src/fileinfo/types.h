@@ -1,14 +1,14 @@
 #ifndef FILEINFO_TYPES_H
 #define FILEINFO_TYPES_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* TODO: automake header conditionals */
 
 #include <stddef.h>
 #include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct fileinfo_struct fileinfo;
 
@@ -24,8 +24,8 @@ typedef struct {
 typedef struct {
   ptrdiff_t const true_offset;
   ptrdiff_t const present_offset;
-  int_fast8_t const true_mask;
-  int_fast8_t const present_mask;
+  size_t const true_mask;
+  size_t const present_mask; /* TODO:int_fast8_t? */
 } fileinfo_flag;
 
 #ifdef __cplusplus

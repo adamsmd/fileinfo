@@ -1,5 +1,5 @@
+#include "fileinfo/functions.h"
 #include "fileinfo/static.h"
-#include "fileinfo/dynamic.h"
 
 #include "config.h"
 
@@ -24,11 +24,14 @@
 #endif
 
 #if HAVE_LINUX_FCNTL_H
-#include <linux/fcntl.h>           /* Definition of AT_* constants */
+#include <linux/fcntl.h> /* Definition of AT_* constants */
 #endif
 
 #if HAVE_LINUX_STAT_H
 #include <linux/stat.h>
+/* Taken from `man statx` as the headers don't have this function.*/
+extern int statx(
+  int dirfd, const char *pathname, int flags, unsigned int mask, struct statx *statxbuf);
 #endif
 
 const int buffer_size = sizeof(fileinfo_stat);
@@ -47,15 +50,59 @@ size_t const fileinfo_fields_length = STAT_FIELDS_COUNT;
 /* TODO: create struct of right shape */
 /* TODO: define field accessors */
 
-int fileinfo_get_stat(const char *pathname, bool follow_symlink, void *buffer) {
+int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *output) {
 
-  fileinfo_stat *stat = buffer;
   /* TODO: implement get_stat */
   #if USE_STATX
-    /* statx(STATX_ALL, buffer); */
+    /* TODO: dirfd support */
+    int flags = follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW;
+    if (0 == statx(AT_FDCWD, pathname, flags, STATX_ALL, &output->stat)) {
+      return true;
+    } else {
+      return false;
+      /* TODO: error based on errno */
+    }
     /* TODO: if use_statx make_dev(base) */
+  #elif USE_FSTATAT64 || USE_FSTATAT
+    if (0 ==
+      #if USE_FSTATAT64
+        fstatat64
+      #elif USE_FSTATAT
+        fstatat
+      #else
+        #error "TODO"
+      #endif
+      (AT_FDCWD, pathconf, output, follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW)) {
+      return true;
+    } else {
+      return false;
+      /* TODO: error based on errno */
+    }
+  #elif USE_STAT64 || USE_STAT
   #elif USE_STAT
-    /* int stat(pathname, statbuf); */
+    int ret =
+    if (0 ==
+      follow_symlink ?
+        #if USE_STAT64
+          stat64
+        #elif USE_STAT
+          stat
+        #else
+          #error "TODO"
+        #endif
+        (pathname, &output) :
+        #if USE_STAT64
+          lstat64
+        #elif USE_STAT
+          lstat
+        #else
+          #error "TODO"
+        #endif
+        (pathname, output)) {
+      return true;
+    } else {
+      return false;
+    }
   #else
   #error "unimplemented"
   #endif
