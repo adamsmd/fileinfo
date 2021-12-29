@@ -14,6 +14,7 @@ AM_INIT_AUTOMAKE([subdir-objects foreign -Wall -Werror])
 
 #### Checks for programs.
 AM_PROG_AR
+AC_SUBST([ARFLAGS], [cr]) # Prevent "ar: `u' modifier ignored since `D' is the default (see `U')"
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_RANLIB
