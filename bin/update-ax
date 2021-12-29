@@ -1,36 +1,79 @@
-#!/bin/bash
+#!/usr/bin/env perl
 
-# WARNING: This script takes a long time to run (~2 hours)
+use strict;
+use warnings;
+use diagnostics;
 
-set -e
-shopt -s nullglob
+use File::Copy;
 
-TMP="$(mktemp --tmpdir --directory libinfo-update-ax-tmp.XXXXXXXXXX)"
+print("################################\n");
+print("# Setting up\n");
+print("################################\n");
 
-(cd "$TMP" && git clone https://git.savannah.gnu.org/git/autoconf-archive.git)
+my $tmp = `mktemp --tmpdir --directory fileinfo-update-ax-tmp.XXXXXXXXXX`;
 
-rm m4/ax_*.m4{,.hide}
-cp "$TMP"/autoconf-archive/m4/* m4/
+chomp $tmp;
 
-rm -rf "$TMP"
+`git clone https://git.savannah.gnu.org/git/autoconf-archive.git $tmp`;
 
-for i in m4/ax_*.m4; do
-  echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  echo !!!! Checking $i
-  echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  mv $i $i.hide
-  bin/clean
-  if bin/bootstrap && ./configure; then
-    echo ''
-    echo !!!! Hiding $i
-    echo ''
-  else
-    echo ''
-    echo !!!! Keeping $i
-    mv $i.hide $i
-    echo ''
-  fi
+unlink for <m4/*>;
 
-done
+my %index;
 
-rm m4/ax_*.m4.hide
+for my $file (<$tmp/m4/*>) {
+  open(FILE, $file);
+  while (<FILE>) {
+    if (/AC_DEFUN[A-Za-z09]*\(\[([A-Za-z0-9_]+)\]/) {
+      $index{$1} = $file;
+    }
+  }
+}
+
+print("\n");
+print("################################\n");
+print("# Iterating\n");
+print("################################\n");
+
+my $iterations = 0;
+while (1) {
+  print("\n");
+  print("################################\n");
+  print("# Iteration $iterations\n");
+  print("################################\n");
+
+  `bin/clean`;
+
+  my $output = `{
+    { autoreconf --verbose --install --warnings=all; };
+    autoreconf --verbose --install && ./configure; } 2>&1 1>/dev/null`;
+
+  last if $? == 0;
+
+  for my $macro ($output =~ /(AX_[A-Za-z0-9_]+)/g) {
+    if (my $file = $index{$macro}) {
+      print("Need macro $macro, so copying file $file\n");
+      copy($file, "m4/");
+    } else {
+      print("Need macro $macro, but could not find file\n");
+    }
+  }
+
+  $iterations++;
+}
+
+print("\n");
+print("################################\n");
+print("# Done iterating\n");
+print("################################\n");
+
+print("\n");
+print("################################\n");
+print("# Cleaning up\n");
+print("################################\n");
+
+unlink('autoconf-archive/');
+
+print("\n");
+print("################################\n");
+print("# Done after $iterations iterations\n");
+print("################################\n");
