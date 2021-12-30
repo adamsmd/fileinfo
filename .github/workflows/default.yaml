@@ -612,7 +612,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -687,7 +687,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -762,7 +762,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -837,7 +837,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -912,7 +912,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -987,7 +987,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -1062,7 +1062,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -1137,7 +1137,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -1212,7 +1212,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -1287,7 +1287,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -1362,7 +1362,7 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>>"
+      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
       - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
