@@ -18,8 +18,8 @@ libfileinfo_a_SOURCES = src/fileinfo.c
 check_PROGRAMS = \
   print-fields-dynamic \
   print-fields-static \
-  print-stat-static \
-  print-stat-dynamic
+  print-file-static \
+  print-file-dynamic
 
 print_fields_dynamic_SOURCES = tests/print-fields-dynamic.c
 print_fields_dynamic_LDADD = libfileinfo.a
@@ -27,8 +27,8 @@ print_fields_dynamic_LDADD = libfileinfo.a
 print_fields_static_SOURCES = tests/print-fields-static.c
 print_fields_static_LDADD = libfileinfo.a
 
-print_stat_dynamic_SOURCES = tests/print-stat-dynamic.c
-print_stat_dynamic_LDADD = libfileinfo.a
+print_file_dynamic_SOURCES = tests/print-file-dynamic.c
+print_file_dynamic_LDADD = libfileinfo.a
 
-print_stat_static_SOURCES = tests/print-stat-static.c
-print_stat_static_LDADD = libfileinfo.a
+print_file_static_SOURCES = tests/print-file-static.c
+print_file_static_LDADD = libfileinfo.a
