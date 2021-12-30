@@ -466,46 +466,47 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
+          false
 
       # Create the working directory
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ success() }}
         run: echo "${{ env.missing }}"
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ success() }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
       - if: ${{ success() }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker exec "$cont" uname -a
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker exec "$cont" mkdir "$workdir"
 
       # Copy the artifact to the working directory
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
 
       # Install dependencies
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
 
       # Build
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker exec --workdir="$workdir" "$cont" make check
 
       # Cleanup
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker stop "$cont"
-      - if: ${{ env.missing == 0 }}
+      - if: ${{ !env.missing }}
         run: docker rm --force --volumes "$cont"
 
 # $ docker run --rm -t arm32v6/alpine uname -m
