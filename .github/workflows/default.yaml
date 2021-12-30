@@ -38,6 +38,8 @@ jobs:
         with: { name: bootstrap-output }
       - run: tar -xvf fileinfo.tar
       - run: ./configure
+      - run: cat src/config.h
+      - run: cat src/fileinfo/static.h
       - run: make
       - run: make check
 
@@ -69,7 +71,11 @@ jobs:
           version: ${{ matrix.os.version }}
           shell: bash
           run: |
-            ./configure && make && make check
+            ./configure && \
+            cat src/config.h && \
+            cat src/fileinfo/static.h && \
+            make && \
+            make check
 
   # vmactions-freebsd:
   #   needs: bootstrap
@@ -238,6 +244,8 @@ jobs:
 
       # Build
       - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
       - run: docker exec --workdir="$workdir" "$cont" make
       - run: docker exec --workdir="$workdir" "$cont" make check
 
