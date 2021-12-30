@@ -144,4 +144,5 @@ jobs:
           # - cirros:latest # no package manager
 
     steps:
+      - uses: actions/checkout@v2
       - uses: ./.github/actions/docker
