@@ -300,38 +300,61 @@ jobs:
   #       with:
   #         args: 'uname -a'
 
-  qemu-s390x:
-    with: { platform: linux/s390x }
-    needs: bootstrap
-    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
   qemu-386:
     with: { platform: linux/386 }
     needs: bootstrap
     uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
-    #   platform: ${{ matrix.platform }}
-    # runs-on: ubuntu-latest
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     platform:
-    #       - linux/386
-    #       - linux/amd64
-    #       - linux/arm/v6
-    #       - linux/arm/v7
-    #       - linux/arm64
-    #       - linux/mips64
-    #       - linux/mips64le
-    #       - linux/ppc64le
-    #       - linux/riscv64
-    #       - linux/s390x
+  qemu-amd64:
+    with: { platform: linux/amd64 }
+    needs: bootstrap
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
+  qemu-arm_v6:
+    with: { platform: linux/arm/v6 }
+    needs: bootstrap
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
+  qemu-arm_v7:
+    with: { platform: linux/arm/v7 }
+    needs: bootstrap
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
+  qemu-arm64:
+    with: { platform: linux/arm64 }
+    needs: bootstrap
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
+  qemu-mips64:
+    with: { platform: linux/mips64 }
+    needs: bootstrap
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
+  qemu-mips64le:
+    with: { platform: linux/mips64le }
+    needs: bootstrap
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
+  qemu-ppc64le:
+    with: { platform: linux/ppc64le }
+    needs: bootstrap
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
+  qemu-riscv64:
+    with: { platform: linux/riscv64 }
+    needs: bootstrap
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
+  qemu-s390x:
+    with: { platform: linux/s390x }
+    needs: bootstrap
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
 
-# $ docker run --rm -t arm32v6/alpine uname -m
-# $ docker run --rm -t ppc64le/debian uname -m
-# $ docker run --rm -t s390x/ubuntu uname -m
-# $ docker run --rm -t arm64v8/fedora uname -m
-# $ docker run --rm -t arm32v7/centos uname -m
-# $ docker run --rm -t ppc64le/busybox uname -m
-# $ docker run --rm -t i386/ubuntu uname -m
+# arm32v6/alpine
+# ppc64le/debian
+# s390x/ubuntu
+# arm64v8/fedora
+# arm32v7/centos
+# ppc64le/busybox
+# i386/ubuntu
+
+
+
+#arm32v5
+#winamd64
+#windows-amd64
+
 
 # multiarch/alpine
 
