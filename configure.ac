@@ -392,6 +392,55 @@ AC_DEFUN([DEFUNX], [
 # TODO: human_access (stat.c)
 # TODO: file_type (stat.c)
 
+# SIFMT
+
+# S_IFSOCK
+# S_IFLNK
+# S_IFREG
+# S_IFBLK
+# S_IFDIR
+# S_IFCHR
+# S_IFIFO
+# S_IFDOOR
+# S_IFPORT
+# S_IFWHT
+
+# S_ISSOCK
+# S_ISLNK
+# S_ISREG
+# S_ISBLK
+# S_ISDIR
+# S_ISCHR
+# S_ISIFO
+# S_ISDOOR
+# S_ISPORT
+# S_ISWHT
+
+
+# S_ISUID     04000   set-user-ID bit (see execve(2))
+# S_ISGID     02000   set-group-ID bit (see below)
+# S_ISVTX     01000   sticky bit (see below)
+# S_IRWXU     00700   owner has read, write, and execute permission
+# S_IRUSR     00400   owner has read permission
+# S_IWUSR     00200   owner has write permission
+# S_IXUSR     00100   owner has execute permission
+# S_IRWXG     00070   group has read, write, and execute permission
+# S_IRGRP     00040   group has read permission
+# S_IWGRP     00020   group has write permission
+# S_IXGRP     00010   group has execute permission
+# S_IRWXO     00007   others (not in group) have read, write, and execute permission
+# S_IROTH     00004   others have read permission
+# S_IWOTH     00002   others have write permission
+# S_IXOTH     00001   others have execute permission
+
+#  stat.S_ENFMT shared with S_ISGID, valid when file does not have SIXGRP set
+
+# https://www.gnu.org/software/libc/manual/html_node/Testing-File-Type.html
+# S_TYPEISMQ (struct stat *s)
+# S_TYPEISSEM (struct stat *s)
+# S_TYPEISSHM (struct stat *s)
+
+
 #### Unsigned integer fields
 
 # CHECK_STATX(NAME)
@@ -504,6 +553,93 @@ AC_CHECK_DECLS([
   STATX_ATTR_DAX
   ], [], [], [[#include <linux/stat.h>]])
 
+# stat(?).flags https://manpages.debian.org/jessie/freebsd-manpages/chflags.2freebsd.en.html
+AC_CHECK_DECLS([
+  SF_APPEND,
+  SF_ARCHIVED,
+  SF_IMMUTABLE,
+  SF_NOUNLINK,
+  SF_SNAPSHOT,
+  UF_APPEND,
+  UF_ARCHIVE,
+  UF_HIDDEN,
+  UF_IMMUTABLE,
+  UF_NODUMP,
+  UF_NOUNLINK,
+  UF_OFFLINE,
+  UF_OPAQUE,
+  UF_READONLY,
+  UF_REPARSE,
+  UF_SPARSE,
+  UF_SYSTEM
+], [], [], [[#inclue <sys/stat.h>]])
+
+# # windows https://docs.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants
+# FILE_ATTRIBUTE_ARCHIVE
+# FILE_ATTRIBUTE_COMPRESSED
+# FILE_ATTRIBUTE_DEVICE
+# FILE_ATTRIBUTE_DIRECTORY
+# FILE_ATTRIBUTE_ENCRYPTED
+# FILE_ATTRIBUTE_HIDDEN
+# FILE_ATTRIBUTE_INTEGRITY_STREAM
+# FILE_ATTRIBUTE_NORMAL
+# FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
+# FILE_ATTRIBUTE_NO_SCRUB_DATA
+# FILE_ATTRIBUTE_OFFLINE
+# FILE_ATTRIBUTE_READONLY
+# FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS
+# FILE_ATTRIBUTE_RECALL_ON_OPEN
+# FILE_ATTRIBUTE_REPARSE_POINT
+# FILE_ATTRIBUTE_SPARSE_FILE
+# FILE_ATTRIBUTE_SYSTEM
+# FILE_ATTRIBUTE_TEMPORARY
+# FILE_ATTRIBUTE_VIRTUAL
+
+# # windows st_reparse_tag https://docs.microsoft.com/en-us/windows/win32/fileio/reparse-point-tags
+# IO_REPARSE_TAG_AF_UNIX
+# IO_REPARSE_TAG_APPEXECLINK
+# IO_REPARSE_TAG_CLOUD
+# IO_REPARSE_TAG_CLOUD_1
+# IO_REPARSE_TAG_CLOUD_2
+# IO_REPARSE_TAG_CLOUD_3
+# IO_REPARSE_TAG_CLOUD_4
+# IO_REPARSE_TAG_CLOUD_5
+# IO_REPARSE_TAG_CLOUD_6
+# IO_REPARSE_TAG_CLOUD_7
+# IO_REPARSE_TAG_CLOUD_8
+# IO_REPARSE_TAG_CLOUD_9
+# IO_REPARSE_TAG_CLOUD_A
+# IO_REPARSE_TAG_CLOUD_B
+# IO_REPARSE_TAG_CLOUD_C
+# IO_REPARSE_TAG_CLOUD_D
+# IO_REPARSE_TAG_CLOUD_E
+# IO_REPARSE_TAG_CLOUD_F
+# IO_REPARSE_TAG_CLOUD_MASK
+# IO_REPARSE_TAG_CSV
+# IO_REPARSE_TAG_DEDUP
+# IO_REPARSE_TAG_DFS
+# IO_REPARSE_TAG_DFSR
+# IO_REPARSE_TAG_FILE_PLACEHOLDER
+# IO_REPARSE_TAG_GLOBAL_REPARSE
+# IO_REPARSE_TAG_HSM
+# IO_REPARSE_TAG_HSM2
+# IO_REPARSE_TAG_MOUNT_POINT
+# IO_REPARSE_TAG_NFS
+# IO_REPARSE_TAG_ONEDRIVE
+# IO_REPARSE_TAG_PROJFS
+# IO_REPARSE_TAG_PROJFS_TOMBSTONE
+# IO_REPARSE_TAG_SIS
+# IO_REPARSE_TAG_STORAGE_SYNC
+# IO_REPARSE_TAG_SYMLINK
+# IO_REPARSE_TAG_UNHANDLED
+# IO_REPARSE_TAG_WCI
+# IO_REPARSE_TAG_WCI_1
+# IO_REPARSE_TAG_WCI_LINK
+# IO_REPARSE_TAG_WCI_LINK_1
+# IO_REPARSE_TAG_WCI_TOMBSTONE
+# IO_REPARSE_TAG_WIM
+# IO_REPARSE_TAG_WOF
+
 # stx_mask;       /* Mask of bits indicating filled fields */
 AC_CHECK_DECLS([
   STATX_TYPE,
@@ -593,6 +729,9 @@ AC_CHECK_FUNCS([ \
 #### ACLs
 
 # acl(5)
+AC_CHECK_FUNCS([ \
+  acl_get_file \
+])
 
 #### Alternate Data Streams
 
@@ -602,15 +741,7 @@ AC_CHECK_FUNCS([ \
 #### other
 
 # https://en.wikipedia.org/wiki/File_attribute
-# https://www.gnu.org/software/libc/manual/html_node/File-Attributes.html
-# https://docs.python.org/3/library/os.html#os.chflags
-# https://docs.python.org/3/library/os.html#os.chmod
 # https://savannah.nongnu.org/projects/attr/
-# Extend the "POSIX 1003.1e draft standard 17" format with an additional uid/gid field
-# Replace the "POSIX 1003.1e draft standard 17" user/group field with uid/gid
-# Replace the user/group field with the stored uid/gid
-# https://manpages.debian.org/jessie/freebsd-manpages/chflags.2freebsd.en.html
-
 # https://www.gnu.org/software/gnulib/manual/gnulib.html#stat
 # ST_NBLOCKSIZE ST_NBLOCKS (gnulib)
 # get_birthtime (stat.c)
