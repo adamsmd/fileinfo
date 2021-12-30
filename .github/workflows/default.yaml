@@ -215,12 +215,40 @@ jobs:
           # - archlinux:base # no c compiler
           - archlinux:base-devel # works
 
+          # - openwrtorg/rootfs:x86-64 # no c compiler
+          # - openwrtorg/rootfs:armvirt-32
+          # - openwrtorg/rootfs:armvirt-64
+
+          # - openmandriva/cooker # no c compiler
+          # - openmandriva/4.2 # no c compiler
+          # - openmandriva/4.0
+          # - openmandriva/3.0
+
+          # - opensuse/leap:latest
+          # - opensuse/leap:15
+          # - opensuse/leap:42
+          # - opensuse/tumbleweed # no c compiler
+          # - opensuse/s390x
+
+          # - vbatts/slackware:latest # no c compiler
+          # - vbatts/slackware:current
+          # - vbatts/slackware:14.2
+          # - vbatts/slackware:14.1
+          # - vbatts/slackware:14.0
+          # - vbatts/slackware:13.1
+          # - vbatts/slackware:13.0
+
+          ## TODO: KaOS
+          ## TODO: mint
+          ## TODO: pclinuxos
+          ## TODO: solus
+          ## TODO: void linux
           ## TODO: nixos?
           ## TODO: busybox?
 
           ## Unsupported
 
-          # - cirros:latest # does not have a package manager
+          # - cirros:latest # no package manager
 
     steps:
       # Create a docker
