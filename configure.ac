@@ -594,15 +594,15 @@ CHECK_TIME_NSEC([m])
 
 #### Error string json:"error,omitempty"
 
-#### Move the info from the shell variable `stat_fields` to the CPP macro `STAT_FIELDS()`.
+#### Move the info from the shell variable `stat_fields` to substituted variables.
 
 AC_MSG_NOTICE([defining STAT_FIELDS() with $stat_fields_count fields to be "$stat_fields"])
 
-AH_TEMPLATE([STAT_FIELDS_COUNT], [Define to be the number of fields in STAT_FIELDS().])
-AC_DEFINE_UNQUOTED([STAT_FIELDS_COUNT], [$stat_fields_count])
+AC_SUBST([STAT_FIELDS], [$stat_fields])
+AM_SUBST_NOTMAKE([STAT_FIELDS])
 
-AH_TEMPLATE([STAT_FIELDS], [Define to be the fields in `struct statx` or `struct stat`.])
-AC_DEFINE_UNQUOTED([STAT_FIELDS(F_INT,F_DEV,F_TIME_SEC,F_TIME_NSEC)], [$stat_fields])
+AC_SUBST([STAT_FIELDS_COUNT], [$stat_fields_count])
+AM_SUBST_NOTMAKE([STAT_FIELDS_COUNT])
 
 ################
 

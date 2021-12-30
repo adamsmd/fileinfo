@@ -7,8 +7,6 @@
 extern "C" {
 #endif
 
-/* TODO: automake header conditionals */
-
 extern size_t const fileinfo_size;
 
 extern fileinfo_field const fileinfo_fields[];

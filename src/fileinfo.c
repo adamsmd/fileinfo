@@ -46,8 +46,6 @@
   #endif
 #endif
 
-const int buffer_size = sizeof(fileinfo_stat);
-
 #define sizeof_field(field) (sizeof(((fileinfo_stat*)NULL)->field))
 
 #define INT(field,name) { offsetof(fileinfo_stat,field), sizeof_field(field), #name },
