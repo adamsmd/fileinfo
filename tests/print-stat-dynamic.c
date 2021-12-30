@@ -1,6 +1,5 @@
 #include <fileinfo/dynamic.h>
 #include <fileinfo/functions.h>
-#include <fileinfo/static.h>
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -12,16 +11,15 @@
 int main(int argc, char **argv) {
   int arg;
   for (arg = 1; arg < argc; arg++) {
-    fileinfo stat;
-    char *buffer = (char*)&stat;
+    char *stat = (char*)malloc(fileinfo_size);
     size_t field_index;
 
-    fileinfo_get_stat(argv[arg], false, &stat);
+    fileinfo_get_stat(argv[arg], false, (fileinfo*)stat);
 
     for (field_index = 0; field_index < fileinfo_fields_length; field_index++) {
       fileinfo_field field = fileinfo_fields[field_index];
       uintmax_t value;
-      void *base = buffer + field.offset;
+      void *base = stat + field.offset;
       switch (8 * field.size) {
         case   8: value = *(uint8_t*)  base; break;
         case  16: value = *(uint16_t*) base; break;
