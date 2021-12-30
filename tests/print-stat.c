@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
   for (arg = 1; arg < argc; arg++) {
     fileinfo stat;
     char *buffer = (char*)&stat;
-    int field_index;
+    size_t field_index;
 
     fileinfo_get_stat(argv[arg], false, &stat);
 

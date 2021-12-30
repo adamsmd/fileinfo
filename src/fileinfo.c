@@ -3,45 +3,47 @@
 
 #include "config.h"
 
-#if HAVE_STDBOOL_H
+#ifdef HAVE_STDBOOL_H
 #include <stdbool.h>
 #endif
 
-#if HAVE_STDDEF_H
+#ifdef HAVE_STDDEF_H
 #include <stddef.h>
 #endif
 
-#if HAVE_SYS_TYPES_H
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
 
-#if HAVE_SYS_TYPES_H
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/stat.h>
 #endif
 
-#if HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
-#if HAVE_LINUX_FCNTL_H
+#ifdef HAVE_LINUX_FCNTL_H
 #include <linux/fcntl.h> /* Definition of AT_* constants */
 #endif
 
-#if HAVE_LINUX_STAT_H
+#ifdef HAVE_LINUX_STAT_H
 #include <linux/stat.h>
-
-#if HAVE_STATX
-/* Taken from `man statx` as the headers don't have this function.*/
-extern int statx(
-  int dirfd, const char *pathname, int flags, unsigned int mask, struct statx *statxbuf);
-#else
-#include <sys/syscall.h>
-/* Older glibc didn't have a statx function, so we use syscall */
-static int statx(
-    int dirfd, const char *pathname, int flags, unsigned int mask, struct statx *statxbuf) {
-	return (int)syscall(SYS_statx, dirfd, pathname, flags, mask, statxbuf);
-}
 #endif
+
+#ifdef USE_STATX
+  #ifdef HAVE_STATX
+    /* Taken from `man statx` as the headers don't have this function.*/
+    extern int statx(
+      int dirfd, const char *pathname, int flags, unsigned int mask, struct statx *statxbuf);
+  #else
+    #include <sys/syscall.h>
+    /* Older glibc didn't have a statx function, so we use syscall */
+    static int statx(
+        int dirfd, const char *pathname, int flags, unsigned int mask, struct statx *statxbuf) {
+      return (int)syscall(SYS_statx, dirfd, pathname, flags, mask, statxbuf);
+    }
+  #endif
 #endif
 
 const int buffer_size = sizeof(fileinfo_stat);
@@ -63,7 +65,7 @@ size_t const fileinfo_fields_length = STAT_FIELDS_COUNT;
 int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *output) {
 
   /* TODO: implement get_stat */
-  #if USE_STATX
+  #if defined(USE_STATX)
     /* TODO: dirfd support */
     int flags = follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW;
     if (0 == statx(AT_FDCWD, pathname, flags, STATX_ALL, &output->stat)) {
@@ -75,9 +77,9 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
     /* TODO: if use_statx make_dev(base) */
   #elif defined(USE_FSTATAT64) || defined(USE_FSTATAT)
     if (0 ==
-      #if USE_FSTATAT64
+      #if defined(USE_FSTATAT64)
         fstatat64
-      #elif USE_FSTATAT
+      #elif defined(USE_FSTATAT)
         fstatat
       #else
         #error "TODO"
@@ -91,17 +93,17 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
   #elif defined(USE_STAT64) || defined(USE_STAT)
     if (0 ==
       follow_symlink ?
-        #if USE_STAT64
+        #if defined(USE_STAT64)
           stat64
-        #elif USE_STAT
+        #elif defined(USE_STAT)
           stat
         #else
           #error "TODO"
         #endif
         (pathname, &output->stat) :
-        #if USE_STAT64
+        #if defined(USE_STAT64)
           lstat64
-        #elif USE_STAT
+        #elif defined(USE_STAT)
           lstat
         #else
           #error "TODO"
