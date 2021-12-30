@@ -578,11 +578,77 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
   qemu-386:
     env: {platform: linux/386}
     needs: bootstrap
@@ -709,11 +775,77 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
   qemu-amd64:
     env: {platform: linux/amd64}
     needs: bootstrap
@@ -840,11 +972,77 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
   qemu-arm_v6:
     env: {platform: linux/arm/v6}
     needs: bootstrap
@@ -971,11 +1169,77 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
   qemu-arm_v7:
     env: {platform: linux/arm/v7}
     needs: bootstrap
@@ -1102,11 +1366,77 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
   qemu-arm64:
     env: {platform: linux/arm64}
     needs: bootstrap
@@ -1233,11 +1563,77 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
   qemu-mips64:
     env: {platform: linux/mips64}
     needs: bootstrap
@@ -1364,11 +1760,77 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
   qemu-mips64le:
     env: {platform: linux/mips64le}
     needs: bootstrap
@@ -1495,11 +1957,77 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
   qemu-ppc64le:
     env: {platform: linux/ppc64le}
     needs: bootstrap
@@ -1626,11 +2154,77 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
   qemu-riscv64:
     env: {platform: linux/riscv64}
     needs: bootstrap
@@ -1757,11 +2351,77 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
   qemu-s390x:
     env: {platform: linux/s390x}
     needs: bootstrap
@@ -1888,8 +2548,74 @@ jobs:
 
           # - cirros:latest # no package manager
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker
-        with:
-          platform: ${{ env.platform }}
-          image: ${{ matrix.image }}
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+        # - uses: actions/checkout@v2
+        # - uses: ./.github/actions/docker
+        #   with:
+        #     platform: ${{ env.platform }}
+        #     image: ${{ matrix.image }}
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec "$cont" mkdir "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        shell: bash
+        run: docker rm --force --volumes "$cont"
