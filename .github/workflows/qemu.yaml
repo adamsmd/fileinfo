@@ -6,7 +6,7 @@ on:
         type: string
 jobs:
   qemu:
-    needs: bootstrap
+    # needs: bootstrap
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
