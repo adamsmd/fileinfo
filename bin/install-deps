@@ -13,6 +13,9 @@ if apt --version >/dev/null 2>&1; then
 elif yum --version >/dev/null 2>&1; then
   echo "$note_using" yum
   yum install --assumeyes gcc make
+elif pacman --version >/dev/null 2>&1; then
+  echo "$note_using" pacman
+  yes | pacman --sync --refresh gcc
 elif apk --version >/dev/null 2>&1; then
   echo "$note_using" apk
   apk add --no-cache gcc libc-dev make
