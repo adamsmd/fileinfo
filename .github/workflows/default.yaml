@@ -303,11 +303,11 @@ jobs:
   qemu-s390x:
     with: { platform: linux/s390x }
     needs: bootstrap
-    uses: ./.github/workflows/qemu.yaml@master
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
   qemu-386:
     with: { platform: linux/386 }
     needs: bootstrap
-    uses: ./.github/workflows/qemu.yaml@master
+    uses: adamsmd/fileinfo/.github/workflows/qemu.yaml@master
     #   platform: ${{ matrix.platform }}
     # runs-on: ubuntu-latest
     # strategy:
