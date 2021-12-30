@@ -46,6 +46,8 @@
   #endif
 #endif
 
+size_t const fileinfo_size = sizeof(fileinfo);
+
 #define sizeof_field(field) (sizeof(((fileinfo_stat*)NULL)->field))
 
 #define INT(field,name) { offsetof(fileinfo_stat,field), sizeof_field(field), #name },
