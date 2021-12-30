@@ -612,40 +612,39 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
   qemu-386:
     env: {platform: linux/386}
@@ -687,40 +686,39 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
   qemu-amd64:
     env: {platform: linux/amd64}
@@ -762,40 +760,39 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
   qemu-arm_v6:
     env: {platform: linux/arm/v6}
@@ -837,40 +834,39 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
   qemu-arm_v7:
     env: {platform: linux/arm/v7}
@@ -912,40 +908,39 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
   qemu-arm64:
     env: {platform: linux/arm64}
@@ -987,40 +982,39 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
   qemu-mips64:
     env: {platform: linux/mips64}
@@ -1062,40 +1056,39 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
   qemu-mips64le:
     env: {platform: linux/mips64le}
@@ -1137,40 +1130,39 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
   qemu-ppc64le:
     env: {platform: linux/ppc64le}
@@ -1212,40 +1204,39 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
   qemu-riscv64:
     env: {platform: linux/riscv64}
@@ -1287,40 +1278,39 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
   qemu-s390x:
     env: {platform: linux/s390x}
@@ -1362,38 +1352,37 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-      - run: echo "env.missing = <<<${{ env.missing }}>>> <<<${{ !env.missing }}>>> <<<${{ env.missing==0 }}>>> <<<${{ env.missing=='0' }}>>>"
       # Create the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: echo "::notice ::workdir=$workdir"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" uname -a
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
       # Install dependencies
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
       # Build
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker stop "$cont"
-      - if: ${{ !env.missing }}
+      - if: ${{ env.missing == 0 }}
         run: docker rm --force --volumes "$cont"
