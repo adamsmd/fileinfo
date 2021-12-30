@@ -206,10 +206,10 @@ jobs:
           - almalinux:8 # works
           # - almalinux:8-minimal # no c compiler
 
-          # - alt:latest # no c compiler
-          # - alt:sisyphus # no c compiler
-          # - alt:p10 # no c compiler
-          # - alt:p9 # no c compiler
+          - alt:latest # works
+          - alt:sisyphus # works
+          - alt:p10 # works
+          - alt:p9 # works
 
           # - archlinux:latest # no c compiler
           # - archlinux:base # no c compiler
