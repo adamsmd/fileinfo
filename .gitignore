@@ -453,9 +453,15 @@ iOSInjectionProject/
 
 # Customizations
 !/bin/
+
+/.act-artifact-server
+/aminclude_static.am
 /build-aux/
+/fileinfo-uninstalled.pc
+/fileinfo-uninstalled.sh
+/fileinfo.pc
+/fileinfo.pc.in
 /src/config.h
 /src/config.h.in
-/src/stamp-h1
-/.act-artifact-server
 /src/fileinfo/static.h
+/src/stamp-h1
