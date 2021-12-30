@@ -1,8 +1,6 @@
 #ifndef FILEINFO_TYPES_H
 #define FILEINFO_TYPES_H
 
-/* TODO: automake header conditionals */
-
 #include <stddef.h>
 #include <stdint.h>
 

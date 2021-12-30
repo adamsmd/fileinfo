@@ -415,9 +415,11 @@ CHECK_STATX(blocks)  # Number of 512B blocks allocated
 CHECK_STATX(gen) # AIX macOS NetBSD OpenBSD
 CHECK_STATX(vfs) # AIX
 CHECK_STATX(access) # AIX: st_access 	Field is not implemented. All bits are returned as zero.
+CHECK_STATX(mnt_id) # Linux 5.8+
 
 # TODO: getpwuid (stat.c)
 # TODO: getgruid (stat.c)
+# TODO: string for mnt_id
 
 # TODO: out_mount_point (stat.c)
 
@@ -490,23 +492,41 @@ CHECK_TIME_NSEC([m])
 
 # TODO: STAT_FIELD(flags) # macOS NetBSD OpenBSD FreeBSD (flags)
 
-# TODO: Solaris: char     st_fstype[_ST_FSTYPSZ]; /* Null-terminated type of filesystem */
+# stx_attributes; /* Extra file attribute indicators */
+# stx_attributes_mask; /* Mask to show what's supported in stx_attributes */
+AC_CHECK_DECLS([
+  STATX_ATTR_COMPRESSED,
+  STATX_ATTR_IMMUTABLE,
+  STATX_ATTR_APPEND,
+  STATX_ATTR_NODUMP,
+  STATX_ATTR_ENCRYPTED,
+  STATX_ATTR_VERITY,
+  STATX_ATTR_DAX
+  ], [], [], [[#include <linux/stat.h>]])
 
-# TODO: linux mnt_id
-
-# TODO: struct statx.stx_mask
-# TODO: struct statx.stx_attributes
-
-# TODO: some way to test if we missed any fields
-# TODO: non-stat_fields
+# stx_mask;       /* Mask of bits indicating filled fields */
+AC_CHECK_DECLS([
+  STATX_TYPE,
+  STATX_MODE,
+  STATX_NLINK,
+  STATX_UID,
+  STATX_GID,
+  STATX_ATIME,
+  STATX_MTIME,
+  STATX_CTIME,
+  STATX_INO,
+  STATX_SIZE,
+  STATX_BLOCKS,
+  STATX_BTIME,
+  STATX_MNT_ID
+  ], [], [], [[#include <linux/stat.h>]])
 
 #### TODO fields
 
-# stx_mask;       /* Mask of bits indicating filled fields */
-# stx_attributes; /* Extra file attribute indicators */
-# stx_attributes_mask; /* Mask to show what's supported in stx_attributes */
+# TODO: Solaris: char     st_fstype[_ST_FSTYPSZ]; /* Null-terminated type of filesystem */
 
-# st_flags;
+# TODO: some way to test if we missed any fields
+# TODO: non-stat_fields
 
 # string user
 # string group
@@ -533,14 +553,6 @@ CHECK_TIME_NSEC([m])
 #   #error FOO
 # #endif
 
-#   STATX_ATTR_COMPRESSED
-#   STATX_ATTR_IMMUTABLE
-#   STATX_ATTR_APPEND
-#   STATX_ATTR_NODUMP
-#   STATX_ATTR_ENCRYPTED
-#   STATX_ATTR_VERITY
-#   STATX_ATTR_DAX
-
 ####
 
 #### chattr
@@ -561,16 +573,26 @@ CHECK_TIME_NSEC([m])
 
 #### SELinux
 
-#     %C     SELinux security context string
-# getfilecon
+AC_CHECK_FUNCS([ \
+  fgetfilecon \
+  fgetfilecon_raw \
+  getfilecon \
+  getfilecon_raw \
+  lgetfilecon \
+  lgetfilecon_raw \
+])
 
 #### Extended attributes
 
-# listxattr(2)
+AC_CHECK_FUNCS([ \
+  listxattr \
+  llistxattr \
+  flistxattr \
+])
 
 #### ACLs
 
-# getfacl(1)
+# acl(5)
 
 #### Alternate Data Streams
 

@@ -64,8 +64,6 @@ size_t const fileinfo_fields_length = FILEINFO_FIELDS_LENGTH;
 /* TODO: define field accessors */
 
 int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *output) {
-
-  /* TODO: implement get_stat */
   #if defined(USE_STATX)
     /* TODO: dirfd support */
     int flags = follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW;

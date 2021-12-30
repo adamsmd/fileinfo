@@ -27,7 +27,6 @@ static size_t const fileinfo_fields_length_static = FILEINFO_FIELDS_LENGTH;
 static fileinfo_field const fileinfo_fields_static[] = { /* TODO: put in ro memory */
   FILEINFO_STAT_FIELDS(FILEINFO_FIELD_INT,FILEINFO_FIELD_DEV,FILEINFO_FIELD_TIME_SEC,FILEINFO_FIELD_TIME_NSEC)
 };
-/* TODO: #undef INT etc. */
 
 #ifdef __cplusplus
 }

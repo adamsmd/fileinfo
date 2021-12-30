@@ -6,8 +6,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-/* TODO: print by offset */
-/* TODO: print by macros */
 int main(int argc, char **argv) {
   int arg;
   for (arg = 1; arg < argc; arg++) {
