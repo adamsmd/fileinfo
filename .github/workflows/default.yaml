@@ -307,16 +307,16 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          # - linux/386
+          - linux/386
           - linux/amd64
           # - linux/arm/v6
           # - linux/arm/v7
-          # - linux/arm64
+          - linux/arm64
           # - linux/mips64
           # - linux/mips64le
           # - linux/ppc64le
           # - linux/riscv64
-          # - linux/s390x
+          - linux/s390x
         image:
           ## Note that symbolic names are often duplicates of the numeric names.
           ## We keep both so that we automatically test new versions when those
@@ -453,7 +453,8 @@ jobs:
       - uses: docker/setup-qemu-action@v1.2.0
 
       # Try to create a container for the given platform and image
-      - run: |
+      - name: Create container
+        run: |
           set +e
           cont=$(docker run --pull=missing --init --detach --platform ${{ matrix.platform }} ${{ matrix.image }} tail -f /dev/null)
           missing=$?
