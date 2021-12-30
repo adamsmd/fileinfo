@@ -317,11 +317,9 @@ jobs:
           - linux/ppc64le
           - linux/riscv64
           - linux/s390x
-    steps:
-      - uses: actions/checkout@v2 # Needed so we can find the action file
-      - uses: ./.github/workflows/qemu
-        with:
-          platform: ${{ matrix.platform }}
+    uses: ./.github/workflows/qemu.yaml
+      with:
+        platform: ${{ matrix.platform }}
 
 # $ docker run --rm -t arm32v6/alpine uname -m
 # $ docker run --rm -t ppc64le/debian uname -m
