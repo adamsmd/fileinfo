@@ -455,6 +455,7 @@ jobs:
   #   #       python3.6 -c\"import platform; print(platform.machine())\""
   qemu-strategy:
     if: false
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
