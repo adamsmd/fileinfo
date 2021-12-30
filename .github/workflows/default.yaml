@@ -131,12 +131,12 @@ jobs:
           - ubuntu:21.04 # works
           - ubuntu:20.04 # works
           - ubuntu:18.04 # works
-          # - ubuntu:16.04 # compile error
-          # - ubuntu:14.04 # compile error
+          - ubuntu:16.04 # works
+          - ubuntu:14.04 # works
 
           - centos:latest # works
           - centos:8 # works
-          # - centos:7 # compile error
+          - centos:7 # works
           # - centos:6.10 # yum error
           # - centos:6 # yum error
 
@@ -145,10 +145,10 @@ jobs:
           - debian:testing # works
           - debian:stable # works
           - debian:oldstable # works
-          # - debian:oldoldstable # compile error
+          - debian:oldoldstable # works
           - debian:11.2 # works
           - debian:10.11 # works
-          # - debian:9.13 # compile error
+          - debian:9.13 # works
 
           - fedora:latest # works
           - fedora:rawhide # works
@@ -162,7 +162,7 @@ jobs:
           - amazonlinux:1 # works
 
           - oraclelinux:8 # works
-          # - oraclelinux:7 # compile error
+          - oraclelinux:7 # works
 
           - ros:latest # works
           ## Rolling release
@@ -188,8 +188,8 @@ jobs:
           - rockylinux:8 # works
 
           ## Scientific Linux
-          # - sl:latest # compile error
-          # - sl:7 # compile error
+          - sl:latest # works
+          - sl:7 # works
 
           ## For IBM Z
           # - clefos:latest
