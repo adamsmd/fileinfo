@@ -1,0 +1,203 @@
+on:
+  workflow_call:
+    inputs:
+      platform:
+        required: true
+        type: string
+jobs:
+  qemu:
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          ## Note that symbolic names are often duplicates of the numeric names.
+          ## We keep both so that we automatically test new versions when those
+          ## symbolic names get updated to newer versions.
+
+          ## A small distribution optimized for containers
+          - alpine:latest # works
+          - alpine:3.15 # works
+          - alpine:3.14 # works
+          - alpine:3.13 # works
+          - alpine:3.12 # works
+
+          - ubuntu:latest # works
+          - ubuntu:22.04 # works
+          - ubuntu:21.10 # works
+          - ubuntu:21.04 # works
+          - ubuntu:20.04 # works
+          - ubuntu:18.04 # works
+          - ubuntu:16.04 # works
+          - ubuntu:14.04 # works
+
+          - centos:latest # works
+          - centos:8 # works
+          - centos:7 # works
+          # - centos:6.10 # yum error
+          # - centos:6 # yum error
+
+          - debian:latest # works
+          - debian:unstable # works
+          - debian:testing # works
+          - debian:stable # works
+          - debian:oldstable # works
+          - debian:oldoldstable # works
+          - debian:11.2 # works
+          - debian:10.11 # works
+          - debian:9.13 # works
+
+          - fedora:latest # works
+          - fedora:rawhide # works
+          - fedora:36 # works
+          - fedora:35 # works
+          - fedora:34 # works
+          - fedora:33 # works
+
+          - amazonlinux:latest # works
+          - amazonlinux:2 # works
+          - amazonlinux:1 # works
+
+          - oraclelinux:8 # works
+          - oraclelinux:7 # works
+
+          ## Robot operating system
+          - ros:latest # works
+          #### Rolling release
+          - ros:rolling # works
+          #### ROS 2
+          - ros:galactic # works
+          - ros:foxy # works
+          #### ROS 1
+          - ros:noetic # works
+          - ros:melodic # works
+
+          ## VmWare Photon
+          # - photon:latest # needs coreutils but is also missing `as`
+
+          # - clearlinux:latest # slow install
+
+          # - mageia:latest # slow install
+          # - mageia:cauldron # slow install
+          # - mageia:8 # slow install
+          # - mageia:7 # slow install
+
+          - rockylinux:latest # works
+          - rockylinux:8 # works
+
+          ## Scientific Linux
+          - sl:latest # works
+          - sl:7 # works
+
+          ## For IBM Z
+          # - clefos:latest
+          # - clefos:7
+
+          - almalinux:latest # works
+          # - almalinux:minimal # no c compiler
+          - almalinux:8 # works
+          # - almalinux:8-minimal # no c compiler
+
+          - alt:latest # works
+          - alt:sisyphus # works
+          - alt:p10 # works
+          - alt:p9 # works
+
+          # - archlinux:latest # no c compiler
+          # - archlinux:base # no c compiler
+          - archlinux:base-devel # works
+
+          # - openwrtorg/rootfs:x86-64 # no c compiler
+          # - openwrtorg/rootfs:armvirt-32
+          # - openwrtorg/rootfs:armvirt-64
+
+          # - openmandriva/cooker # no c compiler
+          # - openmandriva/4.2 # no c compiler
+          # - openmandriva/4.0
+          # - openmandriva/3.0
+
+          # - opensuse/leap:latest
+          # - opensuse/leap:15
+          # - opensuse/leap:42
+          # - opensuse/tumbleweed # no c compiler
+          # - opensuse/s390x
+
+          # - vbatts/slackware:latest # no c compiler
+          # - vbatts/slackware:current
+          # - vbatts/slackware:14.2
+          # - vbatts/slackware:14.1
+          # - vbatts/slackware:14.0
+          # - vbatts/slackware:13.1
+          # - vbatts/slackware:13.0
+
+          ## TODO: KaOS
+          ## TODO: mint
+          ## TODO: pclinuxos
+          ## TODO: solus
+          ## TODO: void linux
+          ## TODO: nixos?
+          ## TODO: busybox?
+
+          ## Unsupported
+
+          # - cirros:latest # no package manager
+
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+
+      # Try to create a container for the given platform and image
+      - name: Create container
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ inputs.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+
+      # Create the working directory
+      - if: ${{ !env.missing }}
+        run: echo "${{ env.missing }}"
+      - if: ${{ !env.missing }}
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ !env.missing }}
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ !env.missing }}
+        run: docker exec "$cont" uname -a
+      - if: ${{ !env.missing }}
+        run: docker exec "$cont" mkdir "$workdir"
+
+      # Copy the artifact to the working directory
+      - if: ${{ !env.missing }}
+        uses: actions/download-artifact@v2
+        with: { name: bootstrap-output }
+      - if: ${{ !env.missing }}
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+      # Install dependencies
+      - if: ${{ !env.missing }}
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+      # Build
+      - if: ${{ !env.missing }}
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ !env.missing }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ !env.missing }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ !env.missing }}
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ !env.missing }}
+        run: docker exec --workdir="$workdir" "$cont" make check
+
+      # Cleanup
+      - if: ${{ !env.missing }}
+        run: docker stop "$cont"
+      - if: ${{ !env.missing }}
+        run: docker rm --force --volumes "$cont"
