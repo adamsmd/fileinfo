@@ -300,26 +300,30 @@ jobs:
   #       with:
   #         args: 'uname -a'
 
-  qemu:
+  qemu-s390x:
+    with: { platform: linux/s390x }
     needs: bootstrap
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - linux/386
-          - linux/amd64
-          - linux/arm/v6
-          - linux/arm/v7
-          - linux/arm64
-          - linux/mips64
-          - linux/mips64le
-          - linux/ppc64le
-          - linux/riscv64
-          - linux/s390x
-    uses: ./.github/workflows/qemu.yaml
-      with:
-        platform: ${{ matrix.platform }}
+    uses: ./.github/workflows/qemu.yaml@master
+  qemu-386:
+    with: { platform: linux/386 }
+    needs: bootstrap
+    uses: ./.github/workflows/qemu.yaml@master
+    #   platform: ${{ matrix.platform }}
+    # runs-on: ubuntu-latest
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     platform:
+    #       - linux/386
+    #       - linux/amd64
+    #       - linux/arm/v6
+    #       - linux/arm/v7
+    #       - linux/arm64
+    #       - linux/mips64
+    #       - linux/mips64le
+    #       - linux/ppc64le
+    #       - linux/riscv64
+    #       - linux/s390x
 
 # $ docker run --rm -t arm32v6/alpine uname -m
 # $ docker run --rm -t ppc64le/debian uname -m
