@@ -1,4 +1,4 @@
-#include <fileinfo/dynamic.h>
+#include <fileinfo/static.h>
 #include <fileinfo/functions.h>
 
 #include <inttypes.h>
@@ -11,13 +11,14 @@
 int main(int argc, char **argv) {
   int arg;
   for (arg = 1; arg < argc; arg++) {
-    char *stat = (char*)malloc(fileinfo_size);
+    fileinfo fi;
+    char *stat = (char*)&fi;
     size_t field_index;
 
-    fileinfo_get_stat(argv[arg], false, (fileinfo*)stat);
+    fileinfo_get_stat(argv[arg], false, &fi);
 
-    for (field_index = 0; field_index < fileinfo_fields_length; field_index++) {
-      fileinfo_field field = fileinfo_fields[field_index];
+    for (field_index = 0; field_index < fileinfo_fields_length_static; field_index++) {
+      fileinfo_field field = fileinfo_fields_static[field_index];
       uintmax_t value;
       void *base = stat + field.offset;
       switch (8 * field.size) {

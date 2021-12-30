@@ -48,16 +48,17 @@
 
 size_t const fileinfo_size = sizeof(fileinfo);
 
-#define sizeof_field(field) (sizeof(((fileinfo_stat*)NULL)->field))
-
-#define INT(field,name) { offsetof(fileinfo_stat,field), sizeof_field(field), #name },
+#define INT(field,name) { \
+  offsetof(fileinfo,stat.field), \
+  sizeof(((fileinfo*)NULL)->stat.field), \
+  #name },
 #define DEV(field,name,major,minor) INT(field,name)
 #define TIME_SEC(field,name) INT(field,name)
 #define TIME_NSEC(field,name) INT(field,name)
 fileinfo_field const fileinfo_fields[] = { /* TODO: put in ro memory */
-  STAT_FIELDS(INT,DEV,TIME_SEC,TIME_NSEC)
+  FILEINFO_STAT_FIELDS(INT,DEV,TIME_SEC,TIME_NSEC)
 };
-size_t const fileinfo_fields_length = STAT_FIELDS_COUNT;
+size_t const fileinfo_fields_length = FILEINFO_FIELDS_LENGTH;
 
 /* TODO: create struct of right shape */
 /* TODO: define field accessors */

@@ -50,6 +50,7 @@ AC_CHECK_TYPES([ \
 ])
 
 #### Checks for library functions.
+AC_FUNC_MALLOC
 AC_CHECK_FUNCS([ \
   fstat \
   fstatat \

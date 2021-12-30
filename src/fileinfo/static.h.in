@@ -13,18 +13,21 @@ struct fileinfo_struct {
   fileinfo_stat stat;
 };
 
-#define STAT_FIELDS_COUNT @STAT_FIELDS_COUNT@
-static size_t const fileinfo_fields_length_static = STAT_FIELDS_COUNT;
+#define FILEINFO_FIELDS_LENGTH @STAT_FIELDS_COUNT@
+static size_t const fileinfo_fields_length_static = FILEINFO_FIELDS_LENGTH;
 
-#define STAT_FIELDS(F_INT,F_DEV,F_TIME_SEC,F_TIME_NSEC) @STAT_FIELDS@
-#define sizeof_field(field) (sizeof(((fileinfo_stat*)NULL)->field))
-#define INT(field,name) { offsetof(fileinfo_stat,field), sizeof_field(field), #name },
-#define DEV(field,name,major,minor) INT(field,name)
-#define TIME_SEC(field,name) INT(field,name)
-#define TIME_NSEC(field,name) INT(field,name)
+#define FILEINFO_STAT_FIELDS(F_INT,F_DEV,F_TIME_SEC,F_TIME_NSEC) @STAT_FIELDS@
+#define FILEINFO_FIELD_INT(field,name) { \
+  offsetof(fileinfo_stat,field), \
+  sizeof(((fileinfo_stat*)NULL)->field), \
+  #name },
+#define FILEINFO_FIELD_DEV(field,name,major,minor) FILEINFO_FIELD_INT(field,name)
+#define FILEINFO_FIELD_TIME_SEC(field,name) FILEINFO_FIELD_INT(field,name)
+#define FILEINFO_FIELD_TIME_NSEC(field,name) FILEINFO_FIELD_INT(field,name)
 static fileinfo_field const fileinfo_fields_static[] = { /* TODO: put in ro memory */
-  STAT_FIELDS(INT,DEV,TIME_SEC,TIME_NSEC)
+  FILEINFO_STAT_FIELDS(FILEINFO_FIELD_INT,FILEINFO_FIELD_DEV,FILEINFO_FIELD_TIME_SEC,FILEINFO_FIELD_TIME_NSEC)
 };
+/* TODO: #undef INT etc. */
 
 #ifdef __cplusplus
 }

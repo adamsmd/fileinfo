@@ -17,10 +17,18 @@ libfileinfo_a_SOURCES = src/fileinfo.c src/fileinfo/static.h src/fileinfo/dynami
 # TESTS = $(check_PROGRAMS)
 check_PROGRAMS = \
   print-fields-dynamic \
+  print-fields-static \
+  print-stat-static \
   print-stat-dynamic
 
 print_fields_dynamic_SOURCES = tests/print-fields-dynamic.c src/fileinfo/dynamic.h
 print_fields_dynamic_LDADD = libfileinfo.a
 
+print_fields_static_SOURCES = tests/print-fields-static.c src/fileinfo/static.h
+print_fields_static_LDADD = libfileinfo.a
+
 print_stat_dynamic_SOURCES = tests/print-stat-dynamic.c src/fileinfo/dynamic.h
 print_stat_dynamic_LDADD = libfileinfo.a
+
+print_stat_static_SOURCES = tests/print-stat-static.c src/fileinfo/static.h
+print_stat_static_LDADD = libfileinfo.a
