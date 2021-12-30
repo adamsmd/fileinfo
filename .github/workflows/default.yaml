@@ -284,6 +284,7 @@ jobs:
 # act --container-architecture string    Architecture which should be used to run containers, e.g.: linux/amd64. If not specified, will use host default architecture. Requires Docker server API Version 1.41+. Ignored on earlier Docker server platforms.
 
   qemu:
+    needs: bootstrap
     runs-on: ubuntu-latest
     steps:
       -
@@ -299,6 +300,9 @@ jobs:
       -
         name: Available platforms
         run: echo ${{ steps.qemu.outputs.platforms }}
+      - uses: docker://multiarch/ubuntu-core:arm64-bionic
+        with:
+          args: 'uname -a'
 
   qemu2:
     runs-on: ubuntu-latest
@@ -310,11 +314,30 @@ jobs:
       with:
         args: 'uname -a'
 
-    - uses: docker://multiarch/ubuntu-core:arm64-bionic
-      with:
-        args: >
-          bash -c
-          "apt-get update &&
-          apt-get install -y python3.6 &&
-          python3.6 --version &&
-          python3.6 -c\"import platform; print(platform.machine())\""
+    # - uses: docker://multiarch/ubuntu-core:arm64-bionic
+    #   with:
+    #     args: >
+    #       bash -c
+    #       "apt-get update &&
+    #       apt-get install -y python3.6 &&
+    #       python3.6 --version &&
+    #       python3.6 -c\"import platform; print(platform.machine())\""
+
+# $ docker run --rm -t arm32v6/alpine uname -m
+# $ docker run --rm -t ppc64le/debian uname -m
+# $ docker run --rm -t s390x/ubuntu uname -m
+# $ docker run --rm -t arm64v8/fedora uname -m
+# $ docker run --rm -t arm32v7/centos uname -m
+# $ docker run --rm -t ppc64le/busybox uname -m
+# $ docker run --rm -t i386/ubuntu uname -m
+
+# linux/386
+#   linux/amd64
+# linux/arm/v6
+# linux/arm/v7
+# linux/arm64
+#   linux/mips64
+#   linux/mips64le
+# linux/ppc64le
+#   linux/riscv64
+# linux/s390x
