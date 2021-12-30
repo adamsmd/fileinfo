@@ -52,7 +52,9 @@ rm -rf -- \
   **/*.o \
   **/lib*.a \
   print-fields-dynamic \
+  print-fields-static \
   print-stat-dynamic \
+  print-stat-static \
 
 echo "Removing files created by act"
 # Files created by act
