@@ -462,7 +462,7 @@ jobs:
           set -e
 
           echo "::notice ::missing=$missing"
-          echo "::set-output name=missing::$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
@@ -470,7 +470,7 @@ jobs:
       # Create the working directory
       - if: ${{ env.missing == 0 }}
         run: echo "${{ env.missing }}"
-      - if: ${{ env.missing == '0' }}
+      - if: ${{ env.missing == 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
       - if: ${{ success() }}
         run: echo "::notice ::workdir=$workdir"
