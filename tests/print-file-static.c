@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
         case  64: value = *(uint64_t*) base; break;
         /* case 128: value = *(uint128_t*)base; */
         default:
-          fprintf(stderr, "error: unknown field size: %zu\n", field.size);
+          fprintf(stderr, "error: unknown field size: %"PRIuMAX"\n", (uintmax_t)field.size);
           exit(1);
           break;
       }
