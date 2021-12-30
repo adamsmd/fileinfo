@@ -466,14 +466,13 @@ jobs:
 
           echo "::notice ::cont=$cont"
           echo "cont=$cont" >> $GITHUB_ENV
-          false
 
       # Create the working directory
-      - if: ${{ success() }}
+      - if: ${{ !env.missing }}
         run: echo "${{ env.missing }}"
-      - if: ${{ success() }}
+      - if: ${{ !env.missing }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ success() }}
+      - if: ${{ !env.missing }}
         run: echo "::notice ::workdir=$workdir"
       - if: ${{ !env.missing }}
         run: docker exec "$cont" uname -a
