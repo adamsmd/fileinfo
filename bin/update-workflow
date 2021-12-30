@@ -1,0 +1,4 @@
+#!/bin/bash
+
+set -ex
+yq e 'explode(.)' .github/default.src.yaml >.github/workflows/default.yaml

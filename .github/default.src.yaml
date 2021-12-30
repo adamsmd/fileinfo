@@ -1,0 +1,738 @@
+on: [push]
+jobs:
+
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: bin/bootstrap
+      - run: tar -cvf ../fileinfo.tar --exclude .git .
+      - run: mv ../fileinfo.tar .
+      - uses: actions/upload-artifact@v2
+        with:
+          name: bootstrap-output
+          path: fileinfo.tar
+
+  vm:
+    needs: bootstrap
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-20.04
+          - ubuntu-18.04
+          - macos-11
+          - macos-10.15
+          # - windows-2022
+          # - windows-2019
+          # - windows-2016
+        # TODO: arch: X86, X64, ARM, and ARM64
+        # TODO: compiler: gcc, llvm, icc
+        # TODO: pre-statx linux (and other kernel implementations)
+        # TODO: WSLv1, WSLv2, different bash ports (MSYS,MingW,Cygwin,GitBash)
+        # TODO: filesystems: zfs, btrfs, ext4
+        # TODO: setup-qemu
+    steps:
+      - uses: actions/download-artifact@v2
+        with: { name: bootstrap-output }
+      - run: tar -xvf fileinfo.tar
+      - run: ./configure
+      - run: cat src/config.h
+      - run: cat src/fileinfo/static.h
+      - run: make
+      - run: make check
+
+  cross-platform-actions:
+    needs: bootstrap
+    runs-on: macos-10.15
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - name: freebsd
+            version: '13.0'
+          - name: freebsd
+            version: '12.2'
+          # - name: openbsd # compiler flag error
+          #   version: '6.9'
+          # - name: openbsd # compiler flag error
+          #   version: '6.8'
+          # - name: netbsd # action fails
+          #   version: '9.2'
+    steps:
+      - uses: actions/download-artifact@v2
+        with: { name: bootstrap-output }
+      - run: tar -xvf fileinfo.tar
+      - name: Test on ${{ matrix.os.name }}
+        uses: cross-platform-actions/action@v0.3.1
+        with:
+          operating_system: ${{ matrix.os.name }}
+          version: ${{ matrix.os.version }}
+          shell: bash
+          run: |
+            ./configure && \
+            cat src/config.h && \
+            cat src/fileinfo/static.h && \
+            make && \
+            make check
+
+  # vmactions-freebsd:
+  #   needs: bootstrap
+  #   runs-on: macos-10.15
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: bootstrap-output
+  #     - run: tar -xvf fileinfo.tar
+  #     - uses: vmactions/freebsd-vm@v0.1.5
+  #       with:
+  #         # prepare: |
+  #         #   pkg install -y gcc
+  #         run: |
+  #           pkg install --help
+  #           ./configure
+  #           make
+
+  # vmactions-solaris: # works but take a long time to run
+  #   needs: bootstrap
+  #   runs-on: macos-10.15
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: bootstrap-output
+  #     - run: tar -xvf fileinfo.tar
+  #     - uses: vmactions/solaris-vm@v0.0.3
+  #       with:
+  #         prepare: |
+  #           # pkgutil -U
+  #           pkgutil -y -i gcc5core
+  #         run: |
+  #           pkgutil --help
+  #           ./configure
+  #           make
+
+  # docker:
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       container:
+  #         ## Note that some symbolic names are duplicates of the numeric names.
+  #         ## We keep both so that we automatically test new versions when those
+  #         ## symbolic names get updated to newer versions.
+
+  #         ## Images from https://hub.docker.com/search?type=image&image_filter=official&category=os
+
+  #         - alpine:latest # works
+  #         - alpine:3.15 # works
+  #         - alpine:3.14 # works
+  #         - alpine:3.13 # works
+  #         - alpine:3.12 # works
+
+  #         - ubuntu:latest # works
+  #         - ubuntu:22.04 # works
+  #         - ubuntu:21.10 # works
+  #         - ubuntu:21.04 # works
+  #         - ubuntu:20.04 # works
+  #         - ubuntu:18.04 # works
+  #         - ubuntu:16.04 # works
+  #         - ubuntu:14.04 # works
+
+  #         - centos:latest # works
+  #         - centos:8 # works
+  #         - centos:7 # works
+  #         # - centos:6.10 # yum error
+  #         # - centos:6 # yum error
+
+  #         - debian:latest # works
+  #         - debian:unstable # works
+  #         - debian:testing # works
+  #         - debian:stable # works
+  #         - debian:oldstable # works
+  #         - debian:oldoldstable # works
+  #         - debian:11.2 # works
+  #         - debian:10.11 # works
+  #         - debian:9.13 # works
+
+  #         - fedora:latest # works
+  #         - fedora:rawhide # works
+  #         - fedora:36 # works
+  #         - fedora:35 # works
+  #         - fedora:34 # works
+  #         - fedora:33 # works
+
+  #         - amazonlinux:latest # works
+  #         - amazonlinux:2 # works
+  #         - amazonlinux:1 # works
+
+  #         - oraclelinux:8 # works
+  #         - oraclelinux:7 # works
+
+  #         - ros:latest # works
+  #         ## Rolling release
+  #         - ros:rolling # works
+  #         ## ROS 2
+  #         - ros:galactic # works
+  #         - ros:foxy # works
+  #         ## ROS 1
+  #         - ros:noetic # works
+  #         - ros:melodic # works
+
+  #         ## VmWare Photon
+  #         # - photon:latest # needs coreutils but is also missing `as`
+
+  #         # - clearlinux:latest # slow install
+
+  #         # - mageia:latest # slow install
+  #         # - mageia:cauldron # slow install
+  #         # - mageia:8 # slow install
+  #         # - mageia:7 # slow install
+
+  #         - rockylinux:latest # works
+  #         - rockylinux:8 # works
+
+  #         ## Scientific Linux
+  #         - sl:latest # works
+  #         - sl:7 # works
+
+  #         ## For IBM Z
+  #         # - clefos:latest
+  #         # - clefos:7
+
+  #         - almalinux:latest # works
+  #         # - almalinux:minimal # no c compiler
+  #         - almalinux:8 # works
+  #         # - almalinux:8-minimal # no c compiler
+
+  #         - alt:latest # works
+  #         - alt:sisyphus # works
+  #         - alt:p10 # works
+  #         - alt:p9 # works
+
+  #         # - archlinux:latest # no c compiler
+  #         # - archlinux:base # no c compiler
+  #         - archlinux:base-devel # works
+
+  #         # - openwrtorg/rootfs:x86-64 # no c compiler
+  #         # - openwrtorg/rootfs:armvirt-32
+  #         # - openwrtorg/rootfs:armvirt-64
+
+  #         # - openmandriva/cooker # no c compiler
+  #         # - openmandriva/4.2 # no c compiler
+  #         # - openmandriva/4.0
+  #         # - openmandriva/3.0
+
+  #         # - opensuse/leap:latest
+  #         # - opensuse/leap:15
+  #         # - opensuse/leap:42
+  #         # - opensuse/tumbleweed # no c compiler
+  #         # - opensuse/s390x
+
+  #         # - vbatts/slackware:latest # no c compiler
+  #         # - vbatts/slackware:current
+  #         # - vbatts/slackware:14.2
+  #         # - vbatts/slackware:14.1
+  #         # - vbatts/slackware:14.0
+  #         # - vbatts/slackware:13.1
+  #         # - vbatts/slackware:13.0
+
+  #         ## TODO: KaOS
+  #         ## TODO: mint
+  #         ## TODO: pclinuxos
+  #         ## TODO: solus
+  #         ## TODO: void linux
+  #         ## TODO: nixos?
+  #         ## TODO: busybox?
+
+  #         ## Unsupported
+
+  #         # - cirros:latest # no package manager
+
+  #   steps:
+  #     # Create a docker
+  #     - run: |
+  #         cont=$(docker run --pull=missing --init --detach ${{ matrix.container }} tail -f /dev/null)
+  #         echo "cont=$cont" >> $GITHUB_ENV
+  #     - run: echo "::notice ::cont=$cont"
+
+  #     # Create the working directory
+  #     - run: echo "workdir=/workdir" >> $GITHUB_ENV
+  #     - run: echo "::notice ::workdir=$workdir"
+  #     - run: docker exec "$cont" mkdir "$workdir"
+
+  #     # Copy the artifact to the working directory
+  #     - uses: actions/download-artifact@v2
+  #       with: { name: bootstrap-output }
+  #     - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+  #     # Install dependencies
+  #     - run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+  #     # Build
+  #     - run: docker exec --workdir="$workdir" "$cont" ./configure
+  #     - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+  #     - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+  #     - run: docker exec --workdir="$workdir" "$cont" make
+  #     - run: docker exec --workdir="$workdir" "$cont" make check
+
+  #     # Cleanup
+  #     - run: docker stop "$cont"
+  #     - run: docker rm --force --volumes "$cont"
+
+# act --container-architecture string    Architecture which should be used to run containers, e.g.: linux/amd64. If not specified, will use host default architecture. Requires Docker server API Version 1.41+. Ignored on earlier Docker server platforms.
+
+  # qemu:
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: docker/setup-qemu-action@v1.2.0
+  #       id: qemu
+  #       with:
+  #         image: tonistiigi/binfmt:latest
+  #         platforms: all
+  #     -
+  #       name: Available platforms
+  #       run: echo ${{ steps.qemu.outputs.platforms }}
+  #     - uses: docker://multiarch/ubuntu-core:arm64-bionic
+  #       with:
+  #         args: 'uname -a'
+
+# arm32v6/alpine
+# ppc64le/debian
+# s390x/ubuntu
+# arm64v8/fedora
+# arm32v7/centos
+# ppc64le/busybox
+# i386/ubuntu
+
+
+
+#arm32v5
+#winamd64
+#windows-amd64
+
+
+# multiarch/alpine
+
+# i386
+# ppc64le
+# arm64
+# x86_64
+# armv7
+# armhf
+# aarch64
+# x86
+
+# -latest-stable
+# -edge
+# -v3.14
+# -v3.13
+# -v3.12
+# -v3.11
+
+
+
+# multiarch/ubuntu-core
+
+# arm64-bionic
+# arm64-focal
+# arm64-hirsute
+# arm64-trusty
+# arm64-xenial
+
+# armhf-bionic
+# armhf-focal
+# armhf-hirsute
+# armhf-trusty
+# armhf-xenial
+
+# i386-bionic
+# i386-trusty
+# i386-xenial
+
+# ppc64el-bionic
+# ppc64el-focal
+# ppc64el-hirsute
+# ppc64el-trusty
+# ppc64el-xenial
+
+# s390x-bionic
+# s390x-focal
+# s390x-hirsute
+
+# x86_64-bionic
+# x86_64-focal
+# x86_64-hirsute
+# x86_64-trusty
+# x86_64-xenial
+
+
+
+# multiarch/ubuntu-debootstrap
+# multiarch/debian-debootstrap
+
+
+
+
+# multiarch/fedora
+
+# 34-aarch64
+# 34-s390x
+# 34-ppc64le
+# 34-x86_64
+
+# 33-ppc64le
+# 33-s390x
+# 33-x86_64
+# 33-aarch64
+
+# 32-s390x
+# 32-aarch64
+# ...
+
+
+# multiarch/centos
+
+# armhfp-clean
+# amd64-clean
+
+
+
+# multiarch/voidlinux
+
+# amd64-latest
+# armhf-latest
+
+
+# multiarch/busybox
+
+# alpha
+# alpha-slim
+# amd64
+# amd64-slim
+# arm64
+# arm64-slim
+# armel
+# armel-slim
+# armhf
+# armhf-slim
+# hppa
+# hppa-slim
+# hurd-i386
+# hurd-i386-slim
+# i386
+# i386-slim
+# kfreebsd-amd64
+# kfreebsd-amd64-slim
+# kfreebsd-i386
+# kfreebsd-i386-slim
+# m68k
+# m68k-slim
+# mips
+# mips-slim
+# mipsel
+# mipsel-slim
+# powerpc
+# powerpc-slim
+# powerpcspe
+# powerpcspe-slim
+# ppc64
+# ppc64-slim
+# ppc64el
+# ppc64el-slim
+# s390x
+# s390x-slim
+# sh4
+# sh4-slim
+# sparc64
+# sparc64-slim
+# sparc64-slim-slim
+# x32
+# x32-slim
+
+
+  # qemu2:
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - run: |
+  #       docker run --rm --privileged multiarch/qemu-user-static:register --reset
+
+  #   - uses: docker://multiarch/ubuntu-core:arm64-bionic
+  #     with:
+  #       args: 'uname -a'
+
+  #   # - uses: docker://multiarch/ubuntu-core:arm64-bionic
+  #   #   with:
+  #   #     args: >
+  #   #       bash -c
+  #   #       "apt-get update &&
+  #   #       apt-get install -y python3.6 &&
+  #   #       python3.6 --version &&
+  #   #       python3.6 -c\"import platform; print(platform.machine())\""
+
+  qemu-strategy:
+    if: false
+    runs-on: ubuntu-latest
+    strategy: &qemu-strategy
+      fail-fast: false
+      matrix:
+        image:
+          ## Note that symbolic names are often duplicates of the numeric names.
+          ## We keep both so that we automatically test new versions when those
+          ## symbolic names get updated to newer versions.
+
+          ## A small distribution optimized for containers
+          - alpine:latest # works
+          - alpine:3.15 # works
+          - alpine:3.14 # works
+          - alpine:3.13 # works
+          - alpine:3.12 # works
+
+          - ubuntu:latest # works
+          - ubuntu:22.04 # works
+          - ubuntu:21.10 # works
+          - ubuntu:21.04 # works
+          - ubuntu:20.04 # works
+          - ubuntu:18.04 # works
+          - ubuntu:16.04 # works
+          - ubuntu:14.04 # works
+
+          - centos:latest # works
+          - centos:8 # works
+          - centos:7 # works
+          # - centos:6.10 # yum error
+          # - centos:6 # yum error
+
+          - debian:latest # works
+          - debian:unstable # works
+          - debian:testing # works
+          - debian:stable # works
+          - debian:oldstable # works
+          - debian:oldoldstable # works
+          - debian:11.2 # works
+          - debian:10.11 # works
+          - debian:9.13 # works
+
+          - fedora:latest # works
+          - fedora:rawhide # works
+          - fedora:36 # works
+          - fedora:35 # works
+          - fedora:34 # works
+          - fedora:33 # works
+
+          - amazonlinux:latest # works
+          - amazonlinux:2 # works
+          - amazonlinux:1 # works
+
+          - oraclelinux:8 # works
+          - oraclelinux:7 # works
+
+          ## Robot operating system
+          - ros:latest # works
+          #### Rolling release
+          - ros:rolling # works
+          #### ROS 2
+          - ros:galactic # works
+          - ros:foxy # works
+          #### ROS 1
+          - ros:noetic # works
+          - ros:melodic # works
+
+          ## VmWare Photon
+          # - photon:latest # needs coreutils but is also missing `as`
+
+          # - clearlinux:latest # slow install
+
+          # - mageia:latest # slow install
+          # - mageia:cauldron # slow install
+          # - mageia:8 # slow install
+          # - mageia:7 # slow install
+
+          - rockylinux:latest # works
+          - rockylinux:8 # works
+
+          ## Scientific Linux
+          - sl:latest # works
+          - sl:7 # works
+
+          ## For IBM Z
+          # - clefos:latest
+          # - clefos:7
+
+          - almalinux:latest # works
+          # - almalinux:minimal # no c compiler
+          - almalinux:8 # works
+          # - almalinux:8-minimal # no c compiler
+
+          - alt:latest # works
+          - alt:sisyphus # works
+          - alt:p10 # works
+          - alt:p9 # works
+
+          # - archlinux:latest # no c compiler
+          # - archlinux:base # no c compiler
+          - archlinux:base-devel # works
+
+          # - openwrtorg/rootfs:x86-64 # no c compiler
+          # - openwrtorg/rootfs:armvirt-32
+          # - openwrtorg/rootfs:armvirt-64
+
+          # - openmandriva/cooker # no c compiler
+          # - openmandriva/4.2 # no c compiler
+          # - openmandriva/4.0
+          # - openmandriva/3.0
+
+          # - opensuse/leap:latest
+          # - opensuse/leap:15
+          # - opensuse/leap:42
+          # - opensuse/tumbleweed # no c compiler
+          # - opensuse/s390x
+
+          # - vbatts/slackware:latest # no c compiler
+          # - vbatts/slackware:current
+          # - vbatts/slackware:14.2
+          # - vbatts/slackware:14.1
+          # - vbatts/slackware:14.0
+          # - vbatts/slackware:13.1
+          # - vbatts/slackware:13.0
+
+          ## TODO: KaOS
+          ## TODO: mint
+          ## TODO: pclinuxos
+          ## TODO: solus
+          ## TODO: void linux
+          ## TODO: nixos?
+          ## TODO: busybox?
+
+          ## Unsupported
+
+          # - cirros:latest # no package manager
+
+    steps: &qemu-steps
+      # - uses: actions/checkout@v2
+      # - uses: ./.github/actions/docker
+      #   with:
+      #     platform: ${{ env.platform }}
+      #     image: ${{ matrix.image }}
+
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ matrix.image }} tail -f /dev/null)
+          missing=$?
+          set -e
+
+          echo "::notice ::cont=$cont"
+          echo "cont=$cont" >> $GITHUB_ENV
+
+          echo "::notice ::missing=$missing"
+          echo "missing=$missing" >> $GITHUB_ENV
+
+      # Create the working directory
+      - if: ${{ env.missing == 0 }}
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ env.missing == 0 }}
+        run: echo "::notice ::workdir=$workdir"
+      - if: ${{ env.missing == 0 }}
+        run: docker exec "$cont" uname -a
+      - if: ${{ env.missing == 0 }}
+        run: docker exec "$cont" mkdir "$workdir"
+
+      # Copy the artifact to the working directory
+      - if: ${{ env.missing == 0 }}
+        uses: actions/download-artifact@v2
+        with: { name: bootstrap-output }
+      - if: ${{ env.missing == 0 }}
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+      # Install dependencies
+      - if: ${{ env.missing == 0 }}
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+      # Build
+      - if: ${{ env.missing == 0 }}
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ env.missing == 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ env.missing == 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ env.missing == 0 }}
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ env.missing == 0 }}
+        run: docker exec --workdir="$workdir" "$cont" make check
+
+      # Cleanup
+      - if: ${{ env.missing == 0 }}
+        run: docker stop "$cont"
+      - if: ${{ env.missing == 0 }}
+        run: docker rm --force --volumes "$cont"
+
+  qemu-386:
+    env: { platform: linux/386 }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy: *qemu-strategy
+    steps: *qemu-steps
+  qemu-amd64:
+    env: { platform: linux/amd64 }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy: *qemu-strategy
+    steps: *qemu-steps
+  qemu-arm_v6:
+    env: { platform: linux/arm/v6 }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy: *qemu-strategy
+    steps: *qemu-steps
+  qemu-arm_v7:
+    env: { platform: linux/arm/v7 }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy: *qemu-strategy
+    steps: *qemu-steps
+  qemu-arm64:
+    env: { platform: linux/arm64 }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy: *qemu-strategy
+    steps: *qemu-steps
+  qemu-mips64:
+    env: { platform: linux/mips64 }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy: *qemu-strategy
+    steps: *qemu-steps
+  qemu-mips64le:
+    env: { platform: linux/mips64le }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy: *qemu-strategy
+    steps: *qemu-steps
+  qemu-ppc64le:
+    env: { platform: linux/ppc64le }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy: *qemu-strategy
+    steps: *qemu-steps
+  qemu-riscv64:
+    env: { platform: linux/riscv64 }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy: *qemu-strategy
+    steps: *qemu-steps
+  qemu-s390x:
+    env: { platform: linux/s390x }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    strategy: *qemu-strategy
+    steps: *qemu-steps
