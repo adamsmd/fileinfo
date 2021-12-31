@@ -111,14 +111,14 @@ AX_APPEND_COMPILE_FLAGS([-pedantic], [AM_CFLAGS])
 # -Wsign-promo
 # -Wstrict-null-sentinel
 
-
 #### AX_APPEND_COMPILE_FLAGS([-fsyntax-only], [AM_CFLAGS])
 #### AX_APPEND_COMPILE_FLAGS([-fmax-errors=n], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wpedantic], [AM_CFLAGS])
 #### AX_APPEND_COMPILE_FLAGS([-pedantic-errors], [AM_CFLAGS])
 #### AX_APPEND_COMPILE_FLAGS([-w], [AM_CFLAGS])
-AX_APPEND_COMPILE_FLAGS([-Wextra], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Wall], [AM_CFLAGS])
+AX_APPEND_COMPILE_FLAGS([-Wextra], [AM_CFLAGS])
+AX_APPEND_COMPILE_FLAGS([-Weverything], [AM_CFLAGS]) # Used by llvm
 ## AX_APPEND_COMPILE_FLAGS([-Wabi], [AM_CFLAGS])
 ## AX_APPEND_COMPILE_FLAGS([-Wabi=n], [AM_CFLAGS])
 AX_APPEND_COMPILE_FLAGS([-Waddress], [AM_CFLAGS])
