@@ -138,7 +138,7 @@ jobs:
           # 386? amd64 arm/v7? arm64/v8 ppc64le
           - centos:latest # works
           - centos:8 # works
-          - centos:7 # works
+          # - centos:7 # no c compiler
           # - centos:6.10 # yum error
           # - centos:6 # yum error
 
@@ -323,66 +323,66 @@ jobs:
         run: docker rm --force --volumes "$cont"
 
 
-  docker-386:
-    env: { platform: linux/386, image: "${{ matrix.image }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy: *docker-strategy
-  docker-amd64:
-    env: { platform: linux/amd64, image: "${{ matrix.image }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy: *docker-strategy
-  docker-arm_v6:
-    env: { platform: linux/arm/v6, image: "${{ matrix.image }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy: *docker-strategy
-  docker-arm_v7:
-    env: { platform: linux/arm/v7, image: "${{ matrix.image }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy: *docker-strategy
-  docker-arm64:
-    env: { platform: linux/arm64, image: "${{ matrix.image }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy: *docker-strategy
-  docker-mips64:
-    env: { platform: linux/mips64, image: "${{ matrix.image }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy: *docker-strategy
-  docker-mips64le:
-    env: { platform: linux/mips64le, image: "${{ matrix.image }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy: *docker-strategy
-  docker-ppc64le:
-    env: { platform: linux/ppc64le, image: "${{ matrix.image }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy: *docker-strategy
-  docker-riscv64:
-    env: { platform: linux/riscv64, image: "${{ matrix.image }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy: *docker-strategy
-  docker-s390x:
-    env: { platform: linux/s390x, image: "${{ matrix.image }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy: *docker-strategy
+  # docker-386:
+  #   env: { platform: linux/386, image: "${{ matrix.image }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy: *docker-strategy
+  # docker-amd64:
+  #   env: { platform: linux/amd64, image: "${{ matrix.image }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy: *docker-strategy
+  # docker-arm_v6:
+  #   env: { platform: linux/arm/v6, image: "${{ matrix.image }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy: *docker-strategy
+  # docker-arm_v7:
+  #   env: { platform: linux/arm/v7, image: "${{ matrix.image }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy: *docker-strategy
+  # docker-arm64:
+  #   env: { platform: linux/arm64, image: "${{ matrix.image }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy: *docker-strategy
+  # docker-mips64:
+  #   env: { platform: linux/mips64, image: "${{ matrix.image }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy: *docker-strategy
+  # docker-mips64le:
+  #   env: { platform: linux/mips64le, image: "${{ matrix.image }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy: *docker-strategy
+  # docker-ppc64le:
+  #   env: { platform: linux/ppc64le, image: "${{ matrix.image }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy: *docker-strategy
+  # docker-riscv64:
+  #   env: { platform: linux/riscv64, image: "${{ matrix.image }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy: *docker-strategy
+  # docker-s390x:
+  #   env: { platform: linux/s390x, image: "${{ matrix.image }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy: *docker-strategy
 
   ## A small distribution optimized for containers
   docker-alpine:
