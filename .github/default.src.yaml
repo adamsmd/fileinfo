@@ -266,14 +266,12 @@ jobs:
         run: |
           set +e
           cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ env.image }} tail -f /dev/null)
-          # missing=$?
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          # echo "missing=$missing" >> $GITHUB_ENV
 
-          echo "::notice ::cont=$cont"
-          echo "::notice ::required=$required"
+          echo "cont=$cont"
+          echo "required=$required"
       - name: Fail if required but missing
         if: ${{ env.required == 1 && env.cont == 0 }}
         run: 'false'
@@ -287,7 +285,7 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
       - if: ${{ env.cont != 0 }}
-        run: echo "::notice ::workdir=$workdir"
+        run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       - if: ${{ env.cont != 0 }}
@@ -386,19 +384,19 @@ jobs:
 
   ## A small distribution optimized for containers
   docker-alpine:
-    env: { platform: "linux/${{ matrix.arch }}", image: "${{ matrix.image }}" }
+    env: { platform: "linux/${{ matrix.arch }}", image: "alpine:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
     strategy:
       fail-fast: false
       matrix:
-        image:
-          - alpine:latest # works
-          - alpine:3.15 # works
-          - alpine:3.14 # works
-          - alpine:3.13 # works
-          - alpine:3.12 # works
+        version:
+          - latest # works
+          - 3.15 # works
+          - 3.14 # works
+          - 3.13 # works
+          - 3.12 # works
         arch:
           - 386
           - amd64
@@ -409,58 +407,98 @@ jobs:
           - s390x
 
 
-  docker-qemu:
-    env: { platform: linux/amd64, image: "qemu/${{ matrix.arch }}:latest" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        arch:
-          - alpha
-          - alpha-slim
-          - amd64
-          - amd64-slim
-          - arm64
-          - arm64-slim
-          - armel
-          - armel-slim
-          - armhf
-          - armhf-slim
-          - hppa
-          - hppa-slim
-          - hurd-i386
-          - hurd-i386-slim
-          - i386
-          - i386-slim
-          - kfreebsd-amd64
-          - kfreebsd-amd64-slim
-          - kfreebsd-i386
-          - kfreebsd-i386-slim
-          - m68k
-          - m68k-slim
-          - mips
-          - mips-slim
-          - mipsel
-          - mipsel-slim
-          - powerpc
-          - powerpc-slim
-          - powerpcspe
-          - powerpcspe-slim
-          - ppc64
-          - ppc64-slim
-          - ppc64el
-          - ppc64el-slim
-          - s390x
-          - s390x-slim
-          - sh4
-          - sh4-slim
-          - sparc64
-          - sparc64-slim
-          - sparc64-slim-slim
-          - x32
-          - x32-slim
+#   docker-qemu:
+#     env: { platform: linux/amd64, image: "qemu/${{ matrix.arch }}:latest" }
+#     needs: bootstrap
+#     runs-on: ubuntu-latest
+#     steps: *docker-steps
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         arch:
+#           # - alpha
+#           # - alpha-slim
+#           # - amd64
+#           # - amd64-slim
+#           # - arm64
+#           # - arm64-slim
+#           # - armel
+#           # - armel-slim
+#           # - armhf
+#           # - armhf-slim
+#           # - hppa
+#           # - hppa-slim
+#           # - hurd-i386
+#           # - hurd-i386-slim
+#           # - i386
+#           # - i386-slim
+#           # - kfreebsd-amd64
+#           # - kfreebsd-amd64-slim
+#           # - kfreebsd-i386
+#           # - kfreebsd-i386-slim
+#           # - m68k
+#           # - m68k-slim
+#           # - mips
+#           # - mips-slim
+#           # - mipsel
+#           # - mipsel-slim
+#           # - powerpc
+#           # - powerpc-slim
+#           # - powerpcspe
+#           # - powerpcspe-slim
+#           # - ppc64
+#           # - ppc64-slim
+#           # - ppc64el
+#           # - ppc64el-slim
+#           # - s390x
+#           # - s390x-slim
+#           # - sh4
+#           # - sh4-slim
+#           # - sparc64
+#           # - sparc64-slim
+#           # - sparc64-slim-slim
+#           # - x32
+#           # - x32-slim
+
+#           - i386
+#           - arm
+#           - aarch64
+#           - x86-64
+#           - alpha
+#           - cris
+#           - lm32
+#           - moxie
+#           - ppc
+#           - sparc
+#           - ppcemb
+#           - sparc64
+#           - tricore
+#           - unicore32
+#           - microblazeel
+#           - m68k
+#           - microblaze
+#           - mipsel
+#           - mips
+#           - mips64
+#           - mips64el
+#           - sh4
+#           - ppc64
+#           - or32
+#           - sh4eb
+#           - xtensaeb
+#           - xtensa
+#           - cdrom
+#           - nbd
+#           - img
+#           - io
+#           - boot-command
+#           - ivshmem
+#           - ksm
+
+# # qemu/base
+# # qemu/tools
+
+
 
   docker-multiarch-alpine:
     env: { platform: linux/amd64, image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}" }
@@ -503,14 +541,10 @@ jobs:
           - s390x
           - x86_64
         version:
-          - artful
           - bionic
-          - eoan
           - focal
-          - hirsute
           - trusty
           - xenial
-          - yakkety
 
   docker-multiarch-ubuntu-debootstrap:
     env: { platform: linux/amd64, image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
@@ -528,24 +562,14 @@ jobs:
           - ppc64el
           - powerpc
         version:
-          - artful
-          - artful-slim
           - bionic
           - bionic-slim
           - focal
           - focal-slim
-          - eoan
-          - eoan-slim
-          - hirsute
-          - hirsute-slim
           - trusty
           - trusty-slim
           - xenial
           - xenial-slim
-          - yakkety
-          - yakkety-slim
-          - zesty
-          - zesty-slim
 
   docker-multiarch-debian-debootstrap:
     env: { platform: linux/amd64, image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
@@ -572,14 +596,10 @@ jobs:
           - bullseye-slim
           - buster
           - buster-slim
-          - jessie
-          - jessie-slim
           - sid
           - sid-slim
           - stretch
           - stretch-slim
-          - wheezy
-          - wheezy-slim
 
   docker-multiarch-fedora:
     env: { platform: linux/amd64, image: "multiarch/fedora:${{ matrix.version }}-${{ matrix.arch }}" }
@@ -602,8 +622,6 @@ jobs:
           - 30
           - 29
           - 28
-          - 25
-          - 24
 
   docker-multiarch-centos:
     env: { required: 1, platform: linux/amd64, image: "multiarch/centos:${{ matrix.version }}-clean" }
@@ -650,61 +668,62 @@ jobs:
           - amd64-latest
           - armhf-latest
 
-  docker-multiarch-busybox:
-    env: { required: 1, platform: linux/amd64, image: "multiarch/busybox:${{ matrix.tag }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        tag:
-          - alpha
-          - alpha-slim
-          - amd64
-          - amd64-slim
-          - arm64
-          - arm64-slim
-          - armel
-          - armel-slim
-          - armhf
-          - armhf-slim
-          - hppa
-          - hppa-slim
-          - hurd-i386
-          - hurd-i386-slim
-          - i386
-          - i386-slim
-          - kfreebsd-amd64
-          - kfreebsd-amd64-slim
-          - kfreebsd-i386
-          - kfreebsd-i386-slim
-          - m68k
-          - m68k-slim
-          - mips
-          - mips-slim
-          - mipsel
-          - mipsel-slim
-          - powerpc
-          - powerpc-slim
-          - powerpcspe
-          - powerpcspe-slim
-          - ppc64
-          - ppc64-slim
-          - ppc64el
-          - ppc64el-slim
-          - s390x
-          - s390x-slim
-          - sh4
-          - sh4-slim
-          - sparc64
-          - sparc64-slim
-          - sparc64-slim-slim
-          - x32
-          - x32-slim
+  # ## No package mangager
+  # docker-multiarch-busybox:
+  #   env: { required: 1, platform: linux/amd64, image: "multiarch/busybox:${{ matrix.tag }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       tag:
+  #         - alpha
+  #         - alpha-slim
+  #         - amd64
+  #         - amd64-slim
+  #         - arm64
+  #         - arm64-slim
+  #         - armel
+  #         - armel-slim
+  #         - armhf
+  #         - armhf-slim
+  #         - hppa
+  #         - hppa-slim
+  #         - hurd-i386
+  #         - hurd-i386-slim
+  #         - i386
+  #         - i386-slim
+  #         - kfreebsd-amd64
+  #         - kfreebsd-amd64-slim
+  #         - kfreebsd-i386
+  #         - kfreebsd-i386-slim
+  #         - m68k
+  #         - m68k-slim
+  #         - mips
+  #         - mips-slim
+  #         - mipsel
+  #         - mipsel-slim
+  #         - powerpc
+  #         - powerpc-slim
+  #         - powerpcspe
+  #         - powerpcspe-slim
+  #         - ppc64
+  #         - ppc64-slim
+  #         - ppc64el
+  #         - ppc64el-slim
+  #         - s390x
+  #         - s390x-slim
+  #         - sh4
+  #         - sh4-slim
+  #         - sparc64
+  #         - sparc64-slim
+  #         - sparc64-slim-slim
+  #         - x32
+  #         - x32-slim
 
   docker-chromebrew: # ChromeOS
-    env: { required: 1, platform: "${{ matrix.platform }}", image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
+    env: { required: 1, platform: "linux/${{ matrix.platform }}", image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -713,117 +732,117 @@ jobs:
       matrix:
         include:
           - version: armv7l-fievel-m91
-            platform: linux/arm
+            platform: arm
           - version: armv7l-fievel-m92
-            platform: linux/amd64
+            platform: amd64
           - version: i686-alex-m58
-            platform: linux/amd64
+            platform: amd64
           - version: x86_64-kip-m92
-            platform: linux/amd64
+            platform: amd64
           - version: x86_64-nocturne-m90
-            platform: linux/amd64
+            platform: amd64
 
-  docker-gentoo:
-    env: { required: 1, platform: "${{ matrix.platform }}", image: "gentoo/stage3:${{ matrix.tag }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - tag: latest
-            platform: linux/386
-          - tag: latest
-            platform: linux/amd64
-          - tag: latest linux
-            platform: arm/v5
-          - tag: amd64-hardened-nomultilib-openrc
-            platform: linux/amd64
-          - tag: amd64-hardened-openrc
-            platform: linux/amd64
-          - tag: amd64-musl
-            platform: linux/amd64
-          - tag: amd64-musl-hardened
-            platform: linux/amd64
-          - tag: amd64-nomultilib-openrc
-            platform: linux/amd64
-          - tag: amd64-nomultilib-systemd
-            platform: linux/amd64
-          - tag: amd64-openrc
-            platform: linux/amd64
-          - tag: amd64-systemd
-            platform: linux/amd64
-          - tag: arm64
-            platform: linux/arm64
-          - tag: arm64-systemd
-            platform: linux/arm64
-          - tag: armv5tel-openrc
-            platform: linux/arm
-          - tag: armv5tel-systemd
-            platform: linux/arm
-          - tag: armv6j_hardfp-openrc
-            platform: linux/arm
-          - tag: armv6j_hardfp-systemd
-            platform: linux/arm
-          - tag: armv6j-openrc
-            platform: linux/arm
-          - tag: armv6j-systemd
-            platform: linux/arm
-          - tag: armv7a_hardfp-openrc
-            platform: linux/arm
-          - tag: armv7a_hardfp-systemd
-            platform: linux/arm
-          - tag: armv7a-openrc
-            platform: linux/arm
-          - tag: armv7a-systemd
-            platform: linux/arm
-          - tag: hardened
-            platform: linux/386
-          - tag: hardened
-            platform: linux/amd64
-          - tag: hardened-nomultilib
-            platform: linux/amd64
-          - tag: i686-hardened-openrc
-            platform: linux/386
-          - tag: i686-musl
-            platform: linux/386
-          - tag: i686-openrc
-            platform: linux/386
-          - tag: i686-systemd
-            platform: linux/386
-          - tag: musl linux/386
-            platform: linux/amd64
-          - tag: musl-hardened
-            platform: linux/amd64
-          - tag: musl-hardened
-            platform: linux/ppc64le
-          - tag: nomultilib
-            platform: linux/amd64
-          - tag: nomultilib-systemd
-            platform: linux/amd64
-          - tag: ppc64le-musl-hardened-openrc
-            platform: linux/ppc64le
-          - tag: ppc64le-openrc
-            platform: linux/ppc64le
-          - tag: ppc64le-systemd
-            platform: linux/ppc64le
-          - tag: rv64_lp64-openrc
-            platform: linux/riscv64
-          - tag: rv64_lp64-systemd
-            platform: linux/riscv64
-          - tag: rv64_lp64d-openrc
-            platform: linux/riscv64
-          - tag: rv64_lp64d-systemd
-            platform: linux/riscv64
-          - tag: s390x
-            platform: linux/s390x
-          - tag: systemd
-            platform: linux/386
-          - tag: systemd
-            platform: linux/amd64
-          - tag: systemd linux
-            platform: arm/v5
+  # docker-gentoo:
+  #   env: { required: 1, platform: "linux/${{ matrix.platform }}", image: "gentoo/stage3:${{ matrix.tag }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - tag: latest
+  #           platform: 386
+  #         - tag: latest
+  #           platform: amd64
+  #         - tag: latest linux
+  #           platform: arm/v5
+  #         - tag: amd64-hardened-nomultilib-openrc
+  #           platform: amd64
+  #         - tag: amd64-hardened-openrc
+  #           platform: amd64
+  #         - tag: amd64-musl
+  #           platform: amd64
+  #         - tag: amd64-musl-hardened
+  #           platform: amd64
+  #         - tag: amd64-nomultilib-openrc
+  #           platform: amd64
+  #         - tag: amd64-nomultilib-systemd
+  #           platform: amd64
+  #         - tag: amd64-openrc
+  #           platform: amd64
+  #         - tag: amd64-systemd
+  #           platform: amd64
+  #         - tag: arm64
+  #           platform: arm64
+  #         - tag: arm64-systemd
+  #           platform: arm64
+  #         - tag: armv5tel-openrc
+  #           platform: arm
+  #         - tag: armv5tel-systemd
+  #           platform: arm
+  #         - tag: armv6j_hardfp-openrc
+  #           platform: arm
+  #         - tag: armv6j_hardfp-systemd
+  #           platform: arm
+  #         - tag: armv6j-openrc
+  #           platform: arm
+  #         - tag: armv6j-systemd
+  #           platform: arm
+  #         - tag: armv7a_hardfp-openrc
+  #           platform: arm
+  #         - tag: armv7a_hardfp-systemd
+  #           platform: arm
+  #         - tag: armv7a-openrc
+  #           platform: arm
+  #         - tag: armv7a-systemd
+  #           platform: arm
+  #         - tag: hardened
+  #           platform: 386
+  #         - tag: hardened
+  #           platform: amd64
+  #         - tag: hardened-nomultilib
+  #           platform: amd64
+  #         - tag: i686-hardened-openrc
+  #           platform: 386
+  #         - tag: i686-musl
+  #           platform: 386
+  #         - tag: i686-openrc
+  #           platform: 386
+  #         - tag: i686-systemd
+  #           platform: 386
+  #         - tag: musl linux/386
+  #           platform: linux/amd64
+  #         - tag: musl-hardened
+  #           platform: linux/amd64
+  #         - tag: musl-hardened
+  #           platform: linux/ppc64le
+  #         - tag: nomultilib
+  #           platform: linux/amd64
+  #         - tag: nomultilib-systemd
+  #           platform: linux/amd64
+  #         - tag: ppc64le-musl-hardened-openrc
+  #           platform: linux/ppc64le
+  #         - tag: ppc64le-openrc
+  #           platform: linux/ppc64le
+  #         - tag: ppc64le-systemd
+  #           platform: linux/ppc64le
+  #         - tag: rv64_lp64-openrc
+  #           platform: linux/riscv64
+  #         - tag: rv64_lp64-systemd
+  #           platform: linux/riscv64
+  #         - tag: rv64_lp64d-openrc
+  #           platform: linux/riscv64
+  #         - tag: rv64_lp64d-systemd
+  #           platform: linux/riscv64
+  #         - tag: s390x
+  #           platform: linux/s390x
+  #         - tag: systemd
+  #           platform: linux/386
+  #         - tag: systemd
+  #           platform: linux/amd64
+  #         - tag: systemd linux
+  #           platform: arm/v5
 
 
 # Android
