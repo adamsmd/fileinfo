@@ -3210,16 +3210,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - version: armv7l-fievel-m91
-          platform: linux/arm
-        - version: armv7l-fievel-m92
-          platform: linux/amd64
-        - version: i686-alex-m58
-          platform: linux/amd64
-        - version: x86_64-kip-m92
-          platform: linux/amd64
-        - version: x86_64-nocturne-m90
-          platform: linux/amd64
+        include:
+          - version: armv7l-fievel-m91
+            platform: linux/arm
+          - version: armv7l-fievel-m92
+            platform: linux/amd64
+          - version: i686-alex-m58
+            platform: linux/amd64
+          - version: x86_64-kip-m92
+            platform: linux/amd64
+          - version: x86_64-nocturne-m90
+            platform: linux/amd64
   docker-gentoo:
     env: {required: 1, platform: "${{ matrix.platform }}", image: "gentoo/stage3:${{ matrix.tag }}"}
     needs: bootstrap
