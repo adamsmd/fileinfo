@@ -3285,98 +3285,99 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - tag: latest
-          platform: linux/386
-        - tag: latest
-          platform: linux/amd64
-        - tag: latest linux
-          platform: arm/v5
-        - tag: amd64-hardened-nomultilib-openrc
-          platform: linux/amd64
-        - tag: amd64-hardened-openrc
-          platform: linux/amd64
-        - tag: amd64-musl
-          platform: linux/amd64
-        - tag: amd64-musl-hardened
-          platform: linux/amd64
-        - tag: amd64-nomultilib-openrc
-          platform: linux/amd64
-        - tag: amd64-nomultilib-systemd
-          platform: linux/amd64
-        - tag: amd64-openrc
-          platform: linux/amd64
-        - tag: amd64-systemd
-          platform: linux/amd64
-        - tag: arm64
-          platform: linux/arm64
-        - tag: arm64-systemd
-          platform: linux/arm64
-        - tag: armv5tel-openrc
-          platform: linux/arm
-        - tag: armv5tel-systemd
-          platform: linux/arm
-        - tag: armv6j_hardfp-openrc
-          platform: linux/arm
-        - tag: armv6j_hardfp-systemd
-          platform: linux/arm
-        - tag: armv6j-openrc
-          platform: linux/arm
-        - tag: armv6j-systemd
-          platform: linux/arm
-        - tag: armv7a_hardfp-openrc
-          platform: linux/arm
-        - tag: armv7a_hardfp-systemd
-          platform: linux/arm
-        - tag: armv7a-openrc
-          platform: linux/arm
-        - tag: armv7a-systemd
-          platform: linux/arm
-        - tag: hardened
-          platform: linux/386
-        - tag: hardened
-          platform: linux/amd64
-        - tag: hardened-nomultilib
-          platform: linux/amd64
-        - tag: i686-hardened-openrc
-          platform: linux/386
-        - tag: i686-musl
-          platform: linux/386
-        - tag: i686-openrc
-          platform: linux/386
-        - tag: i686-systemd
-          platform: linux/386
-        - tag: musl linux/386
-          platform: linux/amd64
-        - tag: musl-hardened
-          platform: linux/amd64
-        - tag: musl-hardened
-          platform: linux/ppc64le
-        - tag: nomultilib
-          platform: linux/amd64
-        - tag: nomultilib-systemd
-          platform: linux/amd64
-        - tag: ppc64le-musl-hardened-openrc
-          platform: linux/ppc64le
-        - tag: ppc64le-openrc
-          platform: linux/ppc64le
-        - tag: ppc64le-systemd
-          platform: linux/ppc64le
-        - tag: rv64_lp64-openrc
-          platform: linux/riscv64
-        - tag: rv64_lp64-systemd
-          platform: linux/riscv64
-        - tag: rv64_lp64d-openrc
-          platform: linux/riscv64
-        - tag: rv64_lp64d-systemd
-          platform: linux/riscv64
-        - tag: s390x
-          platform: linux/s390x
-        - tag: systemd
-          platform: linux/386
-        - tag: systemd
-          platform: linux/amd64
-        - tag: systemd linux
-          platform: arm/v5
+        include:
+          - tag: latest
+            platform: linux/386
+          - tag: latest
+            platform: linux/amd64
+          - tag: latest linux
+            platform: arm/v5
+          - tag: amd64-hardened-nomultilib-openrc
+            platform: linux/amd64
+          - tag: amd64-hardened-openrc
+            platform: linux/amd64
+          - tag: amd64-musl
+            platform: linux/amd64
+          - tag: amd64-musl-hardened
+            platform: linux/amd64
+          - tag: amd64-nomultilib-openrc
+            platform: linux/amd64
+          - tag: amd64-nomultilib-systemd
+            platform: linux/amd64
+          - tag: amd64-openrc
+            platform: linux/amd64
+          - tag: amd64-systemd
+            platform: linux/amd64
+          - tag: arm64
+            platform: linux/arm64
+          - tag: arm64-systemd
+            platform: linux/arm64
+          - tag: armv5tel-openrc
+            platform: linux/arm
+          - tag: armv5tel-systemd
+            platform: linux/arm
+          - tag: armv6j_hardfp-openrc
+            platform: linux/arm
+          - tag: armv6j_hardfp-systemd
+            platform: linux/arm
+          - tag: armv6j-openrc
+            platform: linux/arm
+          - tag: armv6j-systemd
+            platform: linux/arm
+          - tag: armv7a_hardfp-openrc
+            platform: linux/arm
+          - tag: armv7a_hardfp-systemd
+            platform: linux/arm
+          - tag: armv7a-openrc
+            platform: linux/arm
+          - tag: armv7a-systemd
+            platform: linux/arm
+          - tag: hardened
+            platform: linux/386
+          - tag: hardened
+            platform: linux/amd64
+          - tag: hardened-nomultilib
+            platform: linux/amd64
+          - tag: i686-hardened-openrc
+            platform: linux/386
+          - tag: i686-musl
+            platform: linux/386
+          - tag: i686-openrc
+            platform: linux/386
+          - tag: i686-systemd
+            platform: linux/386
+          - tag: musl linux/386
+            platform: linux/amd64
+          - tag: musl-hardened
+            platform: linux/amd64
+          - tag: musl-hardened
+            platform: linux/ppc64le
+          - tag: nomultilib
+            platform: linux/amd64
+          - tag: nomultilib-systemd
+            platform: linux/amd64
+          - tag: ppc64le-musl-hardened-openrc
+            platform: linux/ppc64le
+          - tag: ppc64le-openrc
+            platform: linux/ppc64le
+          - tag: ppc64le-systemd
+            platform: linux/ppc64le
+          - tag: rv64_lp64-openrc
+            platform: linux/riscv64
+          - tag: rv64_lp64-systemd
+            platform: linux/riscv64
+          - tag: rv64_lp64d-openrc
+            platform: linux/riscv64
+          - tag: rv64_lp64d-systemd
+            platform: linux/riscv64
+          - tag: s390x
+            platform: linux/s390x
+          - tag: systemd
+            platform: linux/386
+          - tag: systemd
+            platform: linux/amd64
+          - tag: systemd linux
+            platform: arm/v5
 
 # Android
 #   Android Wear
