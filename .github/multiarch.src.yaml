@@ -1,4 +1,4 @@
-## Docker images from https://hub.docker.com/u/multiarch
+## Docker images from https://hub.docker.com/u/multiarch and https://github.com/multiarch
 ##
 ## Omitted Images:
 ## - qemu-user-static - The binaries for QEMU
@@ -18,14 +18,15 @@
         platform:
           - amd64
         arch:
+          - aarch64
+          - amd64
+          - arm64
+          - armhf
+          - armv7
           - i386
           - ppc64le
-          - arm64
-          - x86_64
-          - armv7
-          - armhf
-          - aarch64
           - x86
+          - x86_64
         version:
           - latest-stable
           - edge
@@ -35,7 +36,7 @@
           - v3.11
 
   docker-multiarch-ubuntu-core:
-    env: { platform: amd64, image: "multiarch/ubuntu-core:${{ matrix.arch }}-${{ matrix.version }}" }
+    env: { image: "multiarch/ubuntu-core:${{ matrix.arch }}-${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -45,27 +46,31 @@
         platform:
           - amd64
         arch:
+          - amd64
           - arm64
           - armhf
           - i386
           - ppc64el
           - s390x
+          - x86
           - x86_64
         version:
           - bionic
           - focal
+          - hirsute
           - trusty
           - xenial
         exclude:
-          - arch: i386
-            version: focal
-          - arch: s390x
-            version: xenial
-          - arch: s390
-            version: trusty
+          - { arch: amd64, version: hirute }
+          - { arch: i386, version: focal }
+          - { arch: i386, version: hirute }
+          - { arch: s390, version: trusty }
+          - { arch: s390, version: xenial }
+          - { arch: x86, version: focal }
+          - { arch: x86, version: hirute }
 
   docker-multiarch-ubuntu-debootstrap:
-    env: { platform: amd64, image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
+    env: { image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -80,19 +85,21 @@
           - armhf
           - i386
           - ppc64el
-          # - powerpc
+          - powerpc
         version:
-          - bionic
           - bionic-slim
-          - focal
           - focal-slim
-          - trusty
+          - hirsuite-slim
           - trusty-slim
-          - xenial
           - xenial-slim
+        exclude:
+          - { arch: arm64, version: hirsuite-slim }
+          - { arch: powerpc, version: bionic-slim }
+          - { arch: powerpc, version: focal-slim }
+          - { arch: powerpc, version: hirsuite-slim }
 
   docker-multiarch-debian-debootstrap:
-    env: { platform: amd64, image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
+    env: { image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -107,24 +114,21 @@
           - armel
           - armhf
           - i386
-          # - mips
+          - mips
           - mips64el
-          # - mipsel
-          # - powerpc
+          - mipsel
           - ppc64el
           - s390x
         version:
-          - bullseye
           - bullseye-slim
-          - buster
           - buster-slim
-          - sid
           - sid-slim
-          - stretch
           - stretch-slim
+        include:
+          - { arch: powerpc, version: sid-slim }
 
   docker-multiarch-fedora:
-    env: { platform: amd64, image: "multiarch/fedora:${{ matrix.version }}-${{ matrix.arch }}" }
+    env: { image: "multiarch/fedora:${{ matrix.version }}-${{ matrix.arch }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -145,25 +149,13 @@
           - 31
           - 30
           - 29
-          - 28
         exclude:
-          - arch: s390x
-            version: 28
-          - arch: ppc64le
-            version: 28
-          - arch: aarch64
-            version: 28
-          - arch: x86_64
-            version: 28
-          - arch: ppc64le
-            version: 30
-          - arch: ppc64le
-            version: 31
-          - arch: ppc64le
-            version: 32
+          - { arch: ppc64le, version: 30 }
+          - { arch: ppc64le, version: 31 }
+          - { arch: ppc64le, version: 32 }
 
   docker-multiarch-centos:
-    env: { platform: amd64, image: "multiarch/centos:${{ matrix.version }}-clean" }
+    env: { image: "multiarch/centos:${{ matrix.version }}-iso-slim" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -173,32 +165,33 @@
         platform:
           - amd64
         version:
+        arch:
           - 7
           - 7-aarch64
           - 7-amd64
           - 7-armhfp
-          # - 7-i386
-          # - 7-ppc64
-          # - 7-ppc64le
+          - 7-i386
+          - 7-ppc64
+          - 7-ppc64le
           - 7.3
           - 7.3-aarch64
           - 7.3-amd64
           - 7.3-armhfp
-          # - 7.3-ppc64
-          # - 7.3-ppc64le
+          - 7.3-ppc64
+          - 7.3-ppc64le
           - 7.6
           - 7.6-amd64
           - 7.6-armhfp
           - aarch64
           - amd64
           - armhfp
-          # - i386
+          - i386
           - latest
-          # - ppc64
-          # - ppc64le
+          - ppc64
+          - ppc64le
 
   docker-multiarch-voidlinux:
-    env: { platform: amd64, image: "multiarch/voidlinux:${{ matrix.tag }}" }
+    env: { image: "multiarch/voidlinux:${{ matrix.tag }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps

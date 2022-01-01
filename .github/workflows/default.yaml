@@ -30,7 +30,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a

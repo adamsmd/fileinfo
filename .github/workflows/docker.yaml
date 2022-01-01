@@ -30,7 +30,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -72,24 +72,6 @@ jobs:
         run: docker stop "$cont"
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
-  ## Note that symbolic names are often duplicates of the numeric names.
-  ## We keep both so that we automatically test new versions when those
-  ## symbolic names get updated to newer versions.
-  ## https://github.com/docker-library/official-images#architectures-other-than-amd64
-  ## https://github.com/docker-library/bashbrew/blob/v0.1.2/architecture/oci-platform.go
-
-  ## amd64         = linux/amd64
-  ## arm32v5       = linux/arm/v5
-  ## arm32v6       = linux/arm/v6
-  ## arm32v7       = linux/arm/v7
-  ## arm64v8       = linux/arm64/v8
-  ## i386          = linux/386
-  ## mips64le      = linux/mips64le
-  ## ppc64le       = linux/ppc64le
-  ## riscv64       = linux/riscv64
-  ## s390x         = linux/s390x
-  ## windows-amd64 = windows/amd64
-
   docker-alpine: # A distribution optimized for containers
     env: {image: "alpine:${{ matrix.version }}"}
     needs: bootstrap
@@ -110,7 +92,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -189,7 +171,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -285,7 +267,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -370,7 +352,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -416,12 +398,12 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - fedora:latest # works
-          - fedora:rawhide # works
-          - fedora:36 # works
-          - fedora:35 # works
-          - fedora:34 # works
-          - fedora:33 # works
+          - latest # works
+          - rawhide # works
+          - 36 # works
+          - 35 # works
+          - 34 # works
+          - 33 # works
         platform:
           - amd64
           - arm/v7
@@ -448,7 +430,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -520,7 +502,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -612,7 +594,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -683,7 +665,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -753,7 +735,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -823,7 +805,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -896,7 +878,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -942,10 +924,10 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - alt:latest # works
-          - alt:sisyphus # works
-          - alt:p10 # works
-          - alt:p9 # works
+          - latest # works
+          - sisyphus # works
+          - p10 # works
+          - p9 # works
         platform:
           - 386
           - amd64
@@ -972,7 +954,7 @@ jobs:
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            false
+            exit 1
           fi
       # Check platforms
       - run: uname -a
@@ -1057,7 +1039,7 @@ jobs:
           # - cirros:latest # no package manager
 
           #   docker-qemu:
-          #     env: { platform: amd64, image: "qemu/${{ matrix.arch }}:latest" }
+          #     env: { image: "qemu/${{ matrix.arch }}:latest" }
           #     needs: bootstrap
           #     runs-on: ubuntu-latest
           #     steps: *docker-steps
