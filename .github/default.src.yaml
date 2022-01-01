@@ -1,24 +1,24 @@
-  # shell:
-  #   needs: bootstrap
-  #   runs-on: windows-2019
-  #   steps:
-  #     - uses: actions/download-artifact@v2
-  #       with: { name: bootstrap-output }
-  #     - name: Setup tmate session
-  #       uses: mxschmitt/action-tmate@v3
-
-  windows:
+  shell:
     needs: bootstrap
     runs-on: windows-2019
     steps:
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
-      - run: echo "$PATH"
-        shell: C:\msys64\usr\bin\bash.exe {0}
-      - run: which cl.exe
-        shell: C:\msys64\usr\bin\bash.exe {0}
-      - run: which tar
-        shell: C:\msys64\usr\bin\bash.exe {0}
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
+  # windows:
+  #   needs: bootstrap
+  #   runs-on: windows-2019
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with: { name: bootstrap-output }
+  #     - run: echo "$PATH"
+  #       shell: C:\msys64\usr\bin\bash.exe {0}
+  #     - run: which cl.exe
+  #       shell: C:\msys64\usr\bin\bash.exe {0}
+  #     - run: which tar
+  #       shell: C:\msys64\usr\bin\bash.exe {0}
 
   # github-virtual-environments:
   #   needs: bootstrap
