@@ -1,3 +1,10 @@
+/*
+
+WARNING: The contents of this header changes depending on the details of your
+platform. For a stable header, use fileinfo/dynamic.h.
+
+*/
+
 #ifndef FILEINFO_STATIC_H
 #define FILEINFO_STATIC_H
 
