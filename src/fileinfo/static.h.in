@@ -1,9 +1,6 @@
-/*
-
-WARNING: The contents of this header changes depending on the details of your
-platform. For a stable header, use fileinfo/dynamic.h.
-
-*/
+/* WARNING: The contents of this header changes depending on the details of your
+ * platform.  For a stable header, use fileinfo/dynamic.h.
+ */
 
 #ifndef FILEINFO_STATIC_H
 #define FILEINFO_STATIC_H
@@ -31,7 +28,7 @@ static size_t const fileinfo_fields_length_static = FILEINFO_FIELDS_LENGTH;
 #define FILEINFO_FIELD_DEV(field,name,major,minor) FILEINFO_FIELD_INT(field,name)
 #define FILEINFO_FIELD_TIME_SEC(field,name) FILEINFO_FIELD_INT(field,name)
 #define FILEINFO_FIELD_TIME_NSEC(field,name) FILEINFO_FIELD_INT(field,name)
-static fileinfo_field const fileinfo_fields_static[] = { /* TODO: put in ro memory */
+static fileinfo_field const fileinfo_fields_static[] = {
   FILEINFO_STAT_FIELDS(FILEINFO_FIELD_INT,FILEINFO_FIELD_DEV,FILEINFO_FIELD_TIME_SEC,FILEINFO_FIELD_TIME_NSEC)
 };
 

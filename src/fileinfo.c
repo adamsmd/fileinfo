@@ -60,7 +60,6 @@ fileinfo_field const fileinfo_fields[] = { /* TODO: put in ro memory */
 };
 size_t const fileinfo_fields_length = FILEINFO_FIELDS_LENGTH;
 
-/* TODO: create struct of right shape */
 /* TODO: define field accessors */
 
 int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *output) {
