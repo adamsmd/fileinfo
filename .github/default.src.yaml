@@ -1,60 +1,67 @@
-  github-virtual-environments:
-    needs: bootstrap
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-20.04
-          - ubuntu-18.04
-          - macos-11
-          - macos-10.15
-          # - windows-2022
-          # - windows-2019
-          # - windows-2016
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v2
-        with: { name: bootstrap-output }
-      - run: tar -xvf fileinfo.tar
-      - run: ./configure
-      - run: cat src/config.h
-      - run: cat src/fileinfo/static.h
-      - run: make
-      - run: make check
+    - uses: actions/checkout@v2
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
 
-  cross-platform-actions:
-    needs: bootstrap
-    runs-on: macos-10.15
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - name: freebsd
-            version: '13.0'
-          - name: freebsd
-            version: '12.2'
-          # - name: openbsd # compiler flag error
-          #   version: '6.9'
-          # - name: openbsd # compiler flag error
-          #   version: '6.8'
-          # - name: netbsd # action fails
-          #   version: '9.2'
-    steps:
-      - uses: actions/download-artifact@v2
-        with: { name: bootstrap-output }
-      - run: tar -xvf fileinfo.tar
-      - name: Test on ${{ matrix.os.name }}
-        uses: cross-platform-actions/action@v0.3.1
-        with:
-          operating_system: ${{ matrix.os.name }}
-          version: ${{ matrix.os.version }}
-          shell: bash
-          run: |
-            ./configure && \
-            cat src/config.h && \
-            cat src/fileinfo/static.h && \
-            make && \
-            make check
+  # github-virtual-environments:
+  #   needs: bootstrap
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os:
+  #         - ubuntu-20.04
+  #         - ubuntu-18.04
+  #         - macos-11
+  #         - macos-10.15
+  #         # - windows-2022
+  #         # - windows-2019
+  #         # - windows-2016
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with: { name: bootstrap-output }
+  #     - run: tar -xvf fileinfo.tar
+  #     - run: ./configure
+  #     - run: cat src/config.h
+  #     - run: cat src/fileinfo/static.h
+  #     - run: make
+  #     - run: make check
+
+  # cross-platform-actions:
+  #   needs: bootstrap
+  #   runs-on: macos-10.15
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os:
+  #         - name: freebsd
+  #           version: '13.0'
+  #         - name: freebsd
+  #           version: '12.2'
+  #         # - name: openbsd # compiler flag error
+  #         #   version: '6.9'
+  #         # - name: openbsd # compiler flag error
+  #         #   version: '6.8'
+  #         # - name: netbsd # action fails
+  #         #   version: '9.2'
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with: { name: bootstrap-output }
+  #     - run: tar -xvf fileinfo.tar
+  #     - name: Test on ${{ matrix.os.name }}
+  #       uses: cross-platform-actions/action@v0.3.1
+  #       with:
+  #         operating_system: ${{ matrix.os.name }}
+  #         version: ${{ matrix.os.version }}
+  #         shell: bash
+  #         run: |
+  #           ./configure && \
+  #           cat src/config.h && \
+  #           cat src/fileinfo/static.h && \
+  #           make && \
+  #           make check
 
   # vmactions-freebsd:
   #   needs: bootstrap
