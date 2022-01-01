@@ -22,11 +22,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing

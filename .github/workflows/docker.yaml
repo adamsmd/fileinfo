@@ -22,11 +22,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -90,7 +92,7 @@ jobs:
 
   ## A small distribution optimized for containers
   docker-alpine:
-    env: {platform: "${{ matrix.arch }}", image: "alpine:${{ matrix.version }}"}
+    env: {image: "alpine:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -101,11 +103,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -161,7 +165,7 @@ jobs:
           - 3.14 # works
           - 3.13 # works
           - 3.12 # works
-        arch:
+        platform:
           - 386
           - amd64
           - arm/v6
@@ -179,7 +183,7 @@ jobs:
           #         - ubuntu:16.04 # works
           #         - ubuntu:14.04 # works
   docker-ubuntu:
-    env: {platform: "${{ matrix.arch }}", ubuntu: "ubuntu:${{ matrix.version }}"}
+    env: {image: "ubuntu:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -190,11 +194,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -253,7 +259,7 @@ jobs:
           - 18.04 # works
           - 16.04 # works
           - 14.04 # works
-        arch:
+        platform:
           - amd64
           - arm/v7
           - arm64/v8
@@ -291,7 +297,7 @@ jobs:
           #         - amazonlinux:2 # works
           #         - amazonlinux:1 # works
   docker-amazonlinux:
-    env: {platform: "${{ matrix.arch }}", ubuntu: "amazonlinux:${{ matrix.version }}"}
+    env: {image: "amazonlinux:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -302,11 +308,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -360,14 +368,14 @@ jobs:
           - latest
           - 2
           - 1
-        arch:
+        platform:
           - amd64
           - arm64/v8
           #         # amd64 arm64/v8
           #         - oraclelinux:8 # works
           #         - oraclelinux:7 # works
   docker-oraclelinux:
-    env: {platform: "${{ matrix.arch }}", ubuntu: "oraclelinux:${{ matrix.version }}"}
+    env: {image: "oraclelinux:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -378,11 +386,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -435,7 +445,7 @@ jobs:
         version:
           - 8
           - 7
-        arch:
+        platform:
           - amd64
           - arm64/v8
           #         # amd64 arm64/v8 arm/v7?
@@ -469,7 +479,7 @@ jobs:
           #         - sl:latest # works
           #         - sl:7 # works
   docker-scientificlinux:
-    env: {platform: "${{ matrix.arch }}", ubuntu: "sl:${{ matrix.version }}"}
+    env: {image: "sl:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -480,11 +490,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -537,14 +549,14 @@ jobs:
         version:
           - latest
           - 7
-        arch:
+        platform:
           - amd64
   ## For IBM Z
   # s390x
   # - clefos:latest
   # - clefos:7
   docker-clefos:
-    env: {platform: "${{ matrix.arch }}", ubuntu: "clefos:${{ matrix.version }}"}
+    env: {image: "clefos:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -555,11 +567,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -612,7 +626,7 @@ jobs:
         version:
           - latest
           - 7
-        arch:
+        platform:
           - s390x
           #         # amd64 arm64/v8
           #         - almalinux:latest # works
@@ -620,7 +634,7 @@ jobs:
           #         - almalinux:8 # works
           #         # - almalinux:8-minimal # no c compiler
   docker-almalinux:
-    env: {platform: "${{ matrix.arch }}", ubuntu: "almalinux:${{ matrix.version }}"}
+    env: {image: "almalinux:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -631,11 +645,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -690,7 +706,7 @@ jobs:
           # - minimal # no c compiler
           - 8
           # - 7 # no c compiler
-        arch:
+        platform:
           - amd64
           - arm64/v8
           #         # 386 amd64 arm/v7 arm64/v8 ppc64le
@@ -704,7 +720,7 @@ jobs:
           #         # - archlinux:base # no c compiler
           #         - archlinux:base-devel # works
   docker-archlinux:
-    env: {platform: "${{ matrix.arch }}", ubuntu: "archlinux:${{ matrix.version }}"}
+    env: {image: "archlinux:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -715,11 +731,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -773,7 +791,7 @@ jobs:
           # - latest # no c compiler
           # - base # no c compiler
           - base-devel # works
-        arch:
+        platform:
           - amd64
           #         # - openwrtorg/rootfs:x86-64 # no c compiler
           #         # - openwrtorg/rootfs:armvirt-32
@@ -900,7 +918,7 @@ jobs:
           # # qemu/tools
   # # C compiler doesn't work
   # docker-chromebrew: # ChromeOS
-  #   env: { required: 1, platform: "${{ matrix.platform }}", image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
+  #   env: { required: 1, image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -919,7 +937,7 @@ jobs:
   #           platform: arm
 
   # docker-gentoo:
-  #   env: { required: 1, platform: "${{ matrix.platform }}", image: "gentoo/stage3:${{ matrix.tag }}" }
+  #   env: { required: 1, image: "gentoo/stage3:${{ matrix.tag }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -1027,7 +1045,6 @@ jobs:
 
 # SELinux
 
-# TODO: arch: X86, X64, ARM, and ARM64
 # TODO: compiler: gcc, llvm, icc
 # TODO: pre-statx linux (and other kernel implementations)
 # TODO: WSLv1, WSLv2, different bash ports (MSYS,MingW,Cygwin,GitBash)

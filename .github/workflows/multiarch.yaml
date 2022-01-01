@@ -22,11 +22,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -74,7 +76,7 @@ jobs:
         # - if: ${{ env.cont != 0 }}
         #   run: docker rm --force --volumes "$cont"
   docker-multiarch-alpine:
-    env: {platform: amd64, image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}"}
+    env: {image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -85,11 +87,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -139,6 +143,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
         arch:
           - i386
           - ppc64le
@@ -167,11 +173,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -221,6 +229,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
         arch:
           - arm64
           - armhf
@@ -245,11 +255,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -299,6 +311,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
         arch:
           - amd64
           - arm64
@@ -327,11 +341,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -381,6 +397,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
         arch:
           - amd64
           - arm64
@@ -414,11 +432,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -468,6 +488,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
         arch:
           - aarch64
           - ppc64le
@@ -493,11 +515,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -547,6 +571,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
         version:
           - 7
           - 7-aarch64
@@ -583,11 +609,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
 
+          echo "contX=$cont"
+          echo "requiredX=$required"
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
@@ -637,6 +665,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
         tag:
           - amd64-latest
           - armhf-latest
@@ -650,6 +680,8 @@ jobs:
 #   strategy:
 #     fail-fast: false
 #     matrix:
+#       platform:
+#         - amd64
 #       tag:
 #         - alpha
 #         - alpha-slim

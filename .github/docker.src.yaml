@@ -15,7 +15,7 @@
 
   ## A small distribution optimized for containers
   docker-alpine:
-    env: { platform: "${{ matrix.arch }}", image: "alpine:${{ matrix.version }}" }
+    env: { image: "alpine:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -28,7 +28,7 @@
           - 3.14 # works
           - 3.13 # works
           - 3.12 # works
-        arch:
+        platform:
           - 386
           - amd64
           - arm/v6
@@ -46,9 +46,8 @@
 #         - ubuntu:18.04 # works
 #         - ubuntu:16.04 # works
 #         - ubuntu:14.04 # works
-
   docker-ubuntu:
-    env: { platform: "${{ matrix.arch }}", ubuntu: "ubuntu:${{ matrix.version }}" }
+    env: { image: "ubuntu:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -64,7 +63,7 @@
           - 18.04 # works
           - 16.04 # works
           - 14.04 # works
-        arch:
+        platform:
           - amd64
           - arm/v7
           - arm64/v8
@@ -102,9 +101,8 @@
 #         - amazonlinux:latest # works
 #         - amazonlinux:2 # works
 #         - amazonlinux:1 # works
-
   docker-amazonlinux:
-    env: { platform: "${{ matrix.arch }}", ubuntu: "amazonlinux:${{ matrix.version }}" }
+    env: { image: "amazonlinux:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -115,7 +113,7 @@
           - latest
           - 2
           - 1
-        arch:
+        platform:
           - amd64
           - arm64/v8
 
@@ -124,7 +122,7 @@
 #         - oraclelinux:7 # works
 
   docker-oraclelinux:
-    env: { platform: "${{ matrix.arch }}", ubuntu: "oraclelinux:${{ matrix.version }}" }
+    env: { image: "oraclelinux:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -134,7 +132,7 @@
         version:
           - 8
           - 7
-        arch:
+        platform:
           - amd64
           - arm64/v8
 
@@ -169,7 +167,7 @@
 #         - sl:latest # works
 #         - sl:7 # works
   docker-scientificlinux:
-    env: { platform: "${{ matrix.arch }}", ubuntu: "sl:${{ matrix.version }}" }
+    env: { image: "sl:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -179,7 +177,7 @@
         version:
           - latest
           - 7
-        arch:
+        platform:
           - amd64
 
   ## For IBM Z
@@ -187,7 +185,7 @@
   # - clefos:latest
   # - clefos:7
   docker-clefos:
-    env: { platform: "${{ matrix.arch }}", ubuntu: "clefos:${{ matrix.version }}" }
+    env: { image: "clefos:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -197,7 +195,7 @@
         version:
           - latest
           - 7
-        arch:
+        platform:
           - s390x
 
 
@@ -208,7 +206,7 @@
 #         - almalinux:8 # works
 #         # - almalinux:8-minimal # no c compiler
   docker-almalinux:
-    env: { platform: "${{ matrix.arch }}", ubuntu: "almalinux:${{ matrix.version }}" }
+    env: { image: "almalinux:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -220,7 +218,7 @@
           # - minimal # no c compiler
           - 8
           # - 7 # no c compiler
-        arch:
+        platform:
           - amd64
           - arm64/v8
 
@@ -235,7 +233,7 @@
 #         # - archlinux:base # no c compiler
 #         - archlinux:base-devel # works
   docker-archlinux:
-    env: { platform: "${{ matrix.arch }}", ubuntu: "archlinux:${{ matrix.version }}" }
+    env: { image: "archlinux:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -246,7 +244,7 @@
           # - latest # no c compiler
           # - base # no c compiler
           - base-devel # works
-        arch:
+        platform:
           - amd64
 
 
@@ -379,7 +377,7 @@
 
   # # C compiler doesn't work
   # docker-chromebrew: # ChromeOS
-  #   env: { required: 1, platform: "${{ matrix.platform }}", image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
+  #   env: { required: 1, image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -398,7 +396,7 @@
   #           platform: arm
 
   # docker-gentoo:
-  #   env: { required: 1, platform: "${{ matrix.platform }}", image: "gentoo/stage3:${{ matrix.tag }}" }
+  #   env: { required: 1, image: "gentoo/stage3:${{ matrix.tag }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -507,7 +505,6 @@
 
 # SELinux
 
-# TODO: arch: X86, X64, ARM, and ARM64
 # TODO: compiler: gcc, llvm, icc
 # TODO: pre-statx linux (and other kernel implementations)
 # TODO: WSLv1, WSLv2, different bash ports (MSYS,MingW,Cygwin,GitBash)
