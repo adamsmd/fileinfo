@@ -16,19 +16,23 @@ libfileinfo_a_SOURCES = src/fileinfo.c
 # check_PROGRAMS=...
 # TESTS = $(check_PROGRAMS)
 check_PROGRAMS = \
-  print-fields-dynamic \
-  print-fields-static \
-  print-file-static \
-  print-file-dynamic
+  fileinfo-fields-dynamic \
+  fileinfo-fields-static \
+  fileinfo-file-static \
+  fileinfo-file-dynamic \
+  fileinfo-cpp
 
-print_fields_dynamic_SOURCES = tests/print-fields-dynamic.c
-print_fields_dynamic_LDADD = libfileinfo.a
+fileinfo_fields_dynamic_SOURCES = tests/fileinfo-fields-dynamic.c
+fileinfo_fields_dynamic_LDADD = libfileinfo.a
 
-print_fields_static_SOURCES = tests/print-fields-static.c
-print_fields_static_LDADD = libfileinfo.a
+fileinfo_fields_static_SOURCES = tests/fileinfo-fields-static.c
+fileinfo_fields_static_LDADD = libfileinfo.a
 
-print_file_dynamic_SOURCES = tests/print-file-dynamic.c
-print_file_dynamic_LDADD = libfileinfo.a
+fileinfo_file_dynamic_SOURCES = tests/fileinfo-file-dynamic.c
+fileinfo_file_dynamic_LDADD = libfileinfo.a
 
-print_file_static_SOURCES = tests/print-file-static.c
-print_file_static_LDADD = libfileinfo.a
+fileinfo_file_static_SOURCES = tests/fileinfo-file-static.c
+fileinfo_file_static_LDADD = libfileinfo.a
+
+fileinfo_cpp_SOURCES = tests/fileinfo-cpp.cpp
+fileinfo_cpp_LDADD = libfileinfo.a

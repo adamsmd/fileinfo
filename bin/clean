@@ -51,10 +51,11 @@ rm -rf -- \
   **/.dirstamp \
   **/*.o \
   **/lib*.a \
-  print-fields-dynamic \
-  print-fields-static \
-  print-stat-dynamic \
-  print-stat-static \
+  fileinfo-fields-dynamic \
+  fileinfo-fields-static \
+  fileinfo-file-dynamic \
+  fileinfo-file-static \
+  fileinfo-cpp \
 
 echo "Removing files created by act"
 # Files created by act

@@ -9,9 +9,9 @@ int main(void) {
     fileinfo_field field = fileinfo_fields[i];
     /* Note: We cast to intmax_t and uintmax_t to avoid warnings about %td and %zu */
     printf(
-      "offset: %4"PRIiMAX" size: %2"PRIuMAX" name: %s\n",
+      "offset: %4"PRIdMAX" size: %2"PRIuMAX" name: %s\n",
       (intmax_t)field.offset, (uintmax_t)field.size, field.name);
   }
 
-  return 0;
+  return fileinfo_fields_length != 0;
 }
