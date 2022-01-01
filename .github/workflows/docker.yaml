@@ -37,41 +37,46 @@ jobs:
       - run: uname -a
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Create the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=$workdir"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+        # # Copy the artifact to the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   uses: actions/download-artifact@v2
+        #   with: { name: bootstrap-output }
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+        # # Install dependencies
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+        # # Build
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" ./configure
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make check
+
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
   ## Note that symbolic names are often duplicates of the numeric names.
   ## We keep both so that we automatically test new versions when those
   ## symbolic names get updated to newer versions.
+
   # linux/386
   # linux/amd64
   # linux/arm/v6
@@ -111,38 +116,42 @@ jobs:
       - run: uname -a
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Create the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=$workdir"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+        # # Copy the artifact to the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   uses: actions/download-artifact@v2
+        #   with: { name: bootstrap-output }
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+        # # Install dependencies
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+        # # Build
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" ./configure
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make check
+
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -196,38 +205,42 @@ jobs:
       - run: uname -a
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Create the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=$workdir"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+        # # Copy the artifact to the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   uses: actions/download-artifact@v2
+        #   with: { name: bootstrap-output }
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+        # # Install dependencies
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+        # # Build
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" ./configure
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make check
+
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -304,38 +317,42 @@ jobs:
       - run: uname -a
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Create the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=$workdir"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+        # # Copy the artifact to the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   uses: actions/download-artifact@v2
+        #   with: { name: bootstrap-output }
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+        # # Install dependencies
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+        # # Build
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" ./configure
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make check
+
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -376,38 +393,42 @@ jobs:
       - run: uname -a
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Create the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=$workdir"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+        # # Copy the artifact to the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   uses: actions/download-artifact@v2
+        #   with: { name: bootstrap-output }
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+        # # Install dependencies
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+        # # Build
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" ./configure
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make check
+
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -474,38 +495,42 @@ jobs:
       - run: uname -a
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Create the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=$workdir"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+        # # Copy the artifact to the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   uses: actions/download-artifact@v2
+        #   with: { name: bootstrap-output }
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+        # # Install dependencies
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+        # # Build
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" ./configure
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make check
+
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -545,38 +570,42 @@ jobs:
       - run: uname -a
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Create the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=$workdir"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+        # # Copy the artifact to the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   uses: actions/download-artifact@v2
+        #   with: { name: bootstrap-output }
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+        # # Install dependencies
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+        # # Build
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" ./configure
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make check
+
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -617,38 +646,42 @@ jobs:
       - run: uname -a
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Create the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=$workdir"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+        # # Copy the artifact to the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   uses: actions/download-artifact@v2
+        #   with: { name: bootstrap-output }
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+        # # Install dependencies
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+        # # Build
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" ./configure
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make check
+
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -697,38 +730,42 @@ jobs:
       - run: uname -a
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Create the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=$workdir"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+        # # Copy the artifact to the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   uses: actions/download-artifact@v2
+        #   with: { name: bootstrap-output }
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+        # # Install dependencies
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+        # # Build
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" ./configure
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make check
+
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
