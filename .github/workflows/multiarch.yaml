@@ -266,15 +266,15 @@ jobs:
           - trusty
           - xenial
         exclude:
-          - {arch: amd64, version: hirute}
+          - {arch: amd64, version: hirsute}
           - {arch: i386, version: focal}
-          - {arch: i386, version: hirute}
+          - {arch: i386, version: hirsute}
           - {arch: s390, version: trusty}
           - {arch: s390, version: xenial}
           - {arch: x86, version: focal}
-          - {arch: x86, version: hirute}
+          - {arch: x86, version: hirsute}
   docker-multiarch-ubuntu-debootstrap:
-    env: {image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}"}
+    env: {image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}-slim"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -348,18 +348,18 @@ jobs:
           - ppc64el
           - powerpc
         version:
-          - bionic-slim
-          - focal-slim
-          - hirsuite-slim
-          - trusty-slim
-          - xenial-slim
+          - bionic
+          - focal
+          - hirsute
+          - trusty
+          - xenial
         exclude:
-          - {arch: arm64, version: hirsuite-slim}
-          - {arch: powerpc, version: bionic-slim}
-          - {arch: powerpc, version: focal-slim}
-          - {arch: powerpc, version: hirsuite-slim}
+          - {arch: arm64, version: hirsute}
+          - {arch: powerpc, version: bionic}
+          - {arch: powerpc, version: focal}
+          - {arch: powerpc, version: hirsute}
   docker-multiarch-debian-debootstrap:
-    env: {image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}"}
+    env: {image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}-slim"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -437,10 +437,10 @@ jobs:
           - ppc64el
           - s390x
         version:
-          - bullseye-slim
-          - buster-slim
-          - sid-slim
-          - stretch-slim
+          - bullseye
+          - buster
+          - sid
+          - stretch
         include:
           - {arch: powerpc, version: sid-slim}
   docker-multiarch-fedora:
@@ -593,7 +593,7 @@ jobs:
       matrix:
         platform:
           - amd64
-        arch:
+        version:
           - 7
           - 7-aarch64
           - 7-amd64
