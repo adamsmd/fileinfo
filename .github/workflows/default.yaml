@@ -91,9 +91,11 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
   build:
+    needs: bootstrap
     runs-on: windows-2019
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
 
