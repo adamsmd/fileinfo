@@ -1,3 +1,12 @@
+## Docker images from https://hub.docker.com/u/multiarch
+##
+## Omitted Images:
+## - qemu-user-static - The binaries for QEMU
+## - crossbuild - Environment for producing binaries for multiple architectures
+## - true - Contains just the `true` program
+## - goxc - Build tool for Go
+## - bussybox - No package manager
+
   docker-multiarch-alpine:
     env: { image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}" }
     needs: bootstrap
@@ -91,9 +100,9 @@
           - armel
           - armhf
           - i386
-          - mips
+          # - mips
           - mips64el
-          - mipsel
+          # - mipsel
           - powerpc
           - ppc64el
           - s390x
@@ -190,59 +199,3 @@
         tag:
           - amd64-latest
           - armhf-latest
-
-  # ## No package mangager
-  # docker-multiarch-busybox:
-  #   env: { required: 1, platform: amd64, image: "multiarch/busybox:${{ matrix.tag }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       tag:
-  #         - alpha
-  #         - alpha-slim
-  #         - amd64
-  #         - amd64-slim
-  #         - arm64
-  #         - arm64-slim
-  #         - armel
-  #         - armel-slim
-  #         - armhf
-  #         - armhf-slim
-  #         - hppa
-  #         - hppa-slim
-  #         - hurd-i386
-  #         - hurd-i386-slim
-  #         - i386
-  #         - i386-slim
-  #         - kfreebsd-amd64
-  #         - kfreebsd-amd64-slim
-  #         - kfreebsd-i386
-  #         - kfreebsd-i386-slim
-  #         - m68k
-  #         - m68k-slim
-  #         - mips
-  #         - mips-slim
-  #         - mipsel
-  #         - mipsel-slim
-  #         - powerpc
-  #         - powerpc-slim
-  #         - powerpcspe
-  #         - powerpcspe-slim
-  #         - ppc64
-  #         - ppc64-slim
-  #         - ppc64el
-  #         - ppc64el-slim
-  #         - s390x
-  #         - s390x-slim
-  #         - sh4
-  #         - sh4-slim
-  #         - sparc64
-  #         - sparc64-slim
-  #         - sparc64-slim-slim
-  #         - x32
-  #         - x32-slim

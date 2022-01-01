@@ -2,6 +2,21 @@
 ## We keep both so that we automatically test new versions when those
 ## symbolic names get updated to newer versions.
 
+
+# https://github.com/docker-library/official-images#architectures-other-than-amd64
+# amd64
+# arm32v5
+# arm32v6
+# arm32v7
+# arm64v8
+# i386
+# mips64le
+# ppc64le
+# riscv64
+# s390x
+# winamd64
+
+
 # linux/386
 # linux/amd64
 # linux/arm/v6
@@ -24,14 +39,14 @@
       matrix:
         version:
           - latest # works
-          - 3.15 # works
-          - 3.14 # works
-          - 3.13 # works
-          - 3.12 # works
+          - '3.15' # works
+          - '3.14' # works
+          - '3.13' # works
+          - '3.12' # works
         platform:
-          - 386
+          - i386
           - amd64
-          - arm/v6
+          - arm32v6
           - arm/v7
           - arm64/v8
           - ppc64le
@@ -55,14 +70,14 @@
       fail-fast: false
       matrix:
         version:
-          - latest # works
-          - 22.04 # works
-          - 21.10 # works
-          - 21.04 # works
-          - 20.04 # works
-          - 18.04 # works
-          - 16.04 # works
-          - 14.04 # works
+          - 'latest' # works
+          - '22.04' # works
+          - '21.10' # works
+          - '21.04' # works
+          - '20.04' # works
+          - '18.04' # works
+          - '16.04' # works
+          - '14.04' # works
         platform:
           - amd64
           - arm/v7
@@ -70,6 +85,15 @@
           - ppc64le
           - riscv64
           - s390x
+        exclude:
+          - version: '18.04'
+            platform: riscv64
+          - version: '16.04'
+            platform: riscv64
+          - version: '14.04'
+            platform: riscv64
+          - version: '14.04'
+            platform: s390x
 
 #         # 386? amd64 arm/v7? arm64/v8 ppc64le
 #         - centos:latest # works
@@ -79,15 +103,34 @@
 #         # - centos:6 # yum error
 
 #         # 386 amd64 arm/v5 arm/v7 arm64/v8 mips64le ppc64le riscv64 s390x
-#         - debian:latest # works
-#         - debian:unstable # works
-#         - debian:testing # works
-#         - debian:stable # works
-#         - debian:oldstable # works
-#         - debian:oldoldstable # works
-#         - debian:11.2 # works
-#         - debian:10.11 # works
-#         - debian:9.13 # works
+  docker-debian:
+    env: { image: "debian:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - latest # works
+          - unstable # works
+          - testing # works
+          - stable # works
+          - oldstable # works
+          - oldoldstable # works
+          - '11.2' # works
+          - '10.11' # works
+          - '9.13' # works
+        platform:
+          - 386
+          - amd64
+          - arm/v5
+          - arm/v7
+          - arm64/v8
+          - mips64le
+          - ppc64le
+          - riscv64
+          - s390x
 
 #         # amd64 arm/v7? arm64/v8 ppc64le s390x
 #         - fedora:latest # works
@@ -96,6 +139,27 @@
 #         - fedora:35 # works
 #         - fedora:34 # works
 #         - fedora:33 # works
+  docker-fedora:
+    env: { image: "fedora:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - fedora:latest # works
+          - fedora:rawhide # works
+          - fedora:36 # works
+          - fedora:35 # works
+          - fedora:34 # works
+          - fedora:33 # works
+        platform:
+          - amd64
+          - arm/v7
+          - arm64/v8
+          - ppc64le
+          - s390x
 
 #         # amd64 arm64/v8
 #         - amazonlinux:latest # works

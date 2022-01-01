@@ -82,6 +82,19 @@ jobs:
   ## Note that symbolic names are often duplicates of the numeric names.
   ## We keep both so that we automatically test new versions when those
   ## symbolic names get updated to newer versions.
+  # https://github.com/docker-library/official-images#architectures-other-than-amd64
+  # amd64
+  # arm32v5
+  # arm32v6
+  # arm32v7
+  # arm64v8
+  # i386
+  # mips64le
+  # ppc64le
+  # riscv64
+  # s390x
+  # winamd64
+
   # linux/386
   # linux/amd64
   # linux/arm/v6
@@ -168,14 +181,14 @@ jobs:
       matrix:
         version:
           - latest # works
-          - 3.15 # works
-          - 3.14 # works
-          - 3.13 # works
-          - 3.12 # works
+          - '3.15' # works
+          - '3.14' # works
+          - '3.13' # works
+          - '3.12' # works
         platform:
-          - 386
+          - i386
           - amd64
-          - arm/v6
+          - arm32v6
           - arm/v7
           - arm64/v8
           - ppc64le
@@ -262,14 +275,14 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - latest # works
-          - 22.04 # works
-          - 21.10 # works
-          - 21.04 # works
-          - 20.04 # works
-          - 18.04 # works
-          - 16.04 # works
-          - 14.04 # works
+          - 'latest' # works
+          - '22.04' # works
+          - '21.10' # works
+          - '21.04' # works
+          - '20.04' # works
+          - '18.04' # works
+          - '16.04' # works
+          - '14.04' # works
         platform:
           - amd64
           - arm/v7
@@ -277,24 +290,115 @@ jobs:
           - ppc64le
           - riscv64
           - s390x
-          #         # 386? amd64 arm/v7? arm64/v8 ppc64le
-          #         - centos:latest # works
-          #         - centos:8 # works
-          #         # - centos:7 # no c compiler
-          #         # - centos:6.10 # yum error
-          #         # - centos:6 # yum error
+        exclude:
+          - version: '18.04'
+            platform: riscv64
+          - version: '16.04'
+            platform: riscv64
+          - version: '14.04'
+            platform: riscv64
+          - version: '14.04'
+            platform: s390x
+            #         # 386? amd64 arm/v7? arm64/v8 ppc64le
+            #         - centos:latest # works
+            #         - centos:8 # works
+            #         # - centos:7 # no c compiler
+            #         # - centos:6.10 # yum error
+            #         # - centos:6 # yum error
 
-          #         # 386 amd64 arm/v5 arm/v7 arm64/v8 mips64le ppc64le riscv64 s390x
-          #         - debian:latest # works
-          #         - debian:unstable # works
-          #         - debian:testing # works
-          #         - debian:stable # works
-          #         - debian:oldstable # works
-          #         - debian:oldoldstable # works
-          #         - debian:11.2 # works
-          #         - debian:10.11 # works
-          #         - debian:9.13 # works
+            #         # 386 amd64 arm/v5 arm/v7 arm64/v8 mips64le ppc64le riscv64 s390x
+  docker-debian:
+    env: {image: "debian:${{ matrix.version }}"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          set -e
 
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "cont=$cont"
+
+          if test "x$cont" = "x"; then
+            echo "Container launch failed."
+            false
+          fi
+        # echo "required=$required"
+        # echo "::debug::cont=$cont"
+        # echo "::debug::required=$required"
+      # Check platforms
+      - run: uname -a
+        # - name: Fail if required but missing
+        #   # if: ${{ env.required == 1 && env.cont == 0 }}
+        #   if: ${{ env.cont == 0 }}
+        #   run: 'false'
+      - if: ${{ env.cont != 0 }}
+        run: docker exec "$cont" uname -a
+      # # Create the working directory
+      # - if: ${{ env.cont != 0 }}
+      #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+      # - if: ${{ env.cont != 0 }}
+      #   run: echo "workdir=$workdir"
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+      # # Copy the artifact to the working directory
+      # - if: ${{ env.cont != 0 }}
+      #   uses: actions/download-artifact@v2
+      #   with: { name: bootstrap-output }
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+      # # Install dependencies
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+      # # Build
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" ./configure
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" make
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" make check
+
+      # Cleanup
+      - if: ${{ env.cont != 0 }}
+        run: docker stop "$cont"
+      - if: ${{ env.cont != 0 }}
+        run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - latest # works
+          - unstable # works
+          - testing # works
+          - stable # works
+          - oldstable # works
+          - oldoldstable # works
+          - '11.2' # works
+          - '10.11' # works
+          - '9.13' # works
+        platform:
+          - 386
+          - amd64
+          - arm/v5
+          - arm/v7
+          - arm64/v8
+          - mips64le
+          - ppc64le
+          - riscv64
+          - s390x
           #         # amd64 arm/v7? arm64/v8 ppc64le s390x
           #         - fedora:latest # works
           #         - fedora:rawhide # works
@@ -302,7 +406,91 @@ jobs:
           #         - fedora:35 # works
           #         - fedora:34 # works
           #         - fedora:33 # works
+  docker-fedora:
+    env: {image: "fedora:${{ matrix.version }}"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          set -e
 
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "cont=$cont"
+
+          if test "x$cont" = "x"; then
+            echo "Container launch failed."
+            false
+          fi
+        # echo "required=$required"
+        # echo "::debug::cont=$cont"
+        # echo "::debug::required=$required"
+      # Check platforms
+      - run: uname -a
+        # - name: Fail if required but missing
+        #   # if: ${{ env.required == 1 && env.cont == 0 }}
+        #   if: ${{ env.cont == 0 }}
+        #   run: 'false'
+      - if: ${{ env.cont != 0 }}
+        run: docker exec "$cont" uname -a
+      # # Create the working directory
+      # - if: ${{ env.cont != 0 }}
+      #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+      # - if: ${{ env.cont != 0 }}
+      #   run: echo "workdir=$workdir"
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+      # # Copy the artifact to the working directory
+      # - if: ${{ env.cont != 0 }}
+      #   uses: actions/download-artifact@v2
+      #   with: { name: bootstrap-output }
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+      # # Install dependencies
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+      # # Build
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" ./configure
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" make
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" make check
+
+      # Cleanup
+      - if: ${{ env.cont != 0 }}
+        run: docker stop "$cont"
+      - if: ${{ env.cont != 0 }}
+        run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - fedora:latest # works
+          - fedora:rawhide # works
+          - fedora:36 # works
+          - fedora:35 # works
+          - fedora:34 # works
+          - fedora:33 # works
+        platform:
+          - amd64
+          - arm/v7
+          - arm64/v8
+          - ppc64le
+          - s390x
           #         # amd64 arm64/v8
           #         - amazonlinux:latest # works
           #         - amazonlinux:2 # works
