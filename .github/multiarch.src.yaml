@@ -1,0 +1,221 @@
+  docker-multiarch-alpine:
+    env: { platform: linux/amd64, image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - i386
+          - ppc64le
+          - arm64
+          - x86_64
+          - armv7
+          - armhf
+          - aarch64
+          - x86
+        version:
+          - latest-stable
+          - edge
+          - v3.14
+          - v3.13
+          - v3.12
+          - v3.11
+
+  docker-multiarch-ubuntu-core:
+    env: { platform: linux/amd64, image: "multiarch/ubuntu-core:${{ matrix.arch }}-${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - arm64
+          - armhf
+          - i386
+          - ppc64el
+          - s390x
+          - x86_64
+        version:
+          - bionic
+          - focal
+          - trusty
+          - xenial
+
+  docker-multiarch-ubuntu-debootstrap:
+    env: { platform: linux/amd64, image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - amd64
+          - arm64
+          - armhf
+          - i386
+          - ppc64el
+          - powerpc
+        version:
+          - bionic
+          - bionic-slim
+          - focal
+          - focal-slim
+          - trusty
+          - trusty-slim
+          - xenial
+          - xenial-slim
+
+  docker-multiarch-debian-debootstrap:
+    env: { platform: linux/amd64, image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - amd64
+          - arm64
+          - armel
+          - armhf
+          - i386
+          - mips
+          - mips64el
+          - mipsel
+          - powerpc
+          - ppc64el
+          - s390x
+        version:
+          - bullseye
+          - bullseye-slim
+          - buster
+          - buster-slim
+          - sid
+          - sid-slim
+          - stretch
+          - stretch-slim
+
+  docker-multiarch-fedora:
+    env: { platform: linux/amd64, image: "multiarch/fedora:${{ matrix.version }}-${{ matrix.arch }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - aarch64
+          - ppc64le
+          - s390x
+          - x86_64
+        version:
+          - 34
+          - 33
+          - 32
+          - 31
+          - 30
+          - 29
+          - 28
+
+  docker-multiarch-centos:
+    env: { required: 1, platform: linux/amd64, image: "multiarch/centos:${{ matrix.version }}-clean" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 7
+          - 7-aarch64
+          - 7-amd64
+          - 7-armhfp
+          - 7-i386
+          - 7-ppc64
+          - 7-ppc64le
+          - 7.3
+          - 7.3-aarch64
+          - 7.3-amd64
+          - 7.3-armhfp
+          - 7.3-ppc64
+          - 7.3-ppc64le
+          - 7.6
+          - 7.6-amd64
+          - 7.6-armhfp
+          - aarch64
+          - amd64
+          - armhfp
+          - i386
+          - latest
+          - ppc64
+          - ppc64le
+
+  docker-multiarch-voidlinux:
+    env: { required: 1, platform: linux/amd64, image: "multiarch/voidlinux:${{ matrix.tag }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        tag:
+          - amd64-latest
+          - armhf-latest
+
+  # ## No package mangager
+  # docker-multiarch-busybox:
+  #   env: { required: 1, platform: linux/amd64, image: "multiarch/busybox:${{ matrix.tag }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       tag:
+  #         - alpha
+  #         - alpha-slim
+  #         - amd64
+  #         - amd64-slim
+  #         - arm64
+  #         - arm64-slim
+  #         - armel
+  #         - armel-slim
+  #         - armhf
+  #         - armhf-slim
+  #         - hppa
+  #         - hppa-slim
+  #         - hurd-i386
+  #         - hurd-i386-slim
+  #         - i386
+  #         - i386-slim
+  #         - kfreebsd-amd64
+  #         - kfreebsd-amd64-slim
+  #         - kfreebsd-i386
+  #         - kfreebsd-i386-slim
+  #         - m68k
+  #         - m68k-slim
+  #         - mips
+  #         - mips-slim
+  #         - mipsel
+  #         - mipsel-slim
+  #         - powerpc
+  #         - powerpc-slim
+  #         - powerpcspe
+  #         - powerpcspe-slim
+  #         - ppc64
+  #         - ppc64-slim
+  #         - ppc64el
+  #         - ppc64el-slim
+  #         - s390x
+  #         - s390x-slim
+  #         - sh4
+  #         - sh4-slim
+  #         - sparc64
+  #         - sparc64-slim
+  #         - sparc64-slim-slim
+  #         - x32
+  #         - x32-slim
