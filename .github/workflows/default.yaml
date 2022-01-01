@@ -90,14 +90,27 @@ jobs:
         run: docker stop "$cont"
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
-  build:
+  # shell:
+  #   needs: bootstrap
+  #   runs-on: windows-2019
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with: { name: bootstrap-output }
+  #     - name: Setup tmate session
+  #       uses: mxschmitt/action-tmate@v3
+
+  windows:
     needs: bootstrap
     runs-on: windows-2019
     steps:
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      - run: echo "$PATH"
+        shell: C:\msys64\usr\bin\bash.exe {0}
+      - run: which cl.exe
+        shell: C:\msys64\usr\bin\bash.exe {0}
+      - run: which tar
+        shell: C:\msys64\usr\bin\bash.exe {0}
 
 # github-virtual-environments:
 #   needs: bootstrap
