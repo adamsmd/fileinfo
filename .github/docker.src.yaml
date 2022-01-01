@@ -1,282 +1,21 @@
-  # docker-strategy:
-  #   if: false
-  #   runs-on: ubuntu-latest
-  #   strategy: &docker-strategy
-  #     fail-fast: false
-  #     matrix:
-  #       image:
-  #         ## Note that symbolic names are often duplicates of the numeric names.
-  #         ## We keep both so that we automatically test new versions when those
-  #         ## symbolic names get updated to newer versions.
+## Note that symbolic names are often duplicates of the numeric names.
+## We keep both so that we automatically test new versions when those
+## symbolic names get updated to newer versions.
 
-  #         # 386 amd64 arm/v6 arm/v7 arm64/v8 ppc64le s390x
-  #         ## A small distribution optimized for containers
-  #         - alpine:latest # works
-  #         - alpine:3.15 # works
-  #         - alpine:3.14 # works
-  #         - alpine:3.13 # works
-  #         - alpine:3.12 # works
-
-  #         # amd64 arm/v7 arm64/v8 ppc64le riscv64 s390x
-  #         - ubuntu:latest # works
-  #         - ubuntu:22.04 # works
-  #         - ubuntu:21.10 # works
-  #         - ubuntu:21.04 # works
-  #         - ubuntu:20.04 # works
-  #         - ubuntu:18.04 # works
-  #         - ubuntu:16.04 # works
-  #         - ubuntu:14.04 # works
-
-  #         # 386? amd64 arm/v7? arm64/v8 ppc64le
-  #         - centos:latest # works
-  #         - centos:8 # works
-  #         # - centos:7 # no c compiler
-  #         # - centos:6.10 # yum error
-  #         # - centos:6 # yum error
-
-  #         # 386 amd64 arm/v5 arm/v7 arm64/v8 mips64le ppc64le riscv64 s390x
-  #         - debian:latest # works
-  #         - debian:unstable # works
-  #         - debian:testing # works
-  #         - debian:stable # works
-  #         - debian:oldstable # works
-  #         - debian:oldoldstable # works
-  #         - debian:11.2 # works
-  #         - debian:10.11 # works
-  #         - debian:9.13 # works
-
-  #         # amd64 arm/v7? arm64/v8 ppc64le s390x
-  #         - fedora:latest # works
-  #         - fedora:rawhide # works
-  #         - fedora:36 # works
-  #         - fedora:35 # works
-  #         - fedora:34 # works
-  #         - fedora:33 # works
-
-  #         # amd64 arm64/v8
-  #         - amazonlinux:latest # works
-  #         - amazonlinux:2 # works
-  #         - amazonlinux:1 # works
-
-  #         # amd64 arm64/v8
-  #         - oraclelinux:8 # works
-  #         - oraclelinux:7 # works
-
-  #         # amd64 arm64/v8 arm/v7?
-  #         ## Robot operating system
-  #         - ros:latest # works
-  #         #### Rolling release
-  #         - ros:rolling # works
-  #         #### ROS 2
-  #         - ros:galactic # works
-  #         - ros:foxy # works
-  #         #### ROS 1
-  #         - ros:noetic # works
-  #         - ros:melodic # works
-
-  #         ## VmWare Photon
-  #         # - photon:latest # needs coreutils but is also missing `as`
-
-  #         # - clearlinux:latest # slow install
-
-  #         # - mageia:latest # slow install
-  #         # - mageia:cauldron # slow install
-  #         # - mageia:8 # slow install
-  #         # - mageia:7 # slow install
-
-  #         # amd64 arm64/v8
-  #         - rockylinux:latest # works
-  #         - rockylinux:8 # works
-
-  #         # amd64
-  #         ## Scientific Linux
-  #         - sl:latest # works
-  #         - sl:7 # works
-
-  #         ## For IBM Z
-  #         # s390x
-  #         # - clefos:latest
-  #         # - clefos:7
-
-  #         # amd64 arm64/v8
-  #         - almalinux:latest # works
-  #         # - almalinux:minimal # no c compiler
-  #         - almalinux:8 # works
-  #         # - almalinux:8-minimal # no c compiler
-
-  #         # 386 amd64 arm/v7 arm64/v8 ppc64le
-  #         - alt:latest # works
-  #         - alt:sisyphus # works
-  #         - alt:p10 # works
-  #         - alt:p9 # works
-
-  #         # amd64
-  #         # - archlinux:latest # no c compiler
-  #         # - archlinux:base # no c compiler
-  #         - archlinux:base-devel # works
-
-  #         # - openwrtorg/rootfs:x86-64 # no c compiler
-  #         # - openwrtorg/rootfs:armvirt-32
-  #         # - openwrtorg/rootfs:armvirt-64
-
-  #         # - openmandriva/cooker # no c compiler
-  #         # - openmandriva/4.2 # no c compiler
-  #         # - openmandriva/4.0
-  #         # - openmandriva/3.0
-
-  #         # - opensuse/leap:latest
-  #         # - opensuse/leap:15
-  #         # - opensuse/leap:42
-  #         # - opensuse/tumbleweed # no c compiler
-  #         # - opensuse/s390x
-
-  #         # - vbatts/slackware:latest # no c compiler
-  #         # - vbatts/slackware:current
-  #         # - vbatts/slackware:14.2
-  #         # - vbatts/slackware:14.1
-  #         # - vbatts/slackware:14.0
-  #         # - vbatts/slackware:13.1
-  #         # - vbatts/slackware:13.0
-
-  #         ## TODO: KaOS
-  #         ## TODO: mint
-  #         ## TODO: pclinuxos
-  #         ## TODO: solus
-  #         ## TODO: nixos?
-
-  #         ## Unsupported
-
-  #         # - cirros:latest # no package manager
-
-  #   steps: &docker-steps
-  #     # Setup multi-platform support for docker
-  #     - uses: docker/setup-qemu-action@v1.2.0
-
-  #     # Try to create a container for the given platform and image
-  #     - name: Create container
-  #       shell: bash
-  #       run: |
-  #         set +e
-  #         cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ env.image }} tail -f /dev/null)
-  #         set -e
-
-  #         echo "cont=$cont" >> $GITHUB_ENV
-
-  #         echo "::debug::cont=$cont"
-  #         echo "::debug::required=$required"
-  #     - name: Fail if required but missing
-  #       if: ${{ env.required == 1 && env.cont == 0 }}
-  #       run: 'false'
-
-  #     # Check platforms
-  #     - run: uname -a
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker exec "$cont" uname -a
-
-  #     # Create the working directory
-  #     - if: ${{ env.cont != 0 }}
-  #       run: echo "workdir=/workdir" >> $GITHUB_ENV
-  #     - if: ${{ env.cont != 0 }}
-  #       run: echo "workdir=$workdir"
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker exec "$cont" uname -a
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker exec "$cont" mkdir "$workdir"
-
-  #     # Copy the artifact to the working directory
-  #     - if: ${{ env.cont != 0 }}
-  #       uses: actions/download-artifact@v2
-  #       with: { name: bootstrap-output }
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker cp - <fileinfo.tar "$cont":"$workdir"
-
-  #     # Install dependencies
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-
-  #     # Build
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker exec --workdir="$workdir" "$cont" ./configure
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker exec --workdir="$workdir" "$cont" make
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker exec --workdir="$workdir" "$cont" make check
-
-  #     # Cleanup
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker stop "$cont"
-  #     - if: ${{ env.cont != 0 }}
-  #       run: docker rm --force --volumes "$cont"
-
-
-  # docker-386:
-  #   env: { platform: linux/386, image: "${{ matrix.image }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy: *docker-strategy
-  # docker-amd64:
-  #   env: { platform: linux/amd64, image: "${{ matrix.image }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy: *docker-strategy
-  # docker-arm_v6:
-  #   env: { platform: linux/arm/v6, image: "${{ matrix.image }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy: *docker-strategy
-  # docker-arm_v7:
-  #   env: { platform: linux/arm/v7, image: "${{ matrix.image }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy: *docker-strategy
-  # docker-arm64:
-  #   env: { platform: linux/arm64, image: "${{ matrix.image }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy: *docker-strategy
-  # docker-mips64:
-  #   env: { platform: linux/mips64, image: "${{ matrix.image }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy: *docker-strategy
-  # docker-mips64le:
-  #   env: { platform: linux/mips64le, image: "${{ matrix.image }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy: *docker-strategy
-  # docker-ppc64le:
-  #   env: { platform: linux/ppc64le, image: "${{ matrix.image }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy: *docker-strategy
-  # docker-riscv64:
-  #   env: { platform: linux/riscv64, image: "${{ matrix.image }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy: *docker-strategy
-  # docker-s390x:
-  #   env: { platform: linux/s390x, image: "${{ matrix.image }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy: *docker-strategy
+# linux/386
+# linux/amd64
+# linux/arm/v6
+# linux/arm/v7
+# linux/arm64
+# linux/mips64
+# linux/mips64le
+# linux/ppc64le
+# linux/riscv64
+# linux/s390x
 
   ## A small distribution optimized for containers
   docker-alpine:
-    env: { platform: "linux/${{ matrix.arch }}", image: "alpine:${{ matrix.version }}" }
+    env: { platform: "${{ matrix.arch }}", image: "alpine:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -298,8 +37,18 @@
           - ppc64le
           - s390x
 
+#         # amd64 arm/v7 arm64/v8 ppc64le riscv64 s390x
+#         - ubuntu:latest # works
+#         - ubuntu:22.04 # works
+#         - ubuntu:21.10 # works
+#         - ubuntu:21.04 # works
+#         - ubuntu:20.04 # works
+#         - ubuntu:18.04 # works
+#         - ubuntu:16.04 # works
+#         - ubuntu:14.04 # works
+
   docker-ubuntu:
-    env: { platform: "linux/${{ matrix.arch }}", ubuntu: "ubuntu:${{ matrix.version }}" }
+    env: { platform: "${{ matrix.arch }}", ubuntu: "ubuntu:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -323,9 +72,222 @@
           - riscv64
           - s390x
 
+#         # 386? amd64 arm/v7? arm64/v8 ppc64le
+#         - centos:latest # works
+#         - centos:8 # works
+#         # - centos:7 # no c compiler
+#         # - centos:6.10 # yum error
+#         # - centos:6 # yum error
+
+#         # 386 amd64 arm/v5 arm/v7 arm64/v8 mips64le ppc64le riscv64 s390x
+#         - debian:latest # works
+#         - debian:unstable # works
+#         - debian:testing # works
+#         - debian:stable # works
+#         - debian:oldstable # works
+#         - debian:oldoldstable # works
+#         - debian:11.2 # works
+#         - debian:10.11 # works
+#         - debian:9.13 # works
+
+#         # amd64 arm/v7? arm64/v8 ppc64le s390x
+#         - fedora:latest # works
+#         - fedora:rawhide # works
+#         - fedora:36 # works
+#         - fedora:35 # works
+#         - fedora:34 # works
+#         - fedora:33 # works
+
+#         # amd64 arm64/v8
+#         - amazonlinux:latest # works
+#         - amazonlinux:2 # works
+#         - amazonlinux:1 # works
+
+  docker-amazonlinux:
+    env: { platform: "${{ matrix.arch }}", ubuntu: "amazonlinux:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - latest
+          - 2
+          - 1
+        arch:
+          - amd64
+          - arm64/v8
+
+#         # amd64 arm64/v8
+#         - oraclelinux:8 # works
+#         - oraclelinux:7 # works
+
+  docker-oraclelinux:
+    env: { platform: "${{ matrix.arch }}", ubuntu: "oraclelinux:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 8
+          - 7
+        arch:
+          - amd64
+          - arm64/v8
+
+#         # amd64 arm64/v8 arm/v7?
+#         ## Robot operating system
+#         - ros:latest # works
+#         #### Rolling release
+#         - ros:rolling # works
+#         #### ROS 2
+#         - ros:galactic # works
+#         - ros:foxy # works
+#         #### ROS 1
+#         - ros:noetic # works
+#         - ros:melodic # works
+
+#         ## VmWare Photon
+#         # - photon:latest # needs coreutils but is also missing `as`
+
+#         # - clearlinux:latest # slow install
+
+#         # - mageia:latest # slow install
+#         # - mageia:cauldron # slow install
+#         # - mageia:8 # slow install
+#         # - mageia:7 # slow install
+
+#         # amd64 arm64/v8
+#         - rockylinux:latest # works
+#         - rockylinux:8 # works
+
+#         # amd64
+#         ## Scientific Linux
+#         - sl:latest # works
+#         - sl:7 # works
+  docker-scientificlinux:
+    env: { platform: "${{ matrix.arch }}", ubuntu: "sl:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - latest
+          - 7
+        arch:
+          - amd64
+
+  ## For IBM Z
+  # s390x
+  # - clefos:latest
+  # - clefos:7
+  docker-clefos:
+    env: { platform: "${{ matrix.arch }}", ubuntu: "clefos:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - latest
+          - 7
+        arch:
+          - s390x
+
+
+
+#         # amd64 arm64/v8
+#         - almalinux:latest # works
+#         # - almalinux:minimal # no c compiler
+#         - almalinux:8 # works
+#         # - almalinux:8-minimal # no c compiler
+  docker-almalinux:
+    env: { platform: "${{ matrix.arch }}", ubuntu: "almalinux:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - latest
+          # - minimal # no c compiler
+          - 8
+          # - 7 # no c compiler
+        arch:
+          - amd64
+          - arm64/v8
+
+#         # 386 amd64 arm/v7 arm64/v8 ppc64le
+#         - alt:latest # works
+#         - alt:sisyphus # works
+#         - alt:p10 # works
+#         - alt:p9 # works
+
+#         # amd64
+#         # - archlinux:latest # no c compiler
+#         # - archlinux:base # no c compiler
+#         - archlinux:base-devel # works
+  docker-archlinux:
+    env: { platform: "${{ matrix.arch }}", ubuntu: "archlinux:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          # - latest # no c compiler
+          # - base # no c compiler
+          - base-devel # works
+        arch:
+          - amd64
+
+
+#         # - openwrtorg/rootfs:x86-64 # no c compiler
+#         # - openwrtorg/rootfs:armvirt-32
+#         # - openwrtorg/rootfs:armvirt-64
+
+#         # - openmandriva/cooker # no c compiler
+#         # - openmandriva/4.2 # no c compiler
+#         # - openmandriva/4.0
+#         # - openmandriva/3.0
+
+#         # - opensuse/leap:latest
+#         # - opensuse/leap:15
+#         # - opensuse/leap:42
+#         # - opensuse/tumbleweed # no c compiler
+#         # - opensuse/s390x
+
+#         # - vbatts/slackware:latest # no c compiler
+#         # - vbatts/slackware:current
+#         # - vbatts/slackware:14.2
+#         # - vbatts/slackware:14.1
+#         # - vbatts/slackware:14.0
+#         # - vbatts/slackware:13.1
+#         # - vbatts/slackware:13.0
+
+#         ## TODO: KaOS
+#         ## TODO: mint
+#         ## TODO: pclinuxos
+#         ## TODO: solus
+#         ## TODO: nixos?
+
+#         ## Unsupported
+
+#         # - cirros:latest # no package manager
+
+
+
 
 #   docker-qemu:
-#     env: { platform: linux/amd64, image: "qemu/${{ matrix.arch }}:latest" }
+#     env: { platform: amd64, image: "qemu/${{ matrix.arch }}:latest" }
 #     needs: bootstrap
 #     runs-on: ubuntu-latest
 #     steps: *docker-steps
@@ -415,29 +377,28 @@
 # # qemu/base
 # # qemu/tools
 
-
-  docker-chromebrew: # ChromeOS
-    env: { required: 1, platform: "linux/${{ matrix.platform }}", image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - version: armv7l-fievel-m91
-            platform: arm
-          - version: armv7l-fievel-m92
-            platform: amd64
-          - version: i686-alex-m58
-            platform: amd64
-          - version: x86_64-kip-m92
-            platform: amd64
-          - version: x86_64-nocturne-m90
-            platform: amd64
+  # # C compiler doesn't work
+  # docker-chromebrew: # ChromeOS
+  #   env: { required: 1, platform: "${{ matrix.platform }}", image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       version:
+  #         - armv7l-fievel-m92
+  #         - i686-alex-m58
+  #         - x86_64-kip-m92
+  #         - x86_64-nocturne-m90
+  #       platform:
+  #         - amd64
+  #       include:
+  #         - version: armv7l-fievel-m91
+  #           platform: arm
 
   # docker-gentoo:
-  #   env: { required: 1, platform: "linux/${{ matrix.platform }}", image: "gentoo/stage3:${{ matrix.tag }}" }
+  #   env: { required: 1, platform: "${{ matrix.platform }}", image: "gentoo/stage3:${{ matrix.tag }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps

@@ -24,7 +24,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          cont=$(docker run --pull=missing --init --detach --platform ${{ env.platform }} ${{ env.image }} tail -f /dev/null)
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ env.platform }} ${{ env.image }} tail -f /dev/null)
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
@@ -32,7 +32,8 @@ jobs:
           echo "::debug::cont=$cont"
           echo "::debug::required=$required"
       - name: Fail if required but missing
-        if: ${{ env.required == 1 && env.cont == 0 }}
+        # if: ${{ env.required == 1 && env.cont == 0 }}
+        if: ${{ env.cont == 0 }}
         run: 'false'
 
       # Check platforms
@@ -46,9 +47,7 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" mkdir "$workdir"
+        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
 
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}

@@ -1,5 +1,5 @@
   docker-multiarch-alpine:
-    env: { platform: linux/amd64, image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}" }
+    env: { platform: amd64, image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -24,7 +24,7 @@
           - v3.11
 
   docker-multiarch-ubuntu-core:
-    env: { platform: linux/amd64, image: "multiarch/ubuntu-core:${{ matrix.arch }}-${{ matrix.version }}" }
+    env: { platform: amd64, image: "multiarch/ubuntu-core:${{ matrix.arch }}-${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -45,7 +45,7 @@
           - xenial
 
   docker-multiarch-ubuntu-debootstrap:
-    env: { platform: linux/amd64, image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
+    env: { platform: amd64, image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -70,7 +70,7 @@
           - xenial-slim
 
   docker-multiarch-debian-debootstrap:
-    env: { platform: linux/amd64, image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
+    env: { platform: amd64, image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -100,7 +100,7 @@
           - stretch-slim
 
   docker-multiarch-fedora:
-    env: { platform: linux/amd64, image: "multiarch/fedora:${{ matrix.version }}-${{ matrix.arch }}" }
+    env: { platform: amd64, image: "multiarch/fedora:${{ matrix.version }}-${{ matrix.arch }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -122,7 +122,7 @@
           - 28
 
   docker-multiarch-centos:
-    env: { required: 1, platform: linux/amd64, image: "multiarch/centos:${{ matrix.version }}-clean" }
+    env: { required: 1, platform: amd64, image: "multiarch/centos:${{ matrix.version }}-clean" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -155,7 +155,7 @@
           - ppc64le
 
   docker-multiarch-voidlinux:
-    env: { required: 1, platform: linux/amd64, image: "multiarch/voidlinux:${{ matrix.tag }}" }
+    env: { required: 1, platform: amd64, image: "multiarch/voidlinux:${{ matrix.tag }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -168,7 +168,7 @@
 
   # ## No package mangager
   # docker-multiarch-busybox:
-  #   env: { required: 1, platform: linux/amd64, image: "multiarch/busybox:${{ matrix.tag }}" }
+  #   env: { required: 1, platform: amd64, image: "multiarch/busybox:${{ matrix.tag }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
