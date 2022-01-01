@@ -64,7 +64,7 @@
           - armhf
           - i386
           - ppc64el
-          - powerpc
+          # - powerpc
         version:
           - bionic
           - bionic-slim
@@ -130,6 +130,17 @@
           - 30
           - 29
           - 28
+        exclude:
+          - arch: s390x
+            version: 28
+          - arch: ppc64le
+            version: 28
+          - arch: ppc64le
+            version: 30
+          - arch: ppc64le
+            version: 31
+          - arch: ppc64le
+            version: 32
 
   docker-multiarch-centos:
     env: { required: 1, platform: amd64, image: "multiarch/centos:${{ matrix.version }}-clean" }
@@ -146,25 +157,25 @@
           - 7-aarch64
           - 7-amd64
           - 7-armhfp
-          - 7-i386
-          - 7-ppc64
-          - 7-ppc64le
+          # - 7-i386
+          # - 7-ppc64
+          # - 7-ppc64le
           - 7.3
           - 7.3-aarch64
           - 7.3-amd64
           - 7.3-armhfp
           - 7.3-ppc64
-          - 7.3-ppc64le
+          # - 7.3-ppc64le
           - 7.6
           - 7.6-amd64
           - 7.6-armhfp
           - aarch64
           - amd64
           - armhfp
-          - i386
+          # - i386
           - latest
-          - ppc64
-          - ppc64le
+          # - ppc64
+          # - ppc64le
 
   docker-multiarch-voidlinux:
     env: { required: 1, platform: amd64, image: "multiarch/voidlinux:${{ matrix.tag }}" }

@@ -28,15 +28,19 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
+          echo "cont=$cont"
 
-          echo "contX=$cont"
-          echo "requiredX=$required"
-          echo "::debug::cont=$cont"
-          echo "::debug::required=$required"
-      - name: Fail if required but missing
-        # if: ${{ env.required == 1 && env.cont == 0 }}
-        if: ${{ env.cont == 0 }}
-        run: 'false'
+          if test "x$cont" = "x"; then
+            echo "Container launch failed."
+            false
+          fi
+        # echo "required=$required"
+        # echo "::debug::cont=$cont"
+        # echo "::debug::required=$required"
+      # - name: Fail if required but missing
+      #   # if: ${{ env.required == 1 && env.cont == 0 }}
+      #   if: ${{ env.cont == 0 }}
+      #   run: 'false'
 
       # Check platforms
       - run: uname -a
@@ -74,8 +78,8 @@ jobs:
       # - if: ${{ env.cont != 0 }}
       #   run: docker exec --workdir="$workdir" "$cont" make check
 
-      # # Cleanup
-      # - if: ${{ env.cont != 0 }}
-      #   run: docker stop "$cont"
-      # - if: ${{ env.cont != 0 }}
-      #   run: docker rm --force --volumes "$cont"
+      # Cleanup
+      - if: ${{ env.cont != 0 }}
+        run: docker stop "$cont"
+      - if: ${{ env.cont != 0 }}
+        run: docker rm --force --volumes "$cont"
