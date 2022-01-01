@@ -29,18 +29,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -107,18 +100,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -197,18 +183,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -264,6 +243,13 @@ jobs:
           - focal
           - trusty
           - xenial
+        exclude:
+          - arch: i386
+            version: focal
+          - arch: s390x
+            version: xenial
+          - arch: s390
+            version: trusty
   docker-multiarch-ubuntu-debootstrap:
     env: {platform: amd64, image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}"}
     needs: bootstrap
@@ -283,18 +269,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -373,18 +352,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -437,7 +409,7 @@ jobs:
           # - mips
           - mips64el
           # - mipsel
-          - powerpc
+          # - powerpc
           - ppc64el
           - s390x
         version:
@@ -468,18 +440,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -541,6 +506,10 @@ jobs:
             version: 28
           - arch: ppc64le
             version: 28
+          - arch: aarch64
+            version: 28
+          - arch: x86_64
+            version: 28
           - arch: ppc64le
             version: 30
           - arch: ppc64le
@@ -548,7 +517,7 @@ jobs:
           - arch: ppc64le
             version: 32
   docker-multiarch-centos:
-    env: {required: 1, platform: amd64, image: "multiarch/centos:${{ matrix.version }}-clean"}
+    env: {platform: amd64, image: "multiarch/centos:${{ matrix.version }}-clean"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -566,18 +535,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -633,7 +595,7 @@ jobs:
           - 7.3-aarch64
           - 7.3-amd64
           - 7.3-armhfp
-          - 7.3-ppc64
+          # - 7.3-ppc64
           # - 7.3-ppc64le
           - 7.6
           - 7.6-amd64
@@ -646,7 +608,7 @@ jobs:
           # - ppc64
           # - ppc64le
   docker-multiarch-voidlinux:
-    env: {required: 1, platform: amd64, image: "multiarch/voidlinux:${{ matrix.tag }}"}
+    env: {platform: amd64, image: "multiarch/voidlinux:${{ matrix.tag }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -664,18 +626,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory

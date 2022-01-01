@@ -29,18 +29,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -82,32 +75,22 @@ jobs:
   ## Note that symbolic names are often duplicates of the numeric names.
   ## We keep both so that we automatically test new versions when those
   ## symbolic names get updated to newer versions.
-  # https://github.com/docker-library/official-images#architectures-other-than-amd64
-  # amd64
-  # arm32v5
-  # arm32v6
-  # arm32v7
-  # arm64v8
-  # i386
-  # mips64le
-  # ppc64le
-  # riscv64
-  # s390x
-  # winamd64
+  ## https://github.com/docker-library/official-images#architectures-other-than-amd64
+  ## https://github.com/docker-library/bashbrew/blob/v0.1.2/architecture/oci-platform.go
 
-  # linux/386
-  # linux/amd64
-  # linux/arm/v6
-  # linux/arm/v7
-  # linux/arm64
-  # linux/mips64
-  # linux/mips64le
-  # linux/ppc64le
-  # linux/riscv64
-  # linux/s390x
+  ## amd64         = linux/amd64
+  ## arm32v5       = linux/arm/v5
+  ## arm32v6       = linux/arm/v6
+  ## arm32v7       = linux/arm/v7
+  ## arm64v8       = linux/arm64/v8
+  ## i386          = linux/386
+  ## mips64le      = linux/mips64le
+  ## ppc64le       = linux/ppc64le
+  ## riscv64       = linux/riscv64
+  ## s390x         = linux/s390x
+  ## windows-amd64 = windows/amd64
 
-  ## A small distribution optimized for containers
-  docker-alpine:
+  docker-alpine: # A distribution optimized for containers
     env: {image: "alpine:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
@@ -126,18 +109,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -186,22 +162,13 @@ jobs:
           - '3.13' # works
           - '3.12' # works
         platform:
-          - i386
+          - 386
           - amd64
-          - arm32v6
+          - arm/v6
           - arm/v7
           - arm64/v8
           - ppc64le
           - s390x
-          #         # amd64 arm/v7 arm64/v8 ppc64le riscv64 s390x
-          #         - ubuntu:latest # works
-          #         - ubuntu:22.04 # works
-          #         - ubuntu:21.10 # works
-          #         - ubuntu:21.04 # works
-          #         - ubuntu:20.04 # works
-          #         - ubuntu:18.04 # works
-          #         - ubuntu:16.04 # works
-          #         - ubuntu:14.04 # works
   docker-ubuntu:
     env: {image: "ubuntu:${{ matrix.version }}"}
     needs: bootstrap
@@ -221,18 +188,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -305,8 +265,6 @@ jobs:
             #         # - centos:7 # no c compiler
             #         # - centos:6.10 # yum error
             #         # - centos:6 # yum error
-
-            #         # 386 amd64 arm/v5 arm/v7 arm64/v8 mips64le ppc64le riscv64 s390x
   docker-debian:
     env: {image: "debian:${{ matrix.version }}"}
     needs: bootstrap
@@ -326,18 +284,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -399,13 +350,6 @@ jobs:
           - ppc64le
           - riscv64
           - s390x
-          #         # amd64 arm/v7? arm64/v8 ppc64le s390x
-          #         - fedora:latest # works
-          #         - fedora:rawhide # works
-          #         - fedora:36 # works
-          #         - fedora:35 # works
-          #         - fedora:34 # works
-          #         - fedora:33 # works
   docker-fedora:
     env: {image: "fedora:${{ matrix.version }}"}
     needs: bootstrap
@@ -425,18 +369,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -491,10 +428,6 @@ jobs:
           - arm64/v8
           - ppc64le
           - s390x
-          #         # amd64 arm64/v8
-          #         - amazonlinux:latest # works
-          #         - amazonlinux:2 # works
-          #         - amazonlinux:1 # works
   docker-amazonlinux:
     env: {image: "amazonlinux:${{ matrix.version }}"}
     needs: bootstrap
@@ -514,18 +447,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -574,9 +500,6 @@ jobs:
         platform:
           - amd64
           - arm64/v8
-          #         # amd64 arm64/v8
-          #         - oraclelinux:8 # works
-          #         - oraclelinux:7 # works
   docker-oraclelinux:
     env: {image: "oraclelinux:${{ matrix.version }}"}
     needs: bootstrap
@@ -596,18 +519,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -667,25 +583,87 @@ jobs:
           #         - ros:noetic # works
           #         - ros:melodic # works
 
-          #         ## VmWare Photon
-          #         # - photon:latest # needs coreutils but is also missing `as`
+          ## VmWare Photon
+          # - photon:latest # needs coreutils but is also missing `as`
 
-          #         # - clearlinux:latest # slow install
+          # - clearlinux:latest # slow install
 
-          #         # - mageia:latest # slow install
-          #         # - mageia:cauldron # slow install
-          #         # - mageia:8 # slow install
-          #         # - mageia:7 # slow install
+          # - mageia:latest # slow install
+          # - mageia:cauldron # slow install
+          # - mageia:8 # slow install
+          # - mageia:7 # slow install
+  docker-rockylinux:
+    env: {image: "rockylinux:${{ matrix.version }}"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          set -e
 
-          #         # amd64 arm64/v8
-          #         - rockylinux:latest # works
-          #         - rockylinux:8 # works
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "cont=$cont"
 
-          #         # amd64
-          #         ## Scientific Linux
-          #         - sl:latest # works
-          #         - sl:7 # works
-  docker-scientificlinux:
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            false
+          fi
+      # Check platforms
+      - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: docker exec "$cont" uname -a
+      # # Create the working directory
+      # - if: ${{ env.cont != 0 }}
+      #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+      # - if: ${{ env.cont != 0 }}
+      #   run: echo "workdir=$workdir"
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+      # # Copy the artifact to the working directory
+      # - if: ${{ env.cont != 0 }}
+      #   uses: actions/download-artifact@v2
+      #   with: { name: bootstrap-output }
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+      # # Install dependencies
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+      # # Build
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" ./configure
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" make
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" make check
+
+      # Cleanup
+      - if: ${{ env.cont != 0 }}
+        run: docker stop "$cont"
+      - if: ${{ env.cont != 0 }}
+        run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - latest
+          - 8
+        platform:
+          - amd64
+          - arm64/8
+  docker-sl: # Scientific Linux
     env: {image: "sl:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
@@ -704,18 +682,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -762,11 +733,7 @@ jobs:
           - 7
         platform:
           - amd64
-  ## For IBM Z
-  # s390x
-  # - clefos:latest
-  # - clefos:7
-  docker-clefos:
+  docker-clefos: # For IBM Z
     env: {image: "clefos:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
@@ -785,18 +752,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -843,11 +803,6 @@ jobs:
           - 7
         platform:
           - s390x
-          #         # amd64 arm64/v8
-          #         - almalinux:latest # works
-          #         # - almalinux:minimal # no c compiler
-          #         - almalinux:8 # works
-          #         # - almalinux:8-minimal # no c compiler
   docker-almalinux:
     env: {image: "almalinux:${{ matrix.version }}"}
     needs: bootstrap
@@ -867,18 +822,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -928,16 +876,82 @@ jobs:
         platform:
           - amd64
           - arm64/v8
-          #         # 386 amd64 arm/v7 arm64/v8 ppc64le
-          #         - alt:latest # works
-          #         - alt:sisyphus # works
-          #         - alt:p10 # works
-          #         - alt:p9 # works
+  docker-alt:
+    env: {image: "alt:${{ matrix.version }}"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          set -e
 
-          #         # amd64
-          #         # - archlinux:latest # no c compiler
-          #         # - archlinux:base # no c compiler
-          #         - archlinux:base-devel # works
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "cont=$cont"
+
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            false
+          fi
+      # Check platforms
+      - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: docker exec "$cont" uname -a
+      # # Create the working directory
+      # - if: ${{ env.cont != 0 }}
+      #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+      # - if: ${{ env.cont != 0 }}
+      #   run: echo "workdir=$workdir"
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+
+      # # Copy the artifact to the working directory
+      # - if: ${{ env.cont != 0 }}
+      #   uses: actions/download-artifact@v2
+      #   with: { name: bootstrap-output }
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+
+      # # Install dependencies
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+
+      # # Build
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" ./configure
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" make
+      # - if: ${{ env.cont != 0 }}
+      #   run: docker exec --workdir="$workdir" "$cont" make check
+
+      # Cleanup
+      - if: ${{ env.cont != 0 }}
+        run: docker stop "$cont"
+      - if: ${{ env.cont != 0 }}
+        run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - alt:latest # works
+          - alt:sisyphus # works
+          - alt:p10 # works
+          - alt:p9 # works
+        platform:
+          - 386
+          - amd64
+          - arm/v7
+          - arm64/v8
+          - ppc64le
   docker-archlinux:
     env: {image: "archlinux:${{ matrix.version }}"}
     needs: bootstrap
@@ -957,18 +971,11 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
       # Check platforms
       - run: uname -a
-        # - name: Fail if required but missing
-        #   # if: ${{ env.required == 1 && env.cont == 0 }}
-        #   if: ${{ env.cont == 0 }}
-        #   run: 'false'
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # # Create the working directory
@@ -1016,38 +1023,38 @@ jobs:
           - base-devel # works
         platform:
           - amd64
-          #         # - openwrtorg/rootfs:x86-64 # no c compiler
-          #         # - openwrtorg/rootfs:armvirt-32
-          #         # - openwrtorg/rootfs:armvirt-64
+          # - openwrtorg/rootfs:x86-64 # no c compiler
+          # - openwrtorg/rootfs:armvirt-32
+          # - openwrtorg/rootfs:armvirt-64
 
-          #         # - openmandriva/cooker # no c compiler
-          #         # - openmandriva/4.2 # no c compiler
-          #         # - openmandriva/4.0
-          #         # - openmandriva/3.0
+          # - openmandriva/cooker # no c compiler
+          # - openmandriva/4.2 # no c compiler
+          # - openmandriva/4.0
+          # - openmandriva/3.0
 
-          #         # - opensuse/leap:latest
-          #         # - opensuse/leap:15
-          #         # - opensuse/leap:42
-          #         # - opensuse/tumbleweed # no c compiler
-          #         # - opensuse/s390x
+          # - opensuse/leap:latest
+          # - opensuse/leap:15
+          # - opensuse/leap:42
+          # - opensuse/tumbleweed # no c compiler
+          # - opensuse/s390x
 
-          #         # - vbatts/slackware:latest # no c compiler
-          #         # - vbatts/slackware:current
-          #         # - vbatts/slackware:14.2
-          #         # - vbatts/slackware:14.1
-          #         # - vbatts/slackware:14.0
-          #         # - vbatts/slackware:13.1
-          #         # - vbatts/slackware:13.0
+          # - vbatts/slackware:latest # no c compiler
+          # - vbatts/slackware:current
+          # - vbatts/slackware:14.2
+          # - vbatts/slackware:14.1
+          # - vbatts/slackware:14.0
+          # - vbatts/slackware:13.1
+          # - vbatts/slackware:13.0
 
-          #         ## TODO: KaOS
-          #         ## TODO: mint
-          #         ## TODO: pclinuxos
-          #         ## TODO: solus
-          #         ## TODO: nixos?
+          ## TODO: KaOS
+          ## TODO: mint
+          ## TODO: pclinuxos
+          ## TODO: solus
+          ## TODO: nixos?
 
-          #         ## Unsupported
+          ## Unsupported
 
-          #         # - cirros:latest # no package manager
+          # - cirros:latest # no package manager
 
           #   docker-qemu:
           #     env: { platform: amd64, image: "qemu/${{ matrix.arch }}:latest" }
@@ -1141,7 +1148,7 @@ jobs:
           # # qemu/tools
   # # C compiler doesn't work
   # docker-chromebrew: # ChromeOS
-  #   env: { required: 1, image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
+  #   env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -1160,7 +1167,7 @@ jobs:
   #           platform: arm
 
   # docker-gentoo:
-  #   env: { required: 1, image: "gentoo/stage3:${{ matrix.tag }}" }
+  #   env: { image: "gentoo/stage3:${{ matrix.tag }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps

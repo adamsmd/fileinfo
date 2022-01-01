@@ -31,16 +31,9 @@ jobs:
           echo "cont=$cont"
 
           if test "x$cont" = "x"; then
-            echo "Container launch failed."
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             false
           fi
-        # echo "required=$required"
-        # echo "::debug::cont=$cont"
-        # echo "::debug::required=$required"
-      # - name: Fail if required but missing
-      #   # if: ${{ env.required == 1 && env.cont == 0 }}
-      #   if: ${{ env.cont == 0 }}
-      #   run: 'false'
 
       # Check platforms
       - run: uname -a
