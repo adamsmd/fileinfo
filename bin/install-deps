@@ -3,7 +3,7 @@
 # Ensure that a c compiler and make are installed.  (This script is mostly to
 # for Docker containers, which often don't have these already installed.)
 
-note_using="::notice ::Installing dependencies using"
+note_using="::debug::Installing dependencies using"
 
 if apt-get --version >/dev/null 2>&1; then
   echo "$note_using" apt-get
