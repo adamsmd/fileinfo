@@ -91,7 +91,7 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-2019
     steps:
       - uses: actions/checkout@v2
       - name: Setup tmate session
