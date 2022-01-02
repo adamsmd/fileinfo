@@ -60,7 +60,7 @@
           - { version: '14.04', platform: s390x }
 
   docker-centos:
-    env: { image: "debian:${{ matrix.version }}" }
+    env: { image: "centos:${{ matrix.version }}" }
     needs: bootstrap
     runs-on: ubuntu-latest
     steps: *docker-steps
@@ -72,6 +72,7 @@
           - arm64/v8
           - ppc64le
         version:
+          - latest
           - 8
           - 7
         include:
@@ -157,8 +158,8 @@
         exclude:
           - { version: 31, platform: arm/v7 }
           - { version: 30, platform: arm/v7 }
-          - { version: 27, platform: arm/v7 }
-          - { version: 26, platform: arm/v7 }
+          - { version: 27, platform: s390x }
+          - { version: 26, platform: s390x }
 
   docker-amazonlinux:
     env: { image: "amazonlinux:${{ matrix.version }}" }
@@ -301,7 +302,6 @@
         version:
           - latest
           - 8
-          - 7
 
   docker-sl: # Scientific Linux
     env: { image: "sl:${{ matrix.version }}" }
