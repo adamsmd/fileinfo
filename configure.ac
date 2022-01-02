@@ -18,7 +18,7 @@ AC_SUBST([ARFLAGS], [cr]) # Prevent "ar: `u' modifier ignored since `D' is the d
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_RANLIB
-AC_PROG_CXX # TODO: optional
+# AC_PROG_CXX # TODO: optional
 
 #### Checks for libraries.
 

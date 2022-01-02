@@ -19,8 +19,8 @@ check_PROGRAMS = \
   fileinfo-fields-dynamic \
   fileinfo-fields-static \
   fileinfo-file-static \
-  fileinfo-file-dynamic \
-  fileinfo-cpp
+  fileinfo-file-dynamic
+  # fileinfo-cpp
 
 fileinfo_fields_dynamic_SOURCES = tests/fileinfo-fields-dynamic.c
 fileinfo_fields_dynamic_LDADD = libfileinfo.a
@@ -34,5 +34,5 @@ fileinfo_file_dynamic_LDADD = libfileinfo.a
 fileinfo_file_static_SOURCES = tests/fileinfo-file-static.c
 fileinfo_file_static_LDADD = libfileinfo.a
 
-fileinfo_cpp_SOURCES = tests/fileinfo-cpp.cpp
-fileinfo_cpp_LDADD = libfileinfo.a
+# fileinfo_cpp_SOURCES = tests/fileinfo-cpp.cpp
+# fileinfo_cpp_LDADD = libfileinfo.a

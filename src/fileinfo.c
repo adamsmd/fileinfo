@@ -6,8 +6,8 @@
 
 /* We cannot include fnctl.h and linux/fnctl.h at the same time */
 #ifndef HAVE_LINUX_FCNTL_H
-#  ifdef HAVE_FNCTL_H
-#    include <fnctl.h>
+#  ifdef HAVE_FCNTL_H
+#    include <fcntl.h>
 #  endif
 #endif
 
