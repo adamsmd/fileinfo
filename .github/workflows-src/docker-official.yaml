@@ -68,16 +68,15 @@
       fail-fast: false
       matrix:
         platform:
+          - amd64
+          - arm64/v8
+          - ppc64le
         version:
+          - 8
+          - 7
         include:
-          - { version: 8, platform: amd64 }
-          - { version: 8, platform: arm64/v8 }
-          - { version: 8, platform: ppc64le }
           - { version: 7, platform: 386 }
-          - { version: 7, platform: amd64 }
           - { version: 7, platform: arm/v7 }
-          - { version: 7, platform: arm64/v8 }
-          - { version: 7, platform: ppc64le }
           - { version: 6, platform: 386 }
           - { version: 6, platform: amd64 }
           - { version: 5, platform: amd64 }
