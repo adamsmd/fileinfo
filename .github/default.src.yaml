@@ -8,13 +8,12 @@
       - shell: C:\msys64\usr\bin\bash.exe {0}
         run: tar -xvf fileinfo.tar
       - run: dir
-      - run: cmd /c "C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat -arch=amd64 -host_arch=amd64 & set" >env.txt
-      - shell: C:\msys64\usr\bin\bash.exe {0}
+
+      - shell: cmd /c "C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat -arch=amd64 -host_arch=amd64 & C:\msys64\usr\bin\bash.exe {0}"
         run: |
           exec 2>&1
           set +e
           set -x
-          echo "$PATH"
           PATH=''
           PATH="$PATH:/c/msys64/usr/bin"
           PATH="$PATH:/c/vcpkg"
@@ -41,13 +40,57 @@
 
           pwd
           ls
-          cat env.txt
-          fgrep -v ')=' env.txt | sed -e 's%\(.\):\\%/\1/%g; s%\\%/%g; s/;/:/g; s/^\(.*\)=\(.*\)$/export \1="\2"/g;' >env-bash.txt
-          cat env-bash.txt
-          source env-bash.txt
           echo 'int main(void) { return 0; }' >test.c
           cl test.c
           ls
+
+
+
+
+      # - run: cmd /c "C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat -arch=amd64 -host_arch=amd64 & set" >env.txt
+      # - shell: C:\msys64\usr\bin\bash.exe {0}
+      #   run: |
+      #     exec 2>&1
+      #     set +e
+      #     set -x
+      #     echo "$PATH"
+      #     PATH=''
+      #     PATH="$PATH:/c/msys64/usr/bin"
+      #     PATH="$PATH:/c/vcpkg"
+      #     PATH="$PATH:/c/tools/zstd"
+      #     PATH="$PATH:/c/hostedtoolcache/windows/stack/2.7.3/x64"
+      #     PATH="$PATH:/c/Program Files (x86)/Microsoft SDKs/Azure/CLI2/wbin"
+      #     PATH="$PATH:/c/ProgramData/kind"
+      #     PATH="$PATH:/c/Windows/system32"
+      #     PATH="$PATH:/c/Windows"
+      #     PATH="$PATH:/c/Windows/System32/Wbem"
+      #     PATH="$PATH:/c/Windows/System32/WindowsPowerShell/v1.0"
+      #     PATH="$PATH:/c/Windows/System32/OpenSSH"
+      #     PATH="$PATH:/c/Program Files/Docker"
+      #     PATH="$PATH:/c/Program Files/PowerShell/7"
+      #     PATH="$PATH:/c/Program Files/OpenSSL/bin"
+      #     PATH="$PATH:/c/Program Files/CMake/bin"
+      #     PATH="$PATH:/c/Users/runneradmin/AppData/Local/Microsoft/WindowsApps"
+
+      #     # PATH="$PATH:/c/ProgramData/Chocolatey/bin" # has GCC
+      #     # PATH="$PATH:/c/Strawberry/c/bin" # has GCC
+
+      #     # PATH="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64:$PATH"
+      #     PATH="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX86/x86:$PATH"
+
+      #     pwd
+      #     ls
+      #     cat env.txt
+      #     fgrep -v ')=' env.txt | sed -e 's%\(.\):\\%/\1/%g; s%\\%/%g; s/;/:/g; s/^\(.*\)=\(.*\)$/export \1="\2"/g;' >env-bash.txt
+      #     cat env-bash.txt
+      #     source env-bash.txt
+      #     echo 'int main(void) { return 0; }' >test.c
+      #     cl test.c
+      #     ls
+
+
+
+
 
 # Path=C:\Program Files\PowerShell\7
 # C:\Program Files\MongoDB\Server\5.0\bin
