@@ -99,7 +99,7 @@ jobs:
       - shell: C:\msys64\usr\bin\bash.exe {0}
         run: tar -xvf fileinfo.tar
       - run: dir
-      - run: cmd /c "C:\Program Files\ (x86)\Microsoft\ Visual\ Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat -arch=amd64 -host_arch=amd64 & set" >env.txt
+      - run: cmd /c "C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat -arch=amd64 -host_arch=amd64 & set" >env.txt
       - shell: C:\msys64\usr\bin\bash.exe {0}
         run: |
           exec 2>&1
@@ -132,6 +132,7 @@ jobs:
 
           pwd
           ls
+          cat env.txt
           sed -e 's%\(.\):\\%/\1/%g; s%\\%/%g; s/;/:/g; s/^\(.*\)=\(.*\)$/export \1="\2"/g;' <env.txt >env-bash.txt
           cat env-bash.txt
           source env-bash.txt
