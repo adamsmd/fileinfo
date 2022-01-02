@@ -118,8 +118,38 @@ jobs:
   #         - '3.8'
   #         - '3.7'
   #         - '3.6'
-  docker-ubuntu:
-    env: {image: "ubuntu:${{ matrix.version }}"}
+
+  # docker-ubuntu:
+  #   env: { image: "ubuntu:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #         - arm/v7
+  #         - arm64/v8
+  #         - ppc64le
+  #         - riscv64
+  #         - s390x
+  #       version:
+  #         - 'latest'
+  #         - '22.04'
+  #         - '21.10'
+  #         - '21.04'
+  #         - '20.04'
+  #         - '18.04'
+  #         - '16.04'
+  #         - '14.04'
+  #       exclude:
+  #         - { version: '18.04', platform: riscv64 }
+  #         - { version: '16.04', platform: riscv64 }
+  #         - { version: '14.04', platform: riscv64 }
+  #         - { version: '14.04', platform: s390x }
+  docker-centos:
+    env: {image: "centos:${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -183,93 +213,117 @@ jobs:
       matrix:
         platform:
           - amd64
-          - arm/v7
           - arm64/v8
           - ppc64le
-          - riscv64
+        version:
+          - latest
+          - 8
+          - 7
+        include:
+          - {version: 7, platform: 386}
+          - {version: 7, platform: arm/v7}
+          - {version: 6, platform: 386}
+          - {version: 6, platform: amd64}
+          - {version: 5, platform: amd64}
+  docker-debian:
+    env: {image: "debian:${{ matrix.version }}-slim"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          set -e
+
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "cont=$cont"
+
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            exit 1
+          fi
+      # Check platforms
+      - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: docker exec "$cont" uname -a
+      # Create the working directory
+      - if: ${{ env.cont != 0 }}
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "workdir=$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" mkdir "$workdir" # don't use --mode since it is not compatible
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chmod 0777 "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ env.cont != 0 }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ env.cont != 0 }}
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" make check
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - 386
+          - amd64
+          - arm/v5
+          - arm/v7
+          - arm64/v8
+          - mips64le
+          - ppc64le
           - s390x
         version:
-          - 'latest'
-          - '22.04'
-          - '21.10'
-          - '21.04'
-          - '20.04'
-          - '18.04'
-          - '16.04'
-          - '14.04'
+          - testing
+          - stable
+          - oldstable
+          - oldoldstable
+          - '11.2'
+          - '10.11'
+          - '9.13'
+          - '8.11'
+          - '8.11'
+        include:
+          - {version: unstable, platform: riscv64}
         exclude:
-          - {version: '18.04', platform: riscv64}
-          - {version: '16.04', platform: riscv64}
-          - {version: '14.04', platform: riscv64}
-          - {version: '14.04', platform: s390x}
-
-# docker-centos:
-#   env: { image: "centos:${{ matrix.version }}" }
-#   needs: bootstrap
-#   runs-on: ubuntu-latest
-#   steps: *docker-steps
-#   strategy:
-#     fail-fast: false
-#     matrix:
-#       platform:
-#         - amd64
-#         - arm64/v8
-#         - ppc64le
-#       version:
-#         - latest
-#         - 8
-#         - 7
-#       include:
-#         - { version: 7, platform: 386 }
-#         - { version: 7, platform: arm/v7 }
-#         - { version: 6, platform: 386 }
-#         - { version: 6, platform: amd64 }
-#         - { version: 5, platform: amd64 }
-
-# docker-debian:
-#   env: { image: "debian:${{ matrix.version }}-slim" }
-#   needs: bootstrap
-#   runs-on: ubuntu-latest
-#   steps: *docker-steps
-#   strategy:
-#     fail-fast: false
-#     matrix:
-#       platform:
-#         - 386
-#         - amd64
-#         - arm/v5
-#         - arm/v7
-#         - arm64/v8
-#         - mips64le
-#         - ppc64le
-#         - s390x
-#       version:
-#         - testing
-#         - stable
-#         - oldstable
-#         - oldoldstable
-#         - '11.2'
-#         - '10.11'
-#         - '9.13'
-#         - '8.11'
-#         - '8.11'
-#       include:
-#         - { version: unstable, platform: riscv64 }
-#       exclude:
-#         - { version: oldoldstable, platform: mips64le }
-#         - { version: oldoldstable, platform: ppc64le }
-#         - { version: oldoldstable, platform: s390x }
-#         - { version: '9.13', platform: mips64le }
-#         - { version: '9.13', platform: ppc64le }
-#         - { version: '9.13', platform: s390x }
-#         - { version: '8.11', platform: arm64/v8 }
-#         - { version: '8.11', platform: mips64le }
-#         - { version: '8.11', platform: ppc64le }
-#         - { version: '8.11', platform: s390x }
-#         - { version: '8.11', platform: arm64/v8 }
-#         - { version: '8.11', platform: mips64le }
-#         - { version: '8.11', platform: ppc64le }
-#         - { version: '8.11', platform: s390x }
+          - {version: oldoldstable, platform: mips64le}
+          - {version: oldoldstable, platform: ppc64le}
+          - {version: oldoldstable, platform: s390x}
+          - {version: '9.13', platform: mips64le}
+          - {version: '9.13', platform: ppc64le}
+          - {version: '9.13', platform: s390x}
+          - {version: '8.11', platform: arm64/v8}
+          - {version: '8.11', platform: mips64le}
+          - {version: '8.11', platform: ppc64le}
+          - {version: '8.11', platform: s390x}
+          - {version: '8.11', platform: arm64/v8}
+          - {version: '8.11', platform: mips64le}
+          - {version: '8.11', platform: ppc64le}
+          - {version: '8.11', platform: s390x}
 
 # docker-fedora:
 #   env: { image: "fedora:${{ matrix.version }}" }
