@@ -130,14 +130,9 @@ jobs:
           PATH="$PATH:/c/Users/runneradmin/AppData/Local/Microsoft/WindowsApps"
 
           # PATH="$PATH:/c/ProgramData/Chocolatey/bin" # has GCC
-          PATH="$PATH:/c/Strawberry/c/bin"
+          # PATH="$PATH:/c/Strawberry/c/bin" # has GCC
 
           PATH="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64:$PATH"
-
-          echo ------------------- cho ------------------
-          ls /c/ProgramData/Chocolatey/bin # has GCC
-          echo ------------------- straw ------------------
-          ls /c/Strawberry/c/bin
 
           echo ------------------- which ------------------
           which gcc
