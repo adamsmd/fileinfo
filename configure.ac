@@ -80,7 +80,7 @@ AS_IF(
       [#include <sys/stat.h>]
       [typedef struct stat fileinfo_stat;]
       "],
-  [AC_MSG_ERROR([cannot find `struct stat`])])
+  [AC_MSG_ERROR([cannot find `struct stat` or any similar struct])])
 AC_SUBST([DECLARE_FILEINFO_STAT], ["$declare_fileinfo_stat"])
 AM_SUBST_NOTMAKE([DECLARE_FILEINFO_STAT])
 preamble="

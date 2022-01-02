@@ -75,12 +75,12 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
     /* TODO: if use_statx make_dev(base) */
   #elif defined(HAVE_FSTATAT64) || defined(HAVE_FSTATAT)
     if (0 ==
-      #if defined(USE_FSTATAT64)
+      #if defined(HAVE_FSTATAT64)
         fstatat64
-      #elif defined(USE_FSTATAT)
+      #elif defined(HAVE_FSTATAT)
         fstatat
       #else
-        #error "TODO"
+        #error "internal error: impossible case"
       #endif
       (AT_FDCWD, pathname, &output->stat, follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW)) {
       return true;
@@ -88,36 +88,30 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
       return false;
       /* TODO: error based on errno */
     }
-  #elif defined(HAVE_STAT64) || defined(HAVE_STAT)
-    if (0 ==
-      follow_symlink ?
-        #if defined(USE_STAT64)
-          stat64
-        #elif defined(USE_STAT)
-          stat
-        #else
-          #error "TODO"
-        #endif
-        (pathname, &output->stat) :
-        #if defined(USE_STAT64)
-          lstat64
-        #elif defined(USE_STAT)
-          lstat
-        #else
-          #error "TODO"
-        #endif
-        (pathname, &output->stat)) {
+    /* TODO: _stat32? */
+  #elif defined(HAVE_STAT64) || define(HAVE__STAT64) || defined(HAVE_STAT)
+    #if defined(HAVE_STAT64)
+      #define STAT stat64
+    #elif defined(HAVE__STAT64)
+      #define STAT _stat64
+    #elif defined(HAVE_STAT)
+      #define STAT stat
+    #else
+      #error "internal error: impossible case"
+    #endif
+
+    #if defined(HAVE_LSTAT64)
+      #define LSTAT lstat64
+    #elif defined(HAVE_LSTAT)
+      #define LSTAT lstat
+    #else
+      #define LSTAT STAT
+    #endif
+
+    if (0 == follow_symlink ? STAT(pathname, &output->stat) : STAT(pathname, &output->stat)) {
       return true;
     } else {
       return false;
-    }
-  #elif defined(HAVE__STAT64) /* TODO: _stat32? */
-    /* There is no lstat on windows */
-    if (0 == __stat64(pathname, &output->stat)) {
-      return true;
-    } else {
-      return false;
-      /* TODO: error based on errno */
     }
   #else
     #error "unimplemented"
