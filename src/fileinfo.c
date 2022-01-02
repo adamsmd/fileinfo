@@ -119,3 +119,5 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
 
   return 0;
 }
+
+// TODO: intmax_t fileinfo_get_field (size_t index, fileinfo const *)

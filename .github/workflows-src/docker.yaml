@@ -6,12 +6,6 @@
     strategy:
       fail-fast: false
       matrix:
-        version:
-          - latest # works
-          - '3.15' # works
-          - '3.14' # works
-          - '3.13' # works
-          - '3.12' # works
         platform:
           - 386
           - amd64
@@ -20,6 +14,12 @@
           - arm64/v8
           - ppc64le
           - s390x
+        version:
+          - latest # works
+          - '3.15' # works
+          - '3.14' # works
+          - '3.13' # works
+          - '3.12' # works
 
   docker-ubuntu:
     env: { image: "ubuntu:${{ matrix.version }}" }
@@ -29,6 +29,13 @@
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
+          - arm/v7
+          - arm64/v8
+          - ppc64le
+          - riscv64
+          - s390x
         version:
           - 'latest' # works
           - '22.04' # works
@@ -38,24 +45,16 @@
           - '18.04' # works
           - '16.04' # works
           - '14.04' # works
-        platform:
-          - amd64
-          - arm/v7
-          - arm64/v8
-          - ppc64le
-          - riscv64
-          - s390x
         exclude:
-          - version: '18.04'
-            platform: riscv64
-          - version: '16.04'
-            platform: riscv64
-          - version: '14.04'
-            platform: riscv64
-          - version: '14.04'
-            platform: s390x
+          - platform: riscv64
+            version: '18.04'
+          - platform: riscv64
+            version: '16.04'
+          - platform: riscv64
+            version: '14.04'
+          - platform: s390x
+            version: '14.04'
 
-#         # 386? amd64 arm/v7? arm64/v8 ppc64le
   docker-centos:
     env: { image: "debian:${{ matrix.version }}" }
     needs: bootstrap
@@ -86,16 +85,6 @@
     strategy:
       fail-fast: false
       matrix:
-        version:
-          - latest # works
-          - unstable # works
-          - testing # works
-          - stable # works
-          - oldstable # works
-          - oldoldstable # works
-          - '11.2' # works
-          - '10.11' # works
-          - '9.13' # works
         platform:
           - 386
           - amd64
@@ -106,6 +95,16 @@
           - ppc64le
           - riscv64
           - s390x
+        version:
+          - latest # works
+          - unstable # works
+          - testing # works
+          - stable # works
+          - oldstable # works
+          - oldoldstable # works
+          - '11.2' # works
+          - '10.11' # works
+          - '9.13' # works
 
   docker-fedora:
     env: { image: "fedora:${{ matrix.version }}" }
@@ -115,6 +114,12 @@
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
+          - arm/v7
+          - arm64/v8
+          - ppc64le
+          - s390x
         version:
           - latest # works
           - rawhide # works
@@ -122,12 +127,6 @@
           - 35 # works
           - 34 # works
           - 33 # works
-        platform:
-          - amd64
-          - arm/v7
-          - arm64/v8
-          - ppc64le
-          - s390x
 
   docker-amazonlinux:
     env: { image: "amazonlinux:${{ matrix.version }}" }
@@ -137,13 +136,13 @@
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
+          - arm64/v8
         version:
           - latest
           - 2
           - 1
-        platform:
-          - amd64
-          - arm64/v8
 
   docker-oraclelinux:
     env: { image: "oraclelinux:${{ matrix.version }}" }
@@ -153,12 +152,12 @@
     strategy:
       fail-fast: false
       matrix:
-        version:
-          - 8
-          - 7
         platform:
           - amd64
           - arm64/v8
+        version:
+          - 8
+          - 7
 
   docker-ros: # Robot operating system
     env: { image: "ros:${{ matrix.version }}" }
@@ -203,12 +202,12 @@
     strategy:
       fail-fast: false
       matrix:
-        version:
-          - latest
-          - 8
         platform:
           - amd64
           - arm64/8
+        version:
+          - latest
+          - 8
 
   docker-sl: # Scientific Linux
     env: { image: "sl:${{ matrix.version }}" }
@@ -218,11 +217,11 @@
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
         version:
           - latest
           - 7
-        platform:
-          - amd64
 
   docker-clefos: # For IBM Z
     env: { image: "clefos:${{ matrix.version }}" }
@@ -232,11 +231,11 @@
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - s390x
         version:
           - latest
           - 7
-        platform:
-          - s390x
 
   docker-almalinux:
     env: { image: "almalinux:${{ matrix.version }}" }
@@ -246,14 +245,14 @@
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
+          - arm64/v8
         version:
           - latest
           # - minimal # no c compiler
           - 8
           # - 7 # no c compiler
-        platform:
-          - amd64
-          - arm64/v8
 
   docker-alt:
     env: { image: "alt:${{ matrix.version }}" }
@@ -263,17 +262,17 @@
     strategy:
       fail-fast: false
       matrix:
-        version:
-          - latest # works
-          - sisyphus # works
-          - p10 # works
-          - p9 # works
         platform:
           - 386
           - amd64
           - arm/v7
           - arm64/v8
           - ppc64le
+        version:
+          - latest # works
+          - sisyphus # works
+          - p10 # works
+          - p9 # works
 
   docker-archlinux:
     env: { image: "archlinux:${{ matrix.version }}" }
@@ -283,12 +282,12 @@
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - amd64
         version:
           # - latest # no c compiler
           # - base # no c compiler
           - base-devel # works
-        platform:
-          - amd64
 
 
 # - openwrtorg/rootfs:x86-64 # no c compiler
@@ -327,93 +326,95 @@
 
 
 
-#   docker-qemu:
-#     env: { image: "qemu/${{ matrix.arch }}:latest" }
-#     needs: bootstrap
-#     runs-on: ubuntu-latest
-#     steps: *docker-steps
-#     strategy:
-#       fail-fast: false
-#       matrix:
-#         arch:
-#           # - alpha
-#           # - alpha-slim
-#           # - amd64
-#           # - amd64-slim
-#           # - arm64
-#           # - arm64-slim
-#           # - armel
-#           # - armel-slim
-#           # - armhf
-#           # - armhf-slim
-#           # - hppa
-#           # - hppa-slim
-#           # - hurd-i386
-#           # - hurd-i386-slim
-#           # - i386
-#           # - i386-slim
-#           # - kfreebsd-amd64
-#           # - kfreebsd-amd64-slim
-#           # - kfreebsd-i386
-#           # - kfreebsd-i386-slim
-#           # - m68k
-#           # - m68k-slim
-#           # - mips
-#           # - mips-slim
-#           # - mipsel
-#           # - mipsel-slim
-#           # - powerpc
-#           # - powerpc-slim
-#           # - powerpcspe
-#           # - powerpcspe-slim
-#           # - ppc64
-#           # - ppc64-slim
-#           # - ppc64el
-#           # - ppc64el-slim
-#           # - s390x
-#           # - s390x-slim
-#           # - sh4
-#           # - sh4-slim
-#           # - sparc64
-#           # - sparc64-slim
-#           # - sparc64-slim-slim
-#           # - x32
-#           # - x32-slim
+  # docker-qemu:
+  #   env: { image: "qemu/${{ matrix.arch }}:latest" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       arch:
+  #         # - alpha
+  #         # - alpha-slim
+  #         # - amd64
+  #         # - amd64-slim
+  #         # - arm64
+  #         # - arm64-slim
+  #         # - armel
+  #         # - armel-slim
+  #         # - armhf
+  #         # - armhf-slim
+  #         # - hppa
+  #         # - hppa-slim
+  #         # - hurd-i386
+  #         # - hurd-i386-slim
+  #         # - i386
+  #         # - i386-slim
+  #         # - kfreebsd-amd64
+  #         # - kfreebsd-amd64-slim
+  #         # - kfreebsd-i386
+  #         # - kfreebsd-i386-slim
+  #         # - m68k
+  #         # - m68k-slim
+  #         # - mips
+  #         # - mips-slim
+  #         # - mipsel
+  #         # - mipsel-slim
+  #         # - powerpc
+  #         # - powerpc-slim
+  #         # - powerpcspe
+  #         # - powerpcspe-slim
+  #         # - ppc64
+  #         # - ppc64-slim
+  #         # - ppc64el
+  #         # - ppc64el-slim
+  #         # - s390x
+  #         # - s390x-slim
+  #         # - sh4
+  #         # - sh4-slim
+  #         # - sparc64
+  #         # - sparc64-slim
+  #         # - sparc64-slim-slim
+  #         # - x32
+  #         # - x32-slim
 
-#           - i386
-#           - arm
-#           - aarch64
-#           - x86-64
-#           - alpha
-#           - cris
-#           - lm32
-#           - moxie
-#           - ppc
-#           - sparc
-#           - ppcemb
-#           - sparc64
-#           - tricore
-#           - unicore32
-#           - microblazeel
-#           - m68k
-#           - microblaze
-#           - mipsel
-#           - mips
-#           - mips64
-#           - mips64el
-#           - sh4
-#           - ppc64
-#           - or32
-#           - sh4eb
-#           - xtensaeb
-#           - xtensa
-#           - cdrom
-#           - nbd
-#           - img
-#           - io
-#           - boot-command
-#           - ivshmem
-#           - ksm
+  #         # - i386
+  #         # - arm
+  #         # - aarch64
+  #         # - x86-64
+  #         # - alpha
+  #         # - cris
+  #         # - lm32
+  #         # - moxie
+  #         # - ppc
+  #         # - sparc
+  #         # - ppcemb
+  #         # - sparc64
+  #         # - tricore
+  #         # - unicore32
+  #         # - microblazeel
+  #         # - m68k
+  #         # - microblaze
+  #         # - mipsel
+  #         # - mips
+  #         # - mips64
+  #         # - mips64el
+  #         # - sh4
+  #         # - ppc64
+  #         # - or32
+  #         # - sh4eb
+  #         # - xtensaeb
+  #         # - xtensa
+  #         # - cdrom
+  #         # - nbd
+  #         # - img
+  #         # - io
+  #         # - boot-command
+  #         # - ivshmem
+  #         # - ksm
 
 # # qemu/base
 # # qemu/tools
