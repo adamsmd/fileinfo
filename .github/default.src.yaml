@@ -8,15 +8,12 @@
       - shell: C:\msys64\usr\bin\bash.exe {0}
         run: tar -xvf fileinfo.tar
       - run: dir
-      - run: |
-          cmd /c "'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat' -arch=amd64 -host_arch=amd64
-          set >env.txt
-          cl -help"
+      - run: cmd /c "C:\Program Files\ (x86)\Microsoft\ Visual\ Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat -arch=amd64 -host_arch=amd64 & set" >env.txt
       - shell: C:\msys64\usr\bin\bash.exe {0}
         run: |
           pwd
           ls
-
+          sed -e 's/;/:/' env.txt
 
 # Path=C:\Program Files\PowerShell\7
 # C:\Program Files\MongoDB\Server\5.0\bin
