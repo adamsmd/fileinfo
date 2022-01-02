@@ -136,6 +136,7 @@ jobs:
 
           tar -xvf fileinfo.tar
           ./configure
+          cat config.log
           make check
       - run: dir
       - run: .\fileinfo-fields-dynamic
