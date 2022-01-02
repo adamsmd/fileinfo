@@ -97,9 +97,9 @@ jobs:
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - run: dir
-      - run: Install-Module -help
+      - run: Install-Module --help
       - run: Install-Module Pscx -Scope CurrentUser
-      - run: Invoke-BatchFile -help
+      - run: Invoke-BatchFile --help
       - run: |
           dir
           call 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat' amd64
