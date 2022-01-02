@@ -48,14 +48,13 @@ AC_TYPE_SIZE_T
 # AC_CHECK_TYPE([struct stat], [use_stat=yes], [], [[#include <sys/stat.h>]])
 
 AC_CHECK_TYPE([struct statx], [], [], [[#include <linux/stat.h>]])
-AC_CHECK_TYPES([ \
-  struct _stat64, \
-  struct stat, \
-  struct stat64, \
-  ], [], [], [[#include <sys/stat.h>]])
-AC_CHECK_TYPES([ \
-  ptrdiff_t \
-])
+AC_CHECK_TYPES([
+  struct _stat64,
+  struct stat,
+  struct stat64],
+  [], [], [[#include <sys/stat.h>]])
+AC_CHECK_TYPES([
+  ptrdiff_t])
 
 # Setup include headers and typedefs for including stat
 AH_TEMPLATE([HAVE_STRUCT_STATX], [Define to 1 if we should use the `stat' function.])
