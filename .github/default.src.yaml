@@ -8,43 +8,188 @@
       - shell: C:\msys64\usr\bin\bash.exe {0}
         run: tar -xvf fileinfo.tar
       - run: dir
-
-      - shell: cmd /c "C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat -arch=amd64 -host_arch=amd64 & C:\msys64\usr\bin\bash.exe {0}"
+      - shell: C:\msys64\usr\bin\bash.exe {0}
         run: |
-          exec 2>&1
-          set +e
-          set -x
-          PATH=''
-          PATH="$PATH:/c/msys64/usr/bin"
-          PATH="$PATH:/c/vcpkg"
-          PATH="$PATH:/c/tools/zstd"
-          PATH="$PATH:/c/hostedtoolcache/windows/stack/2.7.3/x64"
-          PATH="$PATH:/c/Program Files (x86)/Microsoft SDKs/Azure/CLI2/wbin"
-          PATH="$PATH:/c/ProgramData/kind"
-          PATH="$PATH:/c/Windows/system32"
-          PATH="$PATH:/c/Windows"
-          PATH="$PATH:/c/Windows/System32/Wbem"
-          PATH="$PATH:/c/Windows/System32/WindowsPowerShell/v1.0"
-          PATH="$PATH:/c/Windows/System32/OpenSSH"
-          PATH="$PATH:/c/Program Files/Docker"
-          PATH="$PATH:/c/Program Files/PowerShell/7"
-          PATH="$PATH:/c/Program Files/OpenSSL/bin"
-          PATH="$PATH:/c/Program Files/CMake/bin"
-          PATH="$PATH:/c/Users/runneradmin/AppData/Local/Microsoft/WindowsApps"
+          query_vcvarsall() {
+            local envars=$*
 
-          # PATH="$PATH:/c/ProgramData/Chocolatey/bin" # has GCC
-          # PATH="$PATH:/c/Strawberry/c/bin" # has GCC
+            (cd '/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC' &&
+            cmd /c "VcVarsAll.bat amd64 && c:/msys64/usr/bin/bash -c 'printenv $envars'")
+          }
+          query_vsvarsall PATH
+          export PATH="$(query_vsvarsall PATH)"
 
-          # PATH="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64:$PATH"
-          PATH="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX86/x86:$PATH"
-
-          pwd
-          ls
+          dir
           echo 'int main(void) { return 0; }' >test.c
           cl test.c
-          ls
+          dir
 
 
+
+      # - shell: cmd
+      #   run: |
+      #     Path=''
+      #     Path="%Path%;C:/msys64/usr/bin"
+      #     Path="%Path%;C:/vcpkg"
+      #     Path="%Path%;C:/tools/zstd"
+      #     Path="%Path%;C:/hostedtoolcache/windows/stack/2.7.3/x64"
+      #     Path="%Path%;C:/Program Files (x86)/Microsoft SDKs/Azure/CLI2/wbin"
+      #     Path="%Path%;C:/ProgramData/kind"
+      #     Path="%Path%;C:/Windows/system32"
+      #     Path="%Path%;C:/Windows"
+      #     Path="%Path%;C:/Windows/System32/Wbem"
+      #     Path="%Path%;C:/Windows/System32/WindowsPowerShell/v1.0"
+      #     Path="%Path%;C:/Windows/System32/OpenSSH"
+      #     Path="%Path%;C:/Program Files/Docker"
+      #     Path="%Path%;C:/Program Files/PowerShell/7"
+      #     Path="%Path%;C:/Program Files/OpenSSL/bin"
+      #     Path="%Path%;C:/Program Files/CMake/bin"
+      #     Path="%Path%;C:/Users/runneradmin/AppData/Local/Microsoft/WindowsApps"
+
+      #     # PATH="%PATH%:/c/ProgramData/Chocolatey/bin" # has GCC
+      #     # PATH="%PATH%:/c/Strawberry/c/bin" # has GCC
+
+      #     # PATH="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64:%PATH%"
+      #     Path="C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX86/x86:%Path%"
+
+      #     C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat -arch=amd64 -host_arch=amd64
+      #     dir
+      #     echo 'int main(void) { return 0; }' >test.c
+      #     cl test.c
+      #     dir
+
+# Microsoft Visual Studio 14.0/VC/vcvarsall.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvarsall.bat
+
+
+# # find Microsoft\ Visual\ Studio/2019/Enterprise/ -iname \*.bat
+# Microsoft Visual Studio/2019/Enterprise/Apps/apache-ant-1.9.3/bin/ant.bat
+# Microsoft Visual Studio/2019/Enterprise/Apps/apache-ant-1.9.3/bin/antRun.bat
+# Microsoft Visual Studio/2019/Enterprise/Apps/apache-ant-1.9.3/bin/lcp.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.20/Modules/Squish4RunTestCase.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.20/Modules/SquishRunTestCase.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Core/debugpy/_vendored/pydevd/pydevd_attach_to_process/windows/compile_windows.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/condabin/activate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/condabin/conda.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/condabin/conda_auto_activate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/condabin/conda_hook.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/condabin/deactivate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/condabin/rename_tmp.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/condabin/_conda_activate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/ctypes/macholib/fetch_macholib.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/idlelib/idle.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/site-packages/conda/shell/condabin/activate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/site-packages/conda/shell/condabin/conda.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/site-packages/conda/shell/condabin/conda_auto_activate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/site-packages/conda/shell/condabin/conda_hook.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/site-packages/conda/shell/condabin/deactivate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/site-packages/conda/shell/condabin/rename_tmp.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/site-packages/conda/shell/condabin/_conda_activate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/site-packages/conda/shell/Library/bin/conda.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/site-packages/conda/shell/Scripts/activate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/venv/scripts/nt/activate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/venv/scripts/nt/deactivate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Library/bin/conda.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Scripts/activate.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/PreEmptiveSolutions/DotfuscatorCE/dfPrompt.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/tjj34kbw.xsj/Scripts/WslRunner.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/ProjectTemplates/VC/Cross Platform/Android/1033/GradleApplication/gradlew.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/ProjectTemplates/VC/Cross Platform/Android/1033/GradleLibrary/gradlew.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/LaunchDevCmd.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/core/dotnet.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/core/msbuild.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/core/parse_cmd.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/core/vsdevcmd_end.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/core/vsdevcmd_start.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/core/winsdk.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/clang_cl.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/cmake.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/ConnectionManagerExe.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/devinit.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/fsharp.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/html_help.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/netfxsdk.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/perf_tools.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/roslyn.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/team_explorer.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/testwindow.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/vcvars/vcvars140.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/vcvars.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/vsicvars.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/vsdevcmd/ext/vssdk.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/VsDevCmd.bat
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/VsMSBuildCmd.bat
+# Microsoft Visual Studio/2019/Enterprise/Linux/gcc_arm/bin/gccvar.bat
+# Microsoft Visual Studio/2019/Enterprise/MSBuild/Microsoft/VisualStudio/NodeJs/node_modules/npm/make.bat
+# Microsoft Visual Studio/2019/Enterprise/MSBuild/Microsoft/VisualStudio/NodeJs/node_modules/npm/node_modules/node-gyp/gyp/gyp.bat
+# Microsoft Visual Studio/2019/Enterprise/MSBuild/Microsoft/VisualStudio/NodeJs/node_modules/npm/node_modules/node-gyp/gyp/samples/samples.bat
+# Microsoft Visual Studio/2019/Enterprise/MSBuild/Xamarin/Android/proguard/bin/proguard.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars32.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvarsall.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvarsamd64_arm.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvarsamd64_arm64.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvarsamd64_x86.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvarsx86_amd64.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvarsx86_arm.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvarsx86_arm64.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Tools/Llvm/bin/scan-build.bat
+# Microsoft Visual Studio/2019/Enterprise/VC/Tools/Llvm/x64/bin/scan-build.bat
+
+# # find Microsoft\ Visual\ Studio/2019/Enterprise/ -iname \*.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/NuGet/Modules/NuGet/Add-WrapperMembers.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/CommonExtensions/Microsoft/NuGet/Modules/NuGet/Profile.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/site-packages/conda/shell/condabin/conda-hook.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/Lib/venv/scripts/nt/Activate.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/Microsoft/Python/Miniconda/Miniconda3-x64/shell/condabin/conda-hook.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/Get-ServiceFabricApplicationWithContainerStatus.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1028/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1029/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1031/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1033/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1036/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1040/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1041/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1042/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1045/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1046/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1049/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/1055/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/2052/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ItemTemplates/FabricApplication/3082/ItemTemplate.PowerShellScript/Script.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1028/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1029/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1031/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1033/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1036/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1040/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1041/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1042/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1045/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1046/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1049/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/1055/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/2052/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/IDE/Extensions/n02snpa1.o5j/ProjectTemplates/FabricApplication/3082/ProjectTemplate.FabricApplication/Scripts/Deploy-FabricApplication.ps1
+# Microsoft Visual Studio/2019/Enterprise/Common7/Tools/Launch-VsDevShell.ps1
+# Microsoft Visual Studio/2019/Enterprise/MSBuild/Microsoft/VisualStudio/v16.0/AppxPackage/Add-AppDevPackage.ps1
+# Microsoft Visual Studio/2019/Enterprise/MSBuild/Microsoft/VisualStudio/v16.0/AppxPackage/Install.ps1
+# Microsoft Visual Studio/2019/Enterprise/MSBuild/Microsoft/VisualStudio/v16.0/AppxPackage/LogSideloadingTelemetry.ps1
+
+# # find Microsoft\ Visual\ Studio\ 14.0/ -iname \*.bat                                                                                                                                                              
+# Microsoft Visual Studio 14.0/Common7/Tools/VCVarsPhoneQueryRegistry.bat
+# Microsoft Visual Studio 14.0/Common7/Tools/vcvarsqueryregistry.bat
+# Microsoft Visual Studio 14.0/Common7/Tools/vsvars32.bat
+# Microsoft Visual Studio 14.0/VC/bin/amd64/vcvars64.bat
+# Microsoft Visual Studio 14.0/VC/bin/amd64_arm/vcvarsamd64_arm.bat
+# Microsoft Visual Studio 14.0/VC/bin/amd64_x86/vcvarsamd64_x86.bat
+# Microsoft Visual Studio 14.0/VC/bin/vcvars32.bat
+# Microsoft Visual Studio 14.0/VC/bin/vcvarsphoneall.bat
+# Microsoft Visual Studio 14.0/VC/bin/vcvarsphonex86.bat
+# Microsoft Visual Studio 14.0/VC/bin/x86_amd64/vcvarsx86_amd64.bat
+# Microsoft Visual Studio 14.0/VC/bin/x86_arm/vcvarsphonex86_arm.bat
+# Microsoft Visual Studio 14.0/VC/bin/x86_arm/vcvarsx86_arm.bat
+# Microsoft Visual Studio 14.0/VC/vcvarsall.bat
 
 
       # - run: cmd /c "C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat -arch=amd64 -host_arch=amd64 & set" >env.txt
