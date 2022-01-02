@@ -140,11 +140,11 @@ jobs:
         run: |
           PATH=''
           PATH="$PATH:/c/msys64/usr/bin"
-          PATH="$PATH:/c/vcpkg"
-          PATH="$PATH:/c/tools/zstd"
-          PATH="$PATH:/c/hostedtoolcache/windows/stack/2.7.3/x64"
-          PATH="$PATH:/c/Program Files (x86)/Microsoft SDKs/Azure/CLI2/wbin"
-          PATH="$PATH:/c/ProgramData/kind"
+          # PATH="$PATH:/c/vcpkg"
+          # PATH="$PATH:/c/tools/zstd"
+          # PATH="$PATH:/c/hostedtoolcache/windows/stack/2.7.3/x64"
+          # PATH="$PATH:/c/Program Files (x86)/Microsoft SDKs/Azure/CLI2/wbin"
+          # PATH="$PATH:/c/ProgramData/kind"
           PATH="$PATH:/c/Windows/system32"
           PATH="$PATH:/c/Windows"
 
