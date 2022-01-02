@@ -137,10 +137,13 @@ jobs:
           tar -xvf fileinfo.tar
           ./configure
           make check
+          which gcc
+          which cl
       - run: dir
       - run: .\fileinfo-fields-dynamic
-        # /c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/SDK/ScopeCppSDK/vc15/VC/bin/cl.exe
-        # /c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX64/arm/cl.exe
+  # TODO: windows: gcc (msys, mingw, cygwin), cl (all versions)
+# /c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/SDK/ScopeCppSDK/vc15/VC/bin/cl.exe
+# /c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX64/arm/cl.exe
 
 # github-virtual-environments:
 #   needs: bootstrap
