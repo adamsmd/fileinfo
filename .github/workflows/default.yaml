@@ -147,14 +147,14 @@ jobs:
           PATH="$PATH:/c/ProgramData/kind"
           PATH="$PATH:/c/Windows/system32"
           PATH="$PATH:/c/Windows"
-          PATH="$PATH:/c/Windows/System32/Wbem"
-          PATH="$PATH:/c/Windows/System32/WindowsPowerShell/v1.0"
-          PATH="$PATH:/c/Windows/System32/OpenSSH"
-          PATH="$PATH:/c/Program Files/Docker"
-          PATH="$PATH:/c/Program Files/PowerShell/7"
-          PATH="$PATH:/c/Program Files/OpenSSL/bin"
-          PATH="$PATH:/c/Program Files/CMake/bin"
-          PATH="$PATH:/c/Users/runneradmin/AppData/Local/Microsoft/WindowsApps"
+          # PATH="$PATH:/c/Windows/System32/Wbem"
+          # PATH="$PATH:/c/Windows/System32/WindowsPowerShell/v1.0"
+          # PATH="$PATH:/c/Windows/System32/OpenSSH"
+          # PATH="$PATH:/c/Program Files/Docker"
+          # PATH="$PATH:/c/Program Files/PowerShell/7"
+          # PATH="$PATH:/c/Program Files/OpenSSL/bin"
+          # PATH="$PATH:/c/Program Files/CMake/bin"
+          # PATH="$PATH:/c/Users/runneradmin/AppData/Local/Microsoft/WindowsApps"
 
           # PATH="$PATH:/c/ProgramData/Chocolatey/bin" # has GCC
           # PATH="$PATH:/c/Strawberry/c/bin" # has GCC
