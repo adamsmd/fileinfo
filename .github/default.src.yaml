@@ -81,9 +81,9 @@
           query_vcvarsall
           source <(query_vcvarsall)
 
-          ls
           ./configure
-          ls
+          make check
+          ./fileinfo-fields-dynamic
 
 
 

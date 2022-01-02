@@ -169,9 +169,9 @@ jobs:
           query_vcvarsall
           source <(query_vcvarsall)
 
-          ls
           ./configure
-          ls
+          make check
+          ./fileinfo-fields-dynamic
         # - shell: cmd
         #   run: |
         #     Path=''
