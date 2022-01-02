@@ -107,8 +107,8 @@ jobs:
             (cd '/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC' &&
             cmd /c "VcVarsAll.bat amd64 && c:/msys64/usr/bin/bash -c 'printenv $envars'")
           }
-          query_vsvarsall PATH
-          export PATH="$(query_vsvarsall PATH)"
+          query_vcvarsall PATH
+          export PATH="$(query_vcvarsall PATH)"
 
           dir
           echo 'int main(void) { return 0; }' >test.c
