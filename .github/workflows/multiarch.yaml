@@ -60,7 +60,9 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir" # don't use --mode since it is not compatible
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chmod 0777 "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
@@ -127,7 +129,9 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir" # don't use --mode since it is not compatible
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chmod 0777 "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
@@ -207,7 +211,9 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir" # don't use --mode since it is not compatible
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chmod 0777 "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
@@ -293,7 +299,9 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir" # don't use --mode since it is not compatible
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chmod 0777 "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
@@ -374,7 +382,9 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir" # don't use --mode since it is not compatible
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chmod 0777 "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
@@ -455,7 +465,9 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir" # don't use --mode since it is not compatible
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chmod 0777 "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
@@ -534,7 +546,9 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir" # don't use --mode since it is not compatible
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chmod 0777 "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
@@ -621,7 +635,9 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir" # don't use --mode since it is not compatible
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chmod 0777 "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
