@@ -129,7 +129,7 @@ jobs:
             local envars=$*
 
             (cd '/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build' &&
-            cmd /c "VcVarsAll.bat -no_logo amd64 && c:/msys64/usr/bin/bash -c 'export'")
+            cmd /c "VcVarsAll.bat amd64 >nul && c:/msys64/usr/bin/bash -c 'export'")
           }
           query_vcvarsall
           source <(query_vcvarsall)
