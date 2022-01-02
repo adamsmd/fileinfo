@@ -135,11 +135,13 @@ jobs:
           PATH="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64:$PATH"
 
           echo ------------------- which ------------------
+          ls "/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/"
           which gcc
           which cl
 
           tar -xvf fileinfo.tar
           ./configure
+          cat config.log
           make check
       - run: dir
       - run: .\fileinfo-fields-dynamic
