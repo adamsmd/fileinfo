@@ -98,8 +98,12 @@ jobs:
         with: {name: bootstrap-output}
       - run: dir
       - run: Install-Module --help
-      - run: Install-Module Pscx -Scope CurrentUser
-      - run: Invoke-BatchFile --help
+      - run: Install-Module Pscx -Confirm -Scope CurrentUser
+      - run: |
+          Invoke-BatchFile "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat"
+          echo "int main(void) { return 0; }" >test.c
+          cl test.c
+          dir
       - run: |
           dir
           call 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat' amd64
