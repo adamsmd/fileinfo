@@ -90,3 +90,14 @@ jobs:
         run: docker stop "$cont"
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
+  windows-shell:
+    needs: bootstrap
+    runs-on: windows-2019
+    # - windows-2022
+    # - windows-2019
+    # - windows-2016
+    steps:
+      - uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
