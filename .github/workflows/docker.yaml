@@ -157,6 +157,8 @@ jobs:
           - x86-64
           - armvirt-32 # Error relocating /bin/grep: reallocarray: symbol not found
           - armvirt-64 # Error relocating /bin/grep: reallocarray: symbol not found
+  # TODO: openwrt: https://hub.docker.com/r/openwrt/rootfs/tags
+
   docker-openmandriva:
     env: {image: "openmandriva/${{ matrix.version }}"}
     needs: bootstrap
@@ -656,6 +658,17 @@ jobs:
 
 # # qemu/base
 # # qemu/tools
+
+# Multics: https://hub.docker.com/r/rattydave/alpine-multics
+# Cray 1: https://hub.docker.com/r/rattydave/cray1
+# VM/370: https://hub.docker.com/r/rattydave/docker-ubuntu-hercules-vm370
+# MVS: https://hub.docker.com/r/rattydave/docker-ubuntu-hercules-mvs
+# System/370: https://hub.docker.com/r/rattydave/docker-ubuntu-hercules-tss
+# Multiple: https://hub.docker.com/r/rattydave/alpine-simh
+# Cloud 9: https://hub.docker.com/r/rattydave/cloud9
+
+# https://hub.docker.com/u/mintproject
+# https://hub.docker.com/u/voidlinux
 
 # Android
 #   Android Wear
