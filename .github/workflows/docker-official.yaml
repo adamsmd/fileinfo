@@ -81,13 +81,12 @@ jobs:
         run: docker exec --workdir="$workdir" "$cont" make
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
   ## Official Docker Images
-
   docker-alpine: # A distribution optimized for containers
     env: {image: "alpine:${{ matrix.version }}"}
     needs: bootstrap
@@ -141,34 +140,34 @@ jobs:
         run: docker exec --workdir="$workdir" "$cont" make
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
         platform:
-          - 386
+          # - 386
           - amd64
-          - arm/v6
-          - arm/v7
-          - arm64/v8
-          - ppc64le
-          - s390x
+          # - arm/v6
+          # - arm/v7
+          # - arm64/v8
+          # - ppc64le
+          # - s390x
         version:
           - latest
-          - '3.15'
-          - '3.14'
-          - '3.13'
-          - '3.12'
-          - '3.11'
-          - '3.10'
-          - '3.9'
-          - '3.8'
-          - '3.7'
-          - '3.6'
+          # - '3.15'
+          # - '3.14'
+          # - '3.13'
+          # - '3.12'
+          # - '3.11'
+          # - '3.10'
+          # - '3.9'
+          # - '3.8'
+          # - '3.7'
+          # - '3.6'
 
 # docker-ubuntu:
 #   env: { image: "ubuntu:${{ matrix.version }}" }

@@ -81,11 +81,11 @@ jobs:
         run: docker exec --workdir="$workdir" "$cont" make
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
   windows-shell:
     needs: bootstrap
     runs-on: windows-2019

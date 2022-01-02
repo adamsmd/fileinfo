@@ -23,17 +23,43 @@ AC_PROG_CXX # TODO: optional
 #### Checks for libraries.
 
 #### Checks for header files.
+AS_VAR_SET([ac_headers_h], ["src/headers.h"])
+AS_ECHO_N() >"$ac_headers_h"
+AC_DEFUN([CHECK_INCLUDE_HEADERS], [
+  AC_CHECK_HEADERS([$1])
+  # This implementation is similar to AX_AUTO_INCLUDE_HEADERS but does not use
+  # the depricated AC_FOREACH and I couldn't get AX_AUTO_INCLUDE_HEADERS to work
+  # anyway
+  m4_foreach_w([check_include_header], [$1], [
+    m4_pushdef([AX_IfDef], AS_TR_CPP(HAVE_[]check_include_header))dnl
+    cat >>"$ac_headers_h" <<EOT
+[#]ifdef AX_IfDef
+[#] include <check_include_header>
+[#]endif
+
+EOT
+])
+]) # AUTO_HEADERS
+
 AC_HEADER_ASSERT
 AC_HEADER_MAJOR
 AC_HEADER_STDBOOL
 
-AC_CHECK_HEADERS([ \
+CHECK_INCLUDE_HEADERS([ \
+  assert.h \
   linux/fcntl.h \
   linux/stat.h \
+  stdbool.h \
   stddef.h \
+  sys/mkdev.h \
   sys/stat.h \
+  sys/sysmacros.h \
+  sys/types.h \
   unistd.h \
 ])
+
+# This header cannot be included at the same time as linux/fcntl.h
+AC_CHECK_HEADERS([fcntl.h])
 
 #### Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_UINT8_T

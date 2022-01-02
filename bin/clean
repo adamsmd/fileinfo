@@ -44,6 +44,7 @@ rm -rf -- \
   fileinfo-uninstalled.pc \
   fileinfo-uninstalled.sh \
   fileinfo.pc.in \
+  src/headers.h \
 
 echo "Removing files created by make"
 rm -rf -- \

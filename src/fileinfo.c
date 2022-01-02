@@ -2,33 +2,13 @@
 #include "fileinfo/static.h"
 
 #include "config.h"
+#include "headers.h"
 
-#ifdef HAVE_STDBOOL_H
-#include <stdbool.h>
-#endif
-
-#ifdef HAVE_STDDEF_H
-#include <stddef.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#ifdef HAVE_LINUX_FCNTL_H
-#include <linux/fcntl.h> /* Definition of AT_* constants */
-#endif
-
-#ifdef HAVE_LINUX_STAT_H
-#include <linux/stat.h>
+/* We cannot include fnctl.h and linux/fnctl.h at the same time */
+#ifndef HAVE_LINUX_FCNTL_H
+#  ifdef HAVE_FNCTL_H
+#    include <fnctl.h>
+#  endif
 #endif
 
 #ifdef HAVE_STRUCT_STATX
@@ -74,15 +54,14 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
     }
     /* TODO: if use_statx make_dev(base) */
   #elif defined(HAVE_FSTATAT64) || defined(HAVE_FSTATAT)
-    if (0 ==
-      #if defined(HAVE_FSTATAT64)
-        fstatat64
-      #elif defined(HAVE_FSTATAT)
-        fstatat
-      #else
-        #error "internal error: impossible case"
-      #endif
-      (AT_FDCWD, pathname, &output->stat, follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW)) {
+    #if defined(HAVE_FSTATAT64)
+      #define STAT fstatat64
+    #elif defined(HAVE_FSTATAT)
+      #define STAT fstatat
+    #else
+      #error "internal error: impossible case"
+    #endif
+    if (0 == STAT(AT_FDCWD, pathname, &output->stat, follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW)) {
       return true;
     } else {
       return false;
@@ -120,4 +99,4 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
   return 0;
 }
 
-// TODO: intmax_t fileinfo_get_field (size_t index, fileinfo const *)
+/* TODO: intmax_t fileinfo_get_field (size_t index, fileinfo const *) */
