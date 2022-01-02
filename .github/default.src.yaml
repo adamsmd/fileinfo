@@ -37,16 +37,23 @@
           PATH="$PATH:/c/Program Files/CMake/bin"
           PATH="$PATH:/c/Users/runneradmin/AppData/Local/Microsoft/WindowsApps"
 
-          PATH="$PATH:/c/ProgramData/Chocolatey/bin"
+          # PATH="$PATH:/c/ProgramData/Chocolatey/bin" # has GCC
           PATH="$PATH:/c/Strawberry/c/bin"
 
           PATH="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64:$PATH"
 
+          echo ------------------- cho ------------------
+          ls /c/ProgramData/Chocolatey/bin # has GCC
+          echo ------------------- straw ------------------
+          ls /c/Strawberry/c/bin
+
+          echo ------------------- which ------------------
+          which gcc
+          which cl
+
           tar -xvf fileinfo.tar
           ./configure
           make check
-          which gcc
-          which cl
       - run: dir
       - run: .\fileinfo-fields-dynamic
   # TODO: windows: gcc (msys, mingw, cygwin), cl (all versions)
