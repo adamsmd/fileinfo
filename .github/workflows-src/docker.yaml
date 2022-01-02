@@ -46,14 +46,11 @@
           - '16.04' # works
           - '14.04' # works
         exclude:
-          - platform: riscv64
-            version: '18.04'
-          - platform: riscv64
-            version: '16.04'
-          - platform: riscv64
-            version: '14.04'
-          - platform: s390x
-            version: '14.04'
+          - { version: '18.04', platform: riscv64 }
+          - { version: '16.04', platform: riscv64 }
+          - { version: '14.04', platform: riscv64 }
+          - { version: '14.04', platform: s390x }
+
 
   docker-centos:
     env: { image: "debian:${{ matrix.version }}" }
@@ -69,13 +66,13 @@
           - { version: 8, platform: amd64 }
           - { version: 8, platform: arm64/v8 }
           - { version: 8, platform: ppc64le }
-          # - { version: 7, platform: 386 }
-          # - { version: 7, platform: amd64 }
-          # - { version: 7, platform: arm/v7 }
-          # - { version: 7, platform: arm64/v8 }
-          # - { version: 7, platform: ppc64le }
-          # - { version: 6, platform: 386 }
-          # - { version: 6, platform: amd64 }
+          - { version: 7, platform: 386 }
+          - { version: 7, platform: amd64 }
+          - { version: 7, platform: arm/v7 }
+          - { version: 7, platform: arm64/v8 }
+          - { version: 7, platform: ppc64le }
+          - { version: 6, platform: 386 }
+          - { version: 6, platform: amd64 }
 
   docker-debian:
     env: { image: "debian:${{ matrix.version }}-slim" }
@@ -181,18 +178,50 @@
           - noetic
           - melodic
         include:
-          - { platform: arm/v7, version: noetic }
-          - { platform: arm/v7, version: melodic }
+          - { version: noetic, platform: arm/v7 }
+          - { version: melodic, platform: arm/v7 }
 
-## VmWare Photon
-# - photon:latest # needs coreutils but is also missing `as`
+  docker-photon: # VmWare Photon
+    env: { image: "photon:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - latest # needs coreutils but is also missing `as`
 
-# - clearlinux:latest # slow install
+  docker-clearlinux:
+    env: { image: "clearlinux:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - clearlinux:latest # slow install
 
-# - mageia:latest # slow install
-# - mageia:cauldron # slow install
-# - mageia:8 # slow install
-# - mageia:7 # slow install
+  docker-mageia:
+    env: { image: "mageia:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - latest # slow install
+          - cauldron # slow install
+          - 8 # slow install
+          - 7 # slow install
 
   docker-rockylinux:
     env: { image: "rockylinux:${{ matrix.version }}" }
@@ -250,9 +279,9 @@
           - arm64/v8
         version:
           - latest
-          # - minimal # no c compiler
+          - minimal # no c compiler
           - 8
-          # - 7 # no c compiler
+          - 7 # no c compiler
 
   docker-alt:
     env: { image: "alt:${{ matrix.version }}" }
@@ -285,33 +314,153 @@
         platform:
           - amd64
         version:
-          # - latest # no c compiler
-          # - base # no c compiler
+          - latest # no c compiler
+          - base # no c compiler
           - base-devel # works
 
+  docker-openwrtorg:
+    env: { image: "openwrtorg/rootfs:${{ matrix.arch }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        arch:
+          - x86-64 # works
+          - armvirt-32 # Error relocating /bin/grep: reallocarray: symbol not found
+          - armvirt-64 # Error relocating /bin/grep: reallocarray: symbol not found
 
-# - openwrtorg/rootfs:x86-64 # no c compiler
-# - openwrtorg/rootfs:armvirt-32
-# - openwrtorg/rootfs:armvirt-64
+  docker-openmandriva:
+    env: { image: "openmandriva/${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        arch:
+          - cooker # no c compiler
+          - '4.2' # no c compiler
+          - '4.0'
+          - '3.0'
 
-# - openmandriva/cooker # no c compiler
-# - openmandriva/4.2 # no c compiler
-# - openmandriva/4.0
-# - openmandriva/3.0
+  docker-opensuse:
+    env: { image: "opensuse/${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - leap:latest
+          - leap:15
+          - leap:42
+          - tumbleweed # no c compiler
+          - s390x
 
-# - opensuse/leap:latest
-# - opensuse/leap:15
-# - opensuse/leap:42
-# - opensuse/tumbleweed # no c compiler
-# - opensuse/s390x
+  docker-slackware:
+    env: { image: "vbatts/slackware:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - latest # no c compiler
+          - current
+          - '14.2'
+          - '14.1'
+          - '14.0'
+          - '13.1'
+          - '13.0'
 
-# - vbatts/slackware:latest # no c compiler
-# - vbatts/slackware:current
-# - vbatts/slackware:14.2
-# - vbatts/slackware:14.1
-# - vbatts/slackware:14.0
-# - vbatts/slackware:13.1
-# - vbatts/slackware:13.0
+  # C compiler doesn't work
+  docker-chromebrew: # ChromeOS
+    env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - armv7l-fievel-m92
+          - i686-alex-m58
+          - x86_64-kip-m92
+          - x86_64-nocturne-m90
+        include:
+          - { version: armv7l-fievel-m91, platform: arm }
+
+  docker-gentoo:
+    env: { image: "gentoo/stage3:${{ matrix.tag }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { tag: amd64-hardened-nomultilib-openrc, platform: amd64 }
+          - { tag: amd64-hardened-openrc, platform: amd64 }
+          - { tag: amd64-musl-hardened, platform: amd64 }
+          - { tag: amd64-musl, platform: amd64 }
+          - { tag: amd64-nomultilib-openrc, platform: amd64 }
+          - { tag: amd64-nomultilib-systemd, platform: amd64 }
+          - { tag: amd64-openrc, platform: amd64 }
+          - { tag: amd64-systemd, platform: amd64 }
+          - { tag: arm64-systemd, platform: arm64 }
+          - { tag: arm64, platform: arm64 }
+          - { tag: armv5tel-openrc, platform: arm }
+          - { tag: armv5tel-systemd, platform: arm }
+          - { tag: armv6j_hardfp-openrc, platform: arm }
+          - { tag: armv6j_hardfp-systemd, platform: arm }
+          - { tag: armv6j-openrc, platform: arm }
+          - { tag: armv6j-systemd, platform: arm }
+          - { tag: armv7a_hardfp-openrc, platform: arm }
+          - { tag: armv7a_hardfp-systemd, platform: arm }
+          - { tag: armv7a-openrc, platform: arm }
+          - { tag: armv7a-systemd, platform: arm }
+          - { tag: hardened-nomultilib, platform: amd64 }
+          - { tag: hardened, platform: 386 }
+          - { tag: hardened, platform: amd64 }
+          - { tag: i686-hardened-openrc, platform: 386 }
+          - { tag: i686-musl, platform: 386 }
+          - { tag: i686-openrc, platform: 386 }
+          - { tag: i686-systemd, platform: 386 }
+          - { tag: latest, platform: 386 }
+          - { tag: latest, platform: amd64 }
+
+          # - tag: latest linux            platform: arm/v5
+          # - tag: musl linux/386            platform: linux/amd64
+          # - tag: musl-hardened            platform: linux/amd64
+          # - tag: musl-hardened            platform: linux/ppc64le
+          # - tag: nomultilib            platform: linux/amd64
+          # - tag: nomultilib-systemd            platform: linux/amd64
+          # - tag: ppc64le-musl-hardened-openrc            platform: linux/ppc64le
+          # - tag: ppc64le-openrc            platform: linux/ppc64le
+          # - tag: ppc64le-systemd            platform: linux/ppc64le
+          # - tag: rv64_lp64-openrc            platform: linux/riscv64
+          # - tag: rv64_lp64-systemd            platform: linux/riscv64
+          # - tag: rv64_lp64d-openrc            platform: linux/riscv64
+          # - tag: rv64_lp64d-systemd            platform: linux/riscv64
+          # - tag: s390x            platform: linux/s390x
+          # - tag: systemd            platform: linux/386
+          # - tag: systemd            platform: linux/amd64
+          # - tag: systemd linux            platform: arm/v5
+
 
 ## TODO: KaOS
 ## TODO: mint
@@ -419,127 +568,6 @@
 # # qemu/base
 # # qemu/tools
 
-  # # C compiler doesn't work
-  # docker-chromebrew: # ChromeOS
-  #   env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       version:
-  #         - armv7l-fievel-m92
-  #         - i686-alex-m58
-  #         - x86_64-kip-m92
-  #         - x86_64-nocturne-m90
-  #       platform:
-  #         - amd64
-  #       include:
-  #         - version: armv7l-fievel-m91
-  #           platform: arm
-
-  # docker-gentoo:
-  #   env: { image: "gentoo/stage3:${{ matrix.tag }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       include:
-  #         - tag: latest
-  #           platform: 386
-  #         - tag: latest
-  #           platform: amd64
-  #         - tag: latest linux
-  #           platform: arm/v5
-  #         - tag: amd64-hardened-nomultilib-openrc
-  #           platform: amd64
-  #         - tag: amd64-hardened-openrc
-  #           platform: amd64
-  #         - tag: amd64-musl
-  #           platform: amd64
-  #         - tag: amd64-musl-hardened
-  #           platform: amd64
-  #         - tag: amd64-nomultilib-openrc
-  #           platform: amd64
-  #         - tag: amd64-nomultilib-systemd
-  #           platform: amd64
-  #         - tag: amd64-openrc
-  #           platform: amd64
-  #         - tag: amd64-systemd
-  #           platform: amd64
-  #         - tag: arm64
-  #           platform: arm64
-  #         - tag: arm64-systemd
-  #           platform: arm64
-  #         - tag: armv5tel-openrc
-  #           platform: arm
-  #         - tag: armv5tel-systemd
-  #           platform: arm
-  #         - tag: armv6j_hardfp-openrc
-  #           platform: arm
-  #         - tag: armv6j_hardfp-systemd
-  #           platform: arm
-  #         - tag: armv6j-openrc
-  #           platform: arm
-  #         - tag: armv6j-systemd
-  #           platform: arm
-  #         - tag: armv7a_hardfp-openrc
-  #           platform: arm
-  #         - tag: armv7a_hardfp-systemd
-  #           platform: arm
-  #         - tag: armv7a-openrc
-  #           platform: arm
-  #         - tag: armv7a-systemd
-  #           platform: arm
-  #         - tag: hardened
-  #           platform: 386
-  #         - tag: hardened
-  #           platform: amd64
-  #         - tag: hardened-nomultilib
-  #           platform: amd64
-  #         - tag: i686-hardened-openrc
-  #           platform: 386
-  #         - tag: i686-musl
-  #           platform: 386
-  #         - tag: i686-openrc
-  #           platform: 386
-  #         - tag: i686-systemd
-  #           platform: 386
-  #         - tag: musl linux/386
-  #           platform: linux/amd64
-  #         - tag: musl-hardened
-  #           platform: linux/amd64
-  #         - tag: musl-hardened
-  #           platform: linux/ppc64le
-  #         - tag: nomultilib
-  #           platform: linux/amd64
-  #         - tag: nomultilib-systemd
-  #           platform: linux/amd64
-  #         - tag: ppc64le-musl-hardened-openrc
-  #           platform: linux/ppc64le
-  #         - tag: ppc64le-openrc
-  #           platform: linux/ppc64le
-  #         - tag: ppc64le-systemd
-  #           platform: linux/ppc64le
-  #         - tag: rv64_lp64-openrc
-  #           platform: linux/riscv64
-  #         - tag: rv64_lp64-systemd
-  #           platform: linux/riscv64
-  #         - tag: rv64_lp64d-openrc
-  #           platform: linux/riscv64
-  #         - tag: rv64_lp64d-systemd
-  #           platform: linux/riscv64
-  #         - tag: s390x
-  #           platform: linux/s390x
-  #         - tag: systemd
-  #           platform: linux/386
-  #         - tag: systemd
-  #           platform: linux/amd64
-  #         - tag: systemd linux
-  #           platform: arm/v5
 
 
 # Android
@@ -555,14 +583,9 @@
 # TODO: filesystems: zfs, btrfs, ext4
 # TODO: setup-qemu
 
-# act --container-architecture string    Architecture which should be used to run containers, e.g.: linux/amd64. If not specified, will use host default architecture. Requires Docker server API Version 1.41+. Ignored on earlier Docker server platforms.
-
-
 #arm32v5
 #winamd64
 #windows-amd64
-
-
 
 ### Arch as user
 # amd64

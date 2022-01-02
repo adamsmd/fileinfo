@@ -50,46 +50,47 @@ jobs:
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
-      # Check platforms
-      - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
-      # # Create the working directory
-      # - if: ${{ env.cont != 0 }}
-      #   run: echo "workdir=/workdir" >> $GITHUB_ENV
-      # - if: ${{ env.cont != 0 }}
-      #   run: echo "workdir=$workdir"
-      # - if: ${{ env.cont != 0 }}
-      #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
+        # # Check platforms
+        # - run: uname -a
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec "$cont" uname -a
 
-      # # Copy the artifact to the working directory
-      # - if: ${{ env.cont != 0 }}
-      #   uses: actions/download-artifact@v2
-      #   with: { name: bootstrap-output }
-      # - if: ${{ env.cont != 0 }}
-      #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
+        # # Create the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=/workdir" >> $GITHUB_ENV
+        # - if: ${{ env.cont != 0 }}
+        #   run: echo "workdir=$workdir"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --user=root "$cont" mkdir --mode=0777 "$workdir"
 
-      # # Install dependencies
-      # - if: ${{ env.cont != 0 }}
-      #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+        # # Copy the artifact to the working directory
+        # - if: ${{ env.cont != 0 }}
+        #   uses: actions/download-artifact@v2
+        #   with: { name: bootstrap-output }
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker cp - <fileinfo.tar "$cont":"$workdir"
 
-      # # Build
-      # - if: ${{ env.cont != 0 }}
-      #   run: docker exec --workdir="$workdir" "$cont" ./configure
-      # - if: ${{ env.cont != 0 }}
-      #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      # - if: ${{ env.cont != 0 }}
-      #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      # - if: ${{ env.cont != 0 }}
-      #   run: docker exec --workdir="$workdir" "$cont" make
-      # - if: ${{ env.cont != 0 }}
-      #   run: docker exec --workdir="$workdir" "$cont" make check
+        # # Install dependencies
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" bin/install-deps
 
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+        # # Build
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" ./configure
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker exec --workdir="$workdir" "$cont" make check
+
+        # # Cleanup
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker stop "$cont"
+        # - if: ${{ env.cont != 0 }}
+        #   run: docker rm --force --volumes "$cont"
   github-virtual-environments:
     needs: bootstrap
     runs-on: ${{ matrix.os }}

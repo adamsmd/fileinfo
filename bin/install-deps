@@ -3,7 +3,7 @@
 # Ensure that a c compiler and make are installed.  (This script is mostly to
 # for Docker containers, which often don't have these already installed.)
 
-note_using="::debug::Installing dependencies using"
+note_using="Installing dependencies using"
 
 if apt-get --version >/dev/null 2>&1; then
   echo "$note_using" apt-get
@@ -25,6 +25,11 @@ elif swupd --version >/dev/null 2>&1; then
 elif urpmi --version >/dev/null 2>&1; then
   echo "$note_using" swupd
   urpmi --auto gcc make
+elif opkg --version >/dev/null 2>&1; then
+  echo "$note_using" opkg
+  mkdir /var/lock || true
+  opkg update
+  opkg install grep gcc make
 else
   echo "$note_using" '<nothing>'
 fi
