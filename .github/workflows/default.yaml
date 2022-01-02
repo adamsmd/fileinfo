@@ -99,31 +99,48 @@ jobs:
       - run: dir
       # - run: Install-Module Pscx -Confirm -Scope CurrentUser
       - run: |
-          function Invoke-BatchFile
-          {
-              param([string]$Path, [string]$Parameters)
+          # function Invoke-BatchFile
+          # {
+          #     param([string]$Path, [string]$Parameters)
 
-              $tempFile = [IO.Path]::GetTempFileName()
+          #     $tempFile = [IO.Path]::GetTempFileName()
 
-              ## Store the output of cmd.exe.  We also ask cmd.exe to output
-              ## the environment table after the batch file completes
-              cmd.exe /c " `"$Path`" $Parameters && set " > $tempFile
+          #     ## Store the output of cmd.exe.  We also ask cmd.exe to output
+          #     ## the environment table after the batch file completes
+          #     cmd.exe /c " `"$Path`" $Parameters && set " > $tempFile
 
-              ## Go through the environment variables in the temp file.
-              ## For each of them, set the variable in our local environment.
-              Get-Content $tempFile | Foreach-Object {
-                  if ($_ -match "^(.*?)=(.*)$") {
-                      Set-Content "env:\$($matches[1])" $matches[2]
-                  }
-                  else {
-                      $_
-                  }
-              }
+          #     ## Go through the environment variables in the temp file.
+          #     ## For each of them, set the variable in our local environment.
+          #     Get-Content $tempFile | Foreach-Object {
+          #         if ($_ -match "^(.*?)=(.*)$") {
+          #             Set-Content "env:\$($matches[1])" $matches[2]
+          #         }
+          #         else {
+          #             $_
+          #         }
+          #     }
 
-              Remove-Item $tempFile
+          #     Remove-Item $tempFile
+          # }
+          # # Install-Module -Name Pscx -Confirm -RequiredVersion 3.3.2
+          # Android                 Google               'Microsoft Analysis Services'   'Microsoft Visual Studio 12.0'              NSIS                   'Windows Application Driver'   'Windows Photo Viewer'
+          # 'Application Verifier'  'HTML Help Workshop'  'Microsoft BizTalk Server'      'Microsoft Visual Studio 14.0'              NuGet                  'Windows Defender'             'Windows Portable Devices'
+          # 'Common Files'           IIS                  'Microsoft SDKs'                'Microsoft Visual Studio Tools for Unity'  'Open XML SDK'          'Windows Kits'                 'Windows Sidebar'
+          #  desktop.ini            'IIS Express'         'Microsoft SQL Server'          'Microsoft Web Tools'                       pipx                   'Windows Mail'                  WindowsPowerShell
+          #  dotnet                 'Inno Setup 6'        'Microsoft Visual Studio'        Microsoft.NET                              pipx_bin               'Windows Media Player'         'WiX Toolset v3.11'
+          # 'Epic Games'            'Internet Explorer'   'Microsoft Visual Studio 10.0'  'Mozilla Maintenance Service'              'Reference Assemblies'  'Windows Multimedia Platform'  'Workflow Manager Tools'
+          # 'GitHub CLI'             Microsoft            'Microsoft Visual Studio 11.0'   MSBuild                                    sbt                    'windows nt'                    Xamarin
+
+          # Invoke-BatchFile "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat"
+          # pushd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build"
+          pushd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools"
+          cmd /c "VsDevCmd.bat -arch=amd64 -host_arch=amd64&set " |
+          foreach {
+            if ($_ -match "=") {
+              $v = $_.split("="); set-item -force -path "ENV:\$($v[0])"  -value "$($v[1])"
+            }
           }
-          # Install-Module -Name Pscx -Confirm -RequiredVersion 3.3.2
-          Invoke-BatchFile "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat"
+          popd
           echo "int main(void) { return 0; }" >test.c
           cl test.c
           dir
