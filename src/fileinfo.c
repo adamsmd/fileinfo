@@ -15,7 +15,7 @@
 #include <sys/types.h>
 #endif
 
-#ifdef HAVE_SYS_TYPES_H
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 
@@ -31,7 +31,7 @@
 #include <linux/stat.h>
 #endif
 
-#ifdef USE_STATX
+#ifdef HAVE_STRUCT_STATX
   #ifdef HAVE_STATX
     /* Taken from `man statx` as the headers don't have this function.*/
     extern int statx(
@@ -63,7 +63,7 @@ size_t const fileinfo_fields_length = FILEINFO_FIELDS_LENGTH;
 /* TODO: define field accessors */
 
 int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *output) {
-  #if defined(USE_STATX)
+  #if defined(HAVE_STRUCT_STATX)
     /* TODO: dirfd support */
     int flags = follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW;
     if (0 == statx(AT_FDCWD, pathname, flags, STATX_ALL, &output->stat)) {
@@ -73,7 +73,7 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
       /* TODO: error based on errno */
     }
     /* TODO: if use_statx make_dev(base) */
-  #elif defined(USE_FSTATAT64) || defined(USE_FSTATAT)
+  #elif defined(HAVE_FSTATAT64) || defined(HAVE_FSTATAT)
     if (0 ==
       #if defined(USE_FSTATAT64)
         fstatat64
@@ -82,13 +82,13 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
       #else
         #error "TODO"
       #endif
-      (AT_FDCWD, pathconf, &output->stat, follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW)) {
+      (AT_FDCWD, pathname, &output->stat, follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW)) {
       return true;
     } else {
       return false;
       /* TODO: error based on errno */
     }
-  #elif defined(USE_STAT64) || defined(USE_STAT)
+  #elif defined(HAVE_STAT64) || defined(HAVE_STAT)
     if (0 ==
       follow_symlink ?
         #if defined(USE_STAT64)
@@ -110,6 +110,14 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
       return true;
     } else {
       return false;
+    }
+  #elif defined(HAVE__STAT64) /* TODO: _stat32? */
+    /* There is no lstat on windows */
+    if (0 == __stat64(pathname, &output->stat)) {
+      return true;
+    } else {
+      return false;
+      /* TODO: error based on errno */
     }
   #else
     #error "unimplemented"

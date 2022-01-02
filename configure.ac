@@ -42,16 +42,57 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_SIZE_T
 
-AC_CHECK_TYPE([struct statx], [use_statx=yes], [], [[#include <linux/stat.h>]])
-AC_CHECK_TYPE([struct stat64], [use_stat64=yes], [], [[#include <sys/stat.h>]])
-AC_CHECK_TYPE([struct stat], [use_stat=yes], [], [[#include <sys/stat.h>]])
+# AC_CHECK_TYPE([struct statx], [use_statx=yes], [], [[#include <linux/stat.h>]])
+# AC_CHECK_TYPE([struct stat64], [use_stat64=yes], [], [[#include <sys/stat.h>]])
+# AC_CHECK_TYPE([struct _stat64], [use_stat64=yes], [], [[#include <sys/stat.h>]])
+# AC_CHECK_TYPE([struct stat], [use_stat=yes], [], [[#include <sys/stat.h>]])
+
+AC_CHECK_TYPE([struct statx], [], [], [[#include <linux/stat.h>]])
+AC_CHECK_TYPES([ \
+  struct _stat64, \
+  struct stat, \
+  struct stat64, \
+  ], [], [], [[#include <sys/stat.h>]])
 AC_CHECK_TYPES([ \
   ptrdiff_t \
 ])
 
+# Setup include headers and typedefs for including stat
+AH_TEMPLATE([HAVE_STRUCT_STATX], [Define to 1 if we should use the `stat' function.])
+AS_IF(
+  [test "x$ac_cv_type_struct_statx" = xyes], [
+    AC_DEFINE(HAVE_STRUCT_STATX, 1)
+    declare_fileinfo_stat="
+      [#include <linux/stat.h>]
+      [typedef struct statx fileinfo_stat;]
+      "],
+  [test "x$ac_cv_type_struct_stat64" = xyes], [
+    declare_fileinfo_stat="
+      [#include <sys/stat.h>]
+      [typedef struct stat64 fileinfo_stat;]
+      "],
+  [test "x$ac_cv_type_struct__stat64" = xyes], [
+    declare_fileinfo_stat="
+      [#include <sys/stat.h>]
+      [typedef struct _stat64 fileinfo_stat;]
+      "],
+  [test "x$ac_cv_type_struct_stat" = xyes], [
+    declare_fileinfo_stat="
+      [#include <sys/stat.h>]
+      [typedef struct stat fileinfo_stat;]
+      "],
+  [AC_MSG_ERROR([cannot find `struct stat`])])
+AC_SUBST([DECLARE_FILEINFO_STAT], ["$declare_fileinfo_stat"])
+AM_SUBST_NOTMAKE([DECLARE_FILEINFO_STAT])
+preamble="
+  AC_INCLUDES_DEFAULT
+  $declare_fileinfo_stat
+  "
+
 #### Checks for library functions.
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([ \
+  _stat64 \
   fstat \
   fstatat \
   lstat \
@@ -332,36 +373,6 @@ AX_APPEND_COMPILE_FLAGS([-Wzero-length-bounds], [AM_CFLAGS])
 
 #### Helpers
 
-AH_TEMPLATE([USE_STATX], [Define to 1 if we should use the `statx' function.])
-AH_TEMPLATE([USE_STAT64], [Define to 1 if we should use the `stat64' function.])
-AH_TEMPLATE([USE_STAT], [Define to 1 if we should use the `stat' function.])
-AS_IF(
-  [test "x$use_statx" = xyes], [
-    AC_DEFINE(USE_STATX, 1)
-    declare_fileinfo_stat="
-      [#include <linux/stat.h>]
-      [typedef struct statx fileinfo_stat;]
-      "],
-  [test "x$use_stat64" = xyes], [
-    AC_DEFINE(USE_STAT64, 1)
-    declare_fileinfo_stat="
-      [#include <sys/stat.h>]
-      [typedef struct stat64 fileinfo_stat;]
-      "],
-  [test "x$use_stat" = xyes], [
-    AC_DEFINE(USE_STAT, 1)
-    declare_fileinfo_stat="
-      [#include <sys/stat.h>]
-      [typedef struct stat fileinfo_stat;]
-      "],
-  [AC_MSG_ERROR([cannot find `struct stat`])])
-AC_SUBST([DECLARE_FILEINFO_STAT], ["$declare_fileinfo_stat"])
-AM_SUBST_NOTMAKE([DECLARE_FILEINFO_STAT])
-preamble="
-  AC_INCLUDES_DEFAULT
-  $declare_fileinfo_stat
-  "
-
 # Shell variable holding the CPP macro invocations to be added to the CPP macro `STAT_FIELDS()`
 stat_fields=
 stat_fields_count=0
@@ -383,7 +394,7 @@ AC_DEFUN([CHECK_STAT], [
 # Define an autoconf macro NAME to call STATX if `struct statx` exists.
 # Otherwise, have it call STAT.
 AC_DEFUN([DEFUNX], [
-  m4_define([$1], [AS_IF([test "x$use_statx" = xyes], [$2], [$3])])
+  m4_define([$1], [AS_IF([test "x$ac_cv_type_struct_statx" = xyes], [$2], [$3])])
 ]) # DEFUNX
 
 #### File type and mode
