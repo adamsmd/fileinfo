@@ -6,7 +6,8 @@
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
       - run: |
-          "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+          dir
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" "amd64"
           echo "int main(void) { return 0; }" >test.c
           cl test.c
           dir
