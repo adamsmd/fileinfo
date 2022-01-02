@@ -6,7 +6,6 @@
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
       - run: dir
-      - run: Install-Module --help
       - run: Install-Module Pscx -Confirm -Scope CurrentUser
       - run: |
           Invoke-BatchFile "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat"
