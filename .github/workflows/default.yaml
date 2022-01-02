@@ -132,7 +132,10 @@ jobs:
 
           pwd
           ls
-          sed -e 's/;/:/' env.txt
+          eval "$(cat env.txt | sed -e 's%\(.\):\\%/\1/%g; s/;/:/g; s/^/export /g;'")
+          echo 'int main(void) { return 0; }' >test.c
+          cl test.c
+          ls
         # Path=C:\Program Files\PowerShell\7
         # C:\Program Files\MongoDB\Server\5.0\bin
         # C:\aliyun-cli
