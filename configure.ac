@@ -42,11 +42,6 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_SIZE_T
 
-# AC_CHECK_TYPE([struct statx], [use_statx=yes], [], [[#include <linux/stat.h>]])
-# AC_CHECK_TYPE([struct stat64], [use_stat64=yes], [], [[#include <sys/stat.h>]])
-# AC_CHECK_TYPE([struct _stat64], [use_stat64=yes], [], [[#include <sys/stat.h>]])
-# AC_CHECK_TYPE([struct stat], [use_stat=yes], [], [[#include <sys/stat.h>]])
-
 AC_CHECK_TYPE([struct statx], [], [], [[#include <linux/stat.h>]])
 AC_CHECK_TYPES([
   struct _stat64,
@@ -388,14 +383,6 @@ AC_DEFUN([CHECK_STAT], [
     [$preamble])
 ]) # CHECK_STAT
 
-# DEFUNX(NAME, STATX, STAT)
-# --------------------------------------
-# Define an autoconf macro NAME to call STATX if `struct statx` exists.
-# Otherwise, have it call STAT.
-AC_DEFUN([DEFUNX], [
-  m4_define([$1], [AS_IF([test "x$ac_cv_type_struct_statx" = xyes], [$2], [$3])])
-]) # DEFUNX
-
 #### File type and mode
 
 # TODO: stx_mode/st_mode is handled specially
@@ -458,10 +445,10 @@ AC_DEFUN([DEFUNX], [
 # Add one or none of the following to `stat_fields` based on what fields exist.
 # - F_INT(stx_NAME)
 # - F_INT(st_NAME)
-DEFUNX([CHECK_STATX],
-  [CHECK_STAT([F_INT], stx_$1, [$1])],
-  [CHECK_STAT([F_INT], st_$1, [$1])]
-) # CHECK_STATX
+AC_DEFUN([CHECK_STATX], [
+  CHECK_STAT([F_INT], stx_$1, [$1])
+  CHECK_STAT([F_INT], st_$1, [$1])
+]) # CHECK_STATX
 
 CHECK_STATX(ino)     # Inode number
 CHECK_STATX(nlink)   # Number of hard links
@@ -489,10 +476,10 @@ CHECK_STATX(mnt_id) # Linux 5.8+
 # Add one or none of the following to `stat_fields` based on what fields exist.
 # - F_DEV(stx_NAME_major, NAME, stx_NAME_major, stx_NAME_minor)
 # - F_DEV(stx_NAME, NAME, stx_NAME, stx_NAME)
-DEFUNX([CHECK_DEV],
-  [CHECK_STAT([F_DEV], stx_$1_major, [$1, stx_$1_major, stx_$1_minor])],
-  [CHECK_STAT([F_DEV], st_$1,        [$1, st_$1, st_$1])],
-) # CHECK_DEV
+AC_DEFUN([CHECK_DEV], [
+  CHECK_STAT([F_DEV], stx_$1_major, [$1, stx_$1_major, stx_$1_minor])
+  CHECK_STAT([F_DEV], st_$1,        [$1, st_$1, st_$1])
+]) # CHECK_DEV
 
 CHECK_DEV(dev)  # ID of device containing file
 CHECK_DEV(rdev) # Device ID (if special file)
@@ -504,10 +491,10 @@ CHECK_DEV(rdev) # Device ID (if special file)
 # Add one or none of the following to `stat_fields` based on what fields exist.
 # - F_TIME_SEC(stx_PREFIXtime.tv_sec, PREFIXtime_sec)
 # - F_TIME_SEC(st_PREFIXtime, PREFIXtime_sec)
-DEFUNX([CHECK_TIME_SEC],
-  [CHECK_STAT([F_TIME_SEC], stx_$1time.tv_sec, [$1time_sec])],
-  [CHECK_STAT([F_TIME_SEC], st_$1time,         [$1time_sec])],
-) # CHECK_TIME_SEC
+AC_DEFUN([CHECK_TIME_SEC], [
+  CHECK_STAT([F_TIME_SEC], stx_$1time.tv_sec, [$1time_sec])
+  CHECK_STAT([F_TIME_SEC], st_$1time,         [$1time_sec])
+]) # CHECK_TIME_SEC
 
 CHECK_TIME_SEC([a])
 CHECK_TIME_SEC([b])
