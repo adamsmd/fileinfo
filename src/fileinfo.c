@@ -89,7 +89,7 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
       /* TODO: error based on errno */
     }
     /* TODO: _stat32? */
-  #elif defined(HAVE_STAT64) || define(HAVE__STAT64) || defined(HAVE_STAT)
+  #elif defined(HAVE_STAT64) || defined(HAVE__STAT64) || defined(HAVE_STAT)
     #if defined(HAVE_STAT64)
       #define STAT stat64
     #elif defined(HAVE__STAT64)
@@ -114,7 +114,7 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
       return false;
     }
   #else
-    #error "unimplemented"
+    #error "unimplemented case for fileinfo_get_stat"
   #endif
 
   return 0;
