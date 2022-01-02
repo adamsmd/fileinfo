@@ -464,4 +464,5 @@ iOSInjectionProject/
 /src/config.h
 /src/config.h.in
 /src/fileinfo/static.h
+/src/headers.h
 /src/stamp-h1
