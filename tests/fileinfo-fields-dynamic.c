@@ -13,5 +13,5 @@ int main(void) {
       (intmax_t)field.offset, (uintmax_t)field.size, field.name);
   }
 
-  return fileinfo_fields_length != 0;
+  return fileinfo_fields_length == 0;
 }
