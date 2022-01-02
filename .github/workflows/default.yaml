@@ -114,15 +114,23 @@ jobs:
           #ls "/c/Program Files (x86)/"
           #ls "/c/Program Files/"
           PATH="/c/msys64/usr/bin:$PATH"
-          ls "/c/Program Files (x86)/"
-          ls "/c/Program Files/"
+          echo ls /c/msys64
+          ls /c/msys64/
+          echo /c/msys64/usr/bin
+          ls /c/msys64/usr/bin
+
+          # ls "/c/Program Files (x86)/"
+          # ls "/c/Program Files/"
           PATH="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64:$PATH"
           # 7z --version
           # tar --version
-          which tar
+          which cl.exe
+          which gcc
           tar -xvf fileinfo.tar
-          ls
           ./configure
+          make check
+      - run: dir
+      - run: .\fileinfo-fields-dynamic
 
 # github-virtual-environments:
 #   needs: bootstrap
