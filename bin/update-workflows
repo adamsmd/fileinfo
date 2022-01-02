@@ -1,8 +1,8 @@
 #!/bin/bash
 
 set -ex
-for i in default docker multiarch shell windows windows-shell; do
+for i in .github/workflows-src/*.yaml; do
   yq e 'explode(.)' \
-    <(cat .github/docker-steps.src.yaml .github/"$i".src.yaml) \
-    >.github/workflows/"$i".yaml
+    <(cat .github/docker-steps.src.yaml "$i") \
+    >.github/workflows/"${i#.github/workflows-src/}"
 done
