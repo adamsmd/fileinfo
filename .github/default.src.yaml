@@ -41,7 +41,9 @@
 
           pwd
           ls
-          eval "$(cat env.txt | sed -e 's%\(.\):\\%/\1/%g; s/;/:/g; s/^/export /g;')"
+          sed -e 's%\(.\):\\%/\1/%g; s%\\%/%g; s/;/:/g; s/^\(.*\)=\(.*\)$/export \1="\2"/g;' <env.txt >env-bash.txt
+          cat env-bash.txt
+          source env-bash.txt
           echo 'int main(void) { return 0; }' >test.c
           cl test.c
           ls
