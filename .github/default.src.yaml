@@ -6,8 +6,9 @@
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
       - run: dir
-      - run: Install-Module Pscx -Confirm -Scope CurrentUser
+      # - run: Install-Module Pscx -Confirm -Scope CurrentUser
       - run: |
+          Install-Module Pscx -Confirm -Scope CurrentUser -MinimumVersion 3.0.0
           Invoke-BatchFile "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat"
           echo "int main(void) { return 0; }" >test.c
           cl test.c
