@@ -47,7 +47,7 @@ AC_HEADER_STDBOOL
 
 CHECK_INCLUDE_HEADERS([ \
   assert.h \
-  linux/fcntl.h \
+  fcntl.h \
   linux/stat.h \
   stdbool.h \
   stddef.h \
@@ -58,8 +58,8 @@ CHECK_INCLUDE_HEADERS([ \
   unistd.h \
 ])
 
-# This header cannot be included at the same time as linux/fcntl.h
-AC_CHECK_HEADERS([fcntl.h])
+# This header cannot be included at the same time as fcntl.h
+AC_CHECK_HEADERS([linux/fcntl.h])
 
 #### Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_UINT8_T

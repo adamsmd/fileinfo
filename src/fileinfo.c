@@ -5,9 +5,9 @@
 #include "headers.h"
 
 /* We cannot include fnctl.h and linux/fnctl.h at the same time */
-#ifndef HAVE_LINUX_FCNTL_H
-#  ifdef HAVE_FCNTL_H
-#    include <fcntl.h>
+#ifndef HAVE_FCNTL_H
+#  ifdef HAVE_LINUX_FCNTL_H
+#    include <linux/fcntl.h>
 #  endif
 #endif
 
