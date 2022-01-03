@@ -165,179 +165,8 @@
   #         - { version: 27, platform: s390x }
   #         - { version: 26, platform: s390x }
 
-  docker-amazonlinux:
-    env: { image: "amazonlinux:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-          - arm64/v8
-        version:
-          - latest
-          - 2
-          - 1
-        exclude:
-          - { version: 1, platform: arm64/v8 }
-
-  docker-oraclelinux:
-    env: { image: "oraclelinux:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-          - arm64/v8
-        version:
-          - 8
-          - 7
-          - 6
-          ## - 5 # update fails
-        exclude:
-          - { version: 6, platform: arm64/v8 }
-          - { version: 5, platform: arm64/v8 }
-
-  docker-ros: # Robot operating system
-    env: { image: "ros:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-          - arm64/v8
-        version:
-          - latest
-          #### Rolling release
-          - rolling
-          #### ROS 2
-          - galactic
-          - foxy
-          #### ROS 1
-          - noetic
-          - melodic
-        include:
-          - { version: noetic, platform: arm/v7 }
-          - { version: melodic, platform: arm/v7 }
-
-  docker-photon: # VmWare Photon
-    env: { image: "photon:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-          - arm64/v8
-        version:
-          - latest
-          - '4.0'
-          - '3.0'
-          - '2.0'
-          - '1.0'
-        exclude:
-          - { version: '2.0', platform: arm64/v8 }
-          - { version: '1.0', platform: arm64/v8 }
-
-  docker-clearlinux:
-    env: { image: "clearlinux:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - latest
-
-  docker-mageia:
-    env: { image: "mageia:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-          - arm/v7
-          - arm64/v8
-        version:
-          - latest
-          ##- cauldron # update fails
-          - 8
-          - 7
-          ## - 6 # update fails
-          ## - 5 # update fails
-          ## - 4 # update fails
-          ## - 3 # update fails
-        exclude:
-          - { version: 6, platform: arm64/v8 }
-          - { version: 5, platform: arm/v7 }
-          - { version: 5, platform: arm64/v8 }
-          - { version: 4, platform: arm/v7 }
-          - { version: 4, platform: arm64/v8 }
-          - { version: 3, platform: arm/v7 }
-          - { version: 3, platform: arm64/v8 }
-
-  # docker-rockylinux:
-  #   env: { image: "rockylinux:${{ matrix.version }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #         - arm64/8
-  #       version:
-  #         - latest
-  #         - 8
-
-  # docker-sl: # Scientific Linux
-  #   env: { image: "sl:${{ matrix.version }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       version:
-  #         - latest
-  #         - 7
-  #         ## - 6 # update fails
-
-  # docker-clefos: # For IBM Z
-  #   env: { image: "clefos:${{ matrix.version }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - s390x
-  #       version:
-  #         - latest
-  #         - 7
-
-  # docker-almalinux:
-  #   env: { image: "almalinux:${{ matrix.version }}" }
+  # docker-amazonlinux:
+  #   env: { image: "amazonlinux:${{ matrix.version }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -349,12 +178,13 @@
   #         - arm64/v8
   #       version:
   #         - latest
-  #         - minimal
-  #         - 8
-  #         - 8-minimal
+  #         - 2
+  #         - 1
+  #       exclude:
+  #         - { version: 1, platform: arm64/v8 }
 
-  # docker-alt:
-  #   env: { image: "alt:${{ matrix.version }}" }
+  # docker-oraclelinux:
+  #   env: { image: "oraclelinux:${{ matrix.version }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -362,33 +192,203 @@
   #     fail-fast: false
   #     matrix:
   #       platform:
-  #         - 386
+  #         - amd64
+  #         - arm64/v8
+  #       version:
+  #         - 8
+  #         - 7
+  #         - 6
+  #         ## - 5 # update fails
+  #       exclude:
+  #         - { version: 6, platform: arm64/v8 }
+  #         - { version: 5, platform: arm64/v8 }
+
+  # docker-ros: # Robot operating system
+  #   env: { image: "ros:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #         - arm64/v8
+  #       version:
+  #         - latest
+  #         #### Rolling release
+  #         - rolling
+  #         #### ROS 2
+  #         - galactic
+  #         - foxy
+  #         #### ROS 1
+  #         - noetic
+  #         - melodic
+  #       include:
+  #         - { version: noetic, platform: arm/v7 }
+  #         - { version: melodic, platform: arm/v7 }
+
+  # docker-photon: # VmWare Photon
+  #   env: { image: "photon:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #         - arm64/v8
+  #       version:
+  #         - latest
+  #         - '4.0'
+  #         - '3.0'
+  #         - '2.0'
+  #         - '1.0'
+  #       exclude:
+  #         - { version: '2.0', platform: arm64/v8 }
+  #         - { version: '1.0', platform: arm64/v8 }
+
+  # docker-clearlinux:
+  #   env: { image: "clearlinux:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       version:
+  #         - latest
+
+  # docker-mageia:
+  #   env: { image: "mageia:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
   #         - amd64
   #         - arm/v7
   #         - arm64/v8
-  #         - ppc64le
   #       version:
   #         - latest
-  #         - sisyphus
-  #         - p10
-  #         - p9
-  #         - p8
+  #         ##- cauldron # update fails
+  #         - 8
+  #         - 7
+  #         ## - 6 # update fails
+  #         ## - 5 # update fails
+  #         ## - 4 # update fails
+  #         ## - 3 # update fails
   #       exclude:
-  #         - { version: p8, platform: arm/v7 }
-  #         - { version: p8, platform: arm64/v8 }
-  #         - { version: p8, platform: ppc64le }
+  #         - { version: 6, platform: arm64/v8 }
+  #         - { version: 5, platform: arm/v7 }
+  #         - { version: 5, platform: arm64/v8 }
+  #         - { version: 4, platform: arm/v7 }
+  #         - { version: 4, platform: arm64/v8 }
+  #         - { version: 3, platform: arm/v7 }
+  #         - { version: 3, platform: arm64/v8 }
 
-  # docker-archlinux:
-  #   env: { image: "archlinux:${{ matrix.version }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       version:
-  #         - latest
-  #         - base
-  #         - base-devel
+  docker-rockylinux:
+    env: { image: "rockylinux:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+          - arm64/8
+        version:
+          - latest
+          - 8
+
+  docker-sl: # Scientific Linux
+    env: { image: "sl:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - latest
+          - 7
+          ## - 6 # update fails
+
+  docker-clefos: # For IBM Z
+    env: { image: "clefos:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - s390x
+        version:
+          - latest
+          - 7
+
+  docker-almalinux:
+    env: { image: "almalinux:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+          - arm64/v8
+        version:
+          - latest
+          - minimal
+          - 8
+          - 8-minimal
+
+  docker-alt:
+    env: { image: "alt:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - 386
+          - amd64
+          - arm/v7
+          - arm64/v8
+          - ppc64le
+        version:
+          - latest
+          - sisyphus
+          - p10
+          - p9
+          - p8
+        exclude:
+          - { version: p8, platform: arm/v7 }
+          - { version: p8, platform: arm64/v8 }
+          - { version: p8, platform: ppc64le }
+
+  docker-archlinux:
+    env: { image: "archlinux:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - latest
+          - base
+          - base-devel
