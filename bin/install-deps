@@ -12,12 +12,15 @@ if apt-get --version >/dev/null 2>&1; then
   apt-get install --assume-yes make
   apt-get install --assume-yes gcc \
     || apt-get install --assume-yes gcc5 # For Alma Linux p8
+elif tdnf --version >/dev/null 2>&1; then
+  echo "$note_using" tdnf
+  tdnf install --assumeyes gcc make
+  # Fixes for Photon Linux
+  tdnf erase --assumeyes toybox || true
+  tdnf install --assumeyes coreutils sed gawk binutils glibc-devel linux-api-headers || true
 elif yum --version >/dev/null 2>&1; then
   echo "$note_using" yum
   yum install --assumeyes gcc make
-  # Fixes for Photon Linux
-  yum remove --assumeyes toybox || true
-  yum install --assumeyes coreutils sed awk binutils glibc-devel linux-api-headers || true
 elif pacman --version >/dev/null 2>&1; then
   echo "$note_using" pacman
   yes | pacman --sync --refresh gcc make
