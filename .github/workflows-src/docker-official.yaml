@@ -1,89 +1,7 @@
 ## Official Docker Images
 
-  docker-alpine: # A distribution optimized for containers
-    env: { image: "alpine:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - 386
-          - amd64
-          - arm/v6
-          - arm/v7
-          - arm64/v8
-          - ppc64le
-          - s390x
-        version:
-          - latest
-          - '3.15'
-          - '3.14'
-          - '3.13'
-          - '3.12'
-          - '3.11'
-          - '3.10'
-          - '3.9'
-          - '3.8'
-          - '3.7'
-          - '3.6'
-
-  docker-ubuntu:
-    env: { image: "ubuntu:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-          - arm/v7
-          - arm64/v8
-          - ppc64le
-          - riscv64
-          - s390x
-        version:
-          - 'latest'
-          - '22.04'
-          - '21.10'
-          - '21.04'
-          - '20.04'
-          - '18.04'
-          - '16.04'
-          - '14.04'
-        exclude:
-          - { version: '18.04', platform: riscv64 }
-          - { version: '16.04', platform: riscv64 }
-          - { version: '14.04', platform: riscv64 }
-          - { version: '14.04', platform: s390x }
-
-  # docker-centos:
-  #   env: { image: "centos:${{ matrix.version }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #         - arm64/v8
-  #         - ppc64le
-  #       version:
-  #         - latest
-  #         - 8
-  #         - 7
-  #       include:
-  #         - { version: 7, platform: 386 }
-  #         ## - { version: 7, platform: arm/v7 } # update fails, yum segfaults (!?)
-  #         ## - { version: 6, platform: 386 } # update fails
-  #         ## - { version: 6, platform: amd64 } # update fails
-  #         ## - { version: 5, platform: amd64 } # update fails
-
-  # docker-debian:
-  #   env: { image: "debian:${{ matrix.version }}-slim" }
+  # docker-alpine: # A distribution optimized for containers
+  #   env: { image: "alpine:${{ matrix.version }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -93,39 +11,121 @@
   #       platform:
   #         - 386
   #         - amd64
-  #         - arm/v5
+  #         - arm/v6
   #         - arm/v7
   #         - arm64/v8
-  #         - mips64le
   #         - ppc64le
   #         - s390x
   #       version:
-  #         - testing
-  #         - stable
-  #         - oldstable
-  #         - oldoldstable
-  #         - '11.2'
-  #         - '10.11'
-  #         - '9.13'
-  #         - '8.11'
-  #         - '8.11'
-  #       include:
-  #         - { version: unstable, platform: riscv64 }
+  #         - latest
+  #         - '3.15'
+  #         - '3.14'
+  #         - '3.13'
+  #         - '3.12'
+  #         - '3.11'
+  #         - '3.10'
+  #         - '3.9'
+  #         - '3.8'
+  #         - '3.7'
+  #         - '3.6'
+
+  # docker-ubuntu:
+  #   env: { image: "ubuntu:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #         - arm/v7
+  #         - arm64/v8
+  #         - ppc64le
+  #         - riscv64
+  #         - s390x
+  #       version:
+  #         - 'latest'
+  #         - '22.04'
+  #         - '21.10'
+  #         - '21.04'
+  #         - '20.04'
+  #         - '18.04'
+  #         - '16.04'
+  #         - '14.04'
   #       exclude:
-  #         - { version: oldoldstable, platform: mips64le }
-  #         - { version: oldoldstable, platform: ppc64le }
-  #         - { version: oldoldstable, platform: s390x }
-  #         - { version: '9.13', platform: mips64le }
-  #         - { version: '9.13', platform: ppc64le }
-  #         - { version: '9.13', platform: s390x }
-  #         - { version: '8.11', platform: arm64/v8 }
-  #         - { version: '8.11', platform: mips64le }
-  #         - { version: '8.11', platform: ppc64le }
-  #         - { version: '8.11', platform: s390x }
-  #         - { version: '8.11', platform: arm64/v8 }
-  #         - { version: '8.11', platform: mips64le }
-  #         - { version: '8.11', platform: ppc64le }
-  #         - { version: '8.11', platform: s390x }
+  #         - { version: '18.04', platform: riscv64 }
+  #         - { version: '16.04', platform: riscv64 }
+  #         - { version: '14.04', platform: riscv64 }
+  #         - { version: '14.04', platform: s390x }
+
+  docker-centos:
+    env: { image: "centos:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+          - arm64/v8
+          - ppc64le
+        version:
+          - latest
+          - 8
+          - 7
+        include:
+          - { version: 7, platform: 386 }
+          ## - { version: 7, platform: arm/v7 } # update fails, yum segfaults (!?)
+          ## - { version: 6, platform: 386 } # update fails
+          ## - { version: 6, platform: amd64 } # update fails
+          ## - { version: 5, platform: amd64 } # update fails
+
+  docker-debian:
+    env: { image: "debian:${{ matrix.version }}-slim" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - 386
+          - amd64
+          - arm/v5
+          - arm/v7
+          - arm64/v8
+          - mips64le
+          - ppc64le
+          - s390x
+        version:
+          - testing
+          - stable
+          - oldstable
+          - oldoldstable
+          - '11.2'
+          - '10.11'
+          - '9.13'
+          - '8.11'
+          - '8.11'
+        include:
+          - { version: unstable, platform: riscv64 }
+        exclude:
+          - { version: oldoldstable, platform: mips64le }
+          - { version: oldoldstable, platform: ppc64le }
+          - { version: oldoldstable, platform: s390x }
+          - { version: '9.13', platform: mips64le }
+          - { version: '9.13', platform: ppc64le }
+          - { version: '9.13', platform: s390x }
+          - { version: '8.11', platform: arm64/v8 }
+          - { version: '8.11', platform: mips64le }
+          - { version: '8.11', platform: ppc64le }
+          - { version: '8.11', platform: s390x }
+          - { version: '8.11', platform: arm64/v8 }
+          - { version: '8.11', platform: mips64le }
+          - { version: '8.11', platform: ppc64le }
+          - { version: '8.11', platform: s390x }
 
   # docker-fedora:
   #   env: { image: "fedora:${{ matrix.version }}" }
