@@ -295,69 +295,8 @@
   #         - { version: 3, platform: arm/v7 }
   #         - { version: 3, platform: arm64/v8 }
 
-  docker-rockylinux:
-    env: { image: "rockylinux:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-          - arm64/8
-        version:
-          - latest
-          - 8
-
-  docker-sl: # Scientific Linux
-    env: { image: "sl:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - latest
-          - 7
-          - 6
-
-  docker-clefos: # For IBM Z
-    env: { image: "clefos:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - s390x
-        version:
-          - latest
-          - 7
-
-  docker-almalinux:
-    env: { image: "almalinux:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-          - arm64/v8
-        version:
-          - latest
-          - minimal # no c compiler
-          - 8
-          - 8-minimal # no c compiler
-
-  # docker-alt:
-  #   env: { image: "alt:${{ matrix.version }}" }
+  # docker-rockylinux:
+  #   env: { image: "rockylinux:${{ matrix.version }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -365,24 +304,14 @@
   #     fail-fast: false
   #     matrix:
   #       platform:
-  #         - 386
   #         - amd64
-  #         - arm/v7
-  #         - arm64/v8
-  #         - ppc64le
+  #         - arm64/8
   #       version:
   #         - latest
-  #         - sisyphus
-  #         - p10
-  #         - p9
-  #         - p8
-  #       exclude:
-  #         - { version: p8, platform: arm/v7 }
-  #         - { version: p8, platform: arm64/v8 }
-  #         - { version: p8, platform: ppc64le }
+  #         - 8
 
-  # docker-archlinux:
-  #   env: { image: "archlinux:${{ matrix.version }}" }
+  # docker-sl: # Scientific Linux
+  #   env: { image: "sl:${{ matrix.version }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -392,6 +321,77 @@
   #       platform:
   #         - amd64
   #       version:
-  #         - latest # no c compiler
-  #         - base # no c compiler
-  #         - base-devel
+  #         - latest
+  #         - 7
+  #         # - 6 # error updating yum
+
+  # docker-clefos: # For IBM Z
+  #   env: { image: "clefos:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - s390x
+  #       version:
+  #         - latest
+  #         - 7
+
+  # docker-almalinux:
+  #   env: { image: "almalinux:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #         - arm64/v8
+  #       version:
+  #         - latest
+  #         - minimal
+  #         - 8
+  #         - 8-minimal
+
+  docker-alt:
+    env: { image: "alt:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - 386
+          - amd64
+          - arm/v7
+          - arm64/v8
+          - ppc64le
+        version:
+          - latest
+          - sisyphus
+          - p10
+          - p9
+          - p8
+        exclude:
+          - { version: p8, platform: arm/v7 }
+          - { version: p8, platform: arm64/v8 }
+          - { version: p8, platform: ppc64le }
+
+  docker-archlinux:
+    env: { image: "archlinux:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - latest # no c compiler
+          - base # no c compiler
+          - base-devel
