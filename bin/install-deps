@@ -11,10 +11,13 @@ if apt-get --version >/dev/null 2>&1; then
   apt-get update
   apt-get install --assume-yes make
   apt-get install --assume-yes gcc \
-    || apt-get install --assume-yes gcc5 # Fix for Alma Linux p8
+    || apt-get install --assume-yes gcc5 # For Alma Linux p8
 elif yum --version >/dev/null 2>&1; then
   echo "$note_using" yum
   yum install --assumeyes gcc make
+  # Fixes for Photon Linux
+  yum remove --assumeyes toybox || true
+  yum install --assumeyes coreutils sed awk binutils glibc-devel linux-api-headers || true
 elif pacman --version >/dev/null 2>&1; then
   echo "$note_using" pacman
   yes | pacman --sync --refresh gcc make

@@ -1,4 +1,4 @@
-  ## Official Docker Images
+## Official Docker Images
 
   # docker-alpine: # A distribution optimized for containers
   #   env: { image: "alpine:${{ matrix.version }}" }
@@ -77,10 +77,10 @@
   #         - 7
   #       include:
   #         - { version: 7, platform: 386 }
-  #         # - { version: 7, platform: arm/v7 } # yum segfaults (!?)
-  #         # - { version: 6, platform: 386 } # error updating yum
-  #         # - { version: 6, platform: amd64 } # error updating yum
-  #         # - { version: 5, platform: amd64 } # error updating yum
+  #         ## - { version: 7, platform: arm/v7 } # yum segfaults (!?)
+  #         ## - { version: 6, platform: 386 } # error updating yum
+  #         ## - { version: 6, platform: amd64 } # error updating yum
+  #         ## - { version: 5, platform: amd64 } # error updating yum
 
   # docker-debian:
   #   env: { image: "debian:${{ matrix.version }}-slim" }
@@ -197,8 +197,8 @@
   #       version:
   #         - 8
   #         - 7
-  #         - 6 # TODO: fix
-  #         # - 5 # update repo fails
+  #         - 6
+  #         ## - 5 # update repo fails
   #       exclude:
   #         - { version: 6, platform: arm64/v8 }
   #         - { version: 5, platform: arm64/v8 }
@@ -228,29 +228,28 @@
   #         - { version: noetic, platform: arm/v7 }
   #         - { version: melodic, platform: arm/v7 }
 
-  # # TODO: test and fix photon
-  # docker-photon: # VmWare Photon
-  #   env: { image: "photon:${{ matrix.version }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #         - arm64/v8
-  #       version:
-  #         - latest # needs coreutils but is also missing `as`
-  #         - '4.0'
-  #         - '3.0'
-  #         - '2.0'
-  #         - '1.0'
-  #       exclude:
-  #         - { version: '2.0', platform: arm64/v8 }
-  #         - { version: '1.0', platform: arm64/v8 }
+  docker-photon: # VmWare Photon
+    env: { image: "photon:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+          - arm64/v8
+        version:
+          - latest
+          - '4.0'
+          - '3.0'
+          - '2.0'
+          - '1.0'
+        exclude:
+          - { version: '2.0', platform: arm64/v8 }
+          - { version: '1.0', platform: arm64/v8 }
 
-  # TODO: test
+  # ##TODO: test
   # docker-clearlinux:
   #   env: { image: "clearlinux:${{ matrix.version }}" }
   #   needs: bootstrap
@@ -264,7 +263,7 @@
   #       version:
   #         - latest # slow install
 
-  # TODO: test
+  # ## TODO: test
   # docker-mageia:
   #   env: { image: "mageia:${{ matrix.version }}" }
   #   needs: bootstrap
@@ -323,7 +322,7 @@
   #       version:
   #         - latest
   #         - 7
-  #         # - 6 # error updating yum
+  #         ## - 6 # error updating yum
 
   # docker-clefos: # For IBM Z
   #   env: { image: "clefos:${{ matrix.version }}" }
@@ -356,42 +355,42 @@
   #         - 8
   #         - 8-minimal
 
-  docker-alt:
-    env: { image: "alt:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - 386
-          - amd64
-          - arm/v7
-          - arm64/v8
-          - ppc64le
-        version:
-          - latest
-          - sisyphus
-          - p10
-          - p9
-          - p8
-        exclude:
-          - { version: p8, platform: arm/v7 }
-          - { version: p8, platform: arm64/v8 }
-          - { version: p8, platform: ppc64le }
+  # docker-alt:
+  #   env: { image: "alt:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - 386
+  #         - amd64
+  #         - arm/v7
+  #         - arm64/v8
+  #         - ppc64le
+  #       version:
+  #         - latest
+  #         - sisyphus
+  #         - p10
+  #         - p9
+  #         - p8
+  #       exclude:
+  #         - { version: p8, platform: arm/v7 }
+  #         - { version: p8, platform: arm64/v8 }
+  #         - { version: p8, platform: ppc64le }
 
-  docker-archlinux:
-    env: { image: "archlinux:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - latest # no c compiler
-          - base # no c compiler
-          - base-devel
+  # docker-archlinux:
+  #   env: { image: "archlinux:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       version:
+  #         - latest
+  #         - base
+  #         - base-devel
