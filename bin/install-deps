@@ -9,13 +9,15 @@ if apt-get --version >/dev/null 2>&1; then
   echo "$note_using" apt-get
   export DEBIAN_FRONTEND=noninteractive
   apt-get update
-  apt-get install --assume-yes gcc make
+  apt-get install --assume-yes make
+  apt-get install --assume-yes gcc \
+    || apt-get install --assume-yes gcc5 # Fix for Alma Linux p8
 elif yum --version >/dev/null 2>&1; then
   echo "$note_using" yum
   yum install --assumeyes gcc make
 elif pacman --version >/dev/null 2>&1; then
   echo "$note_using" pacman
-  yes | pacman --sync --refresh gcc
+  yes | pacman --sync --refresh gcc make
 elif apk --version >/dev/null 2>&1; then
   echo "$note_using" apk
   apk add --no-cache gcc libc-dev make
