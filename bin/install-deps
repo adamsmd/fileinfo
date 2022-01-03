@@ -30,6 +30,9 @@ elif opkg --version >/dev/null 2>&1; then
   mkdir /var/lock || true
   opkg update
   opkg install grep gcc make
+elif microdnf --help 2>/dev/null 2>&1; then
+  echo "$note_using" microdnf
+  microdnf install --assumeyes gcc make
 else
   echo "$note_using" '<nothing>'
 fi
