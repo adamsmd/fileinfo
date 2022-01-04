@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -ex
+rm -rf .github/workflows/*
 for i in .github/workflows-src/*.yaml; do
   yq e 'explode(.)' \
     <(cat .github/docker-steps.src.yaml "$i") \

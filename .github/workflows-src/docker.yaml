@@ -9,138 +9,147 @@
         platform:
           - amd64
         arch:
+          - aarch64_cortex
+          - aarch64_generic
+          - arm_cortex-a15_neon-vfpv4
+          - armvirt-32
+          - armvirt-64
+          - i386_pentium-mmx
+          - i386_pentium4
+          - malta-be
+          - mips_24kc
+          - x86_64
           - x86-64
-          - armvirt-32 # Error relocating /bin/grep: reallocarray: symbol not found
-          - armvirt-64 # Error relocating /bin/grep: reallocarray: symbol not found
-# TODO: openwrt: https://hub.docker.com/r/openwrt/rootfs/tags
+          - x86-generic
+          - x86-geode
 
-  docker-openmandriva:
-    env: { image: "openmandriva/${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        arch:
-          - cooker # no c compiler
-          - '4.2' # no c compiler
-          - '4.0'
-          - '3.0'
+  # docker-openmandriva:
+  #   env: { image: "openmandriva/${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       arch:
+  #         - cooker # no c compiler
+  #         - '4.2' # no c compiler
+  #         - '4.0'
+  #         - '3.0'
 
-  docker-opensuse:
-    env: { image: "opensuse/${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - leap:latest
-          - leap:15
-          - leap:42
-          - tumbleweed # no c compiler
-          - s390x
+  # docker-opensuse:
+  #   env: { image: "opensuse/${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       version:
+  #         - leap:latest
+  #         - leap:15
+  #         - leap:42
+  #         - tumbleweed # no c compiler
+  #         - s390x
 
-  docker-slackware:
-    env: { image: "vbatts/slackware:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - latest # no c compiler
-          - current
-          - '14.2'
-          - '14.1'
-          - '14.0'
-          - '13.1'
-          - '13.0'
+  # docker-slackware:
+  #   env: { image: "vbatts/slackware:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       version:
+  #         - latest # no c compiler
+  #         - current
+  #         - '14.2'
+  #         - '14.1'
+  #         - '14.0'
+  #         - '13.1'
+  #         - '13.0'
 
-  # C compiler doesn't work
-  docker-chromebrew: # ChromeOS
-    env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - armv7l-fievel-m92
-          - i686-alex-m58
-          - x86_64-kip-m92
-          - x86_64-nocturne-m90
-        include:
-          - { version: armv7l-fievel-m91, platform: arm }
+  # # C compiler doesn't work
+  # docker-chromebrew: # ChromeOS
+  #   env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       version:
+  #         - armv7l-fievel-m92
+  #         - i686-alex-m58
+  #         - x86_64-kip-m92
+  #         - x86_64-nocturne-m90
+  #       include:
+  #         - { version: armv7l-fievel-m91, platform: arm }
 
-  docker-gentoo:
-    env: { image: "gentoo/stage3:${{ matrix.tag }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { tag: amd64-hardened-nomultilib-openrc, platform: amd64 }
-          - { tag: amd64-hardened-openrc, platform: amd64 }
-          - { tag: amd64-musl-hardened, platform: amd64 }
-          - { tag: amd64-musl, platform: amd64 }
-          - { tag: amd64-nomultilib-openrc, platform: amd64 }
-          - { tag: amd64-nomultilib-systemd, platform: amd64 }
-          - { tag: amd64-openrc, platform: amd64 }
-          - { tag: amd64-systemd, platform: amd64 }
-          - { tag: arm64-systemd, platform: arm64 }
-          - { tag: arm64, platform: arm64 }
-          - { tag: armv5tel-openrc, platform: arm }
-          - { tag: armv5tel-systemd, platform: arm }
-          - { tag: armv6j_hardfp-openrc, platform: arm }
-          - { tag: armv6j_hardfp-systemd, platform: arm }
-          - { tag: armv6j-openrc, platform: arm }
-          - { tag: armv6j-systemd, platform: arm }
-          - { tag: armv7a_hardfp-openrc, platform: arm }
-          - { tag: armv7a_hardfp-systemd, platform: arm }
-          - { tag: armv7a-openrc, platform: arm }
-          - { tag: armv7a-systemd, platform: arm }
-          - { tag: hardened-nomultilib, platform: amd64 }
-          - { tag: hardened, platform: 386 }
-          - { tag: hardened, platform: amd64 }
-          - { tag: i686-hardened-openrc, platform: 386 }
-          - { tag: i686-musl, platform: 386 }
-          - { tag: i686-openrc, platform: 386 }
-          - { tag: i686-systemd, platform: 386 }
-          - { tag: latest, platform: 386 }
-          - { tag: latest, platform: amd64 }
+  # docker-gentoo:
+  #   env: { image: "gentoo/stage3:${{ matrix.tag }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - { tag: amd64-hardened-nomultilib-openrc, platform: amd64 }
+  #         - { tag: amd64-hardened-openrc, platform: amd64 }
+  #         - { tag: amd64-musl-hardened, platform: amd64 }
+  #         - { tag: amd64-musl, platform: amd64 }
+  #         - { tag: amd64-nomultilib-openrc, platform: amd64 }
+  #         - { tag: amd64-nomultilib-systemd, platform: amd64 }
+  #         - { tag: amd64-openrc, platform: amd64 }
+  #         - { tag: amd64-systemd, platform: amd64 }
+  #         - { tag: arm64-systemd, platform: arm64 }
+  #         - { tag: arm64, platform: arm64 }
+  #         - { tag: armv5tel-openrc, platform: arm }
+  #         - { tag: armv5tel-systemd, platform: arm }
+  #         - { tag: armv6j_hardfp-openrc, platform: arm }
+  #         - { tag: armv6j_hardfp-systemd, platform: arm }
+  #         - { tag: armv6j-openrc, platform: arm }
+  #         - { tag: armv6j-systemd, platform: arm }
+  #         - { tag: armv7a_hardfp-openrc, platform: arm }
+  #         - { tag: armv7a_hardfp-systemd, platform: arm }
+  #         - { tag: armv7a-openrc, platform: arm }
+  #         - { tag: armv7a-systemd, platform: arm }
+  #         - { tag: hardened-nomultilib, platform: amd64 }
+  #         - { tag: hardened, platform: 386 }
+  #         - { tag: hardened, platform: amd64 }
+  #         - { tag: i686-hardened-openrc, platform: 386 }
+  #         - { tag: i686-musl, platform: 386 }
+  #         - { tag: i686-openrc, platform: 386 }
+  #         - { tag: i686-systemd, platform: 386 }
+  #         - { tag: latest, platform: 386 }
+  #         - { tag: latest, platform: amd64 }
 
-          # - tag: latest linux            platform: arm/v5
-          # - tag: musl linux/386            platform: linux/amd64
-          # - tag: musl-hardened            platform: linux/amd64
-          # - tag: musl-hardened            platform: linux/ppc64le
-          # - tag: nomultilib            platform: linux/amd64
-          # - tag: nomultilib-systemd            platform: linux/amd64
-          # - tag: ppc64le-musl-hardened-openrc            platform: linux/ppc64le
-          # - tag: ppc64le-openrc            platform: linux/ppc64le
-          # - tag: ppc64le-systemd            platform: linux/ppc64le
-          # - tag: rv64_lp64-openrc            platform: linux/riscv64
-          # - tag: rv64_lp64-systemd            platform: linux/riscv64
-          # - tag: rv64_lp64d-openrc            platform: linux/riscv64
-          # - tag: rv64_lp64d-systemd            platform: linux/riscv64
-          # - tag: s390x            platform: linux/s390x
-          # - tag: systemd            platform: linux/386
-          # - tag: systemd            platform: linux/amd64
-          # - tag: systemd linux            platform: arm/v5
+  #         # - tag: latest linux            platform: arm/v5
+  #         # - tag: musl linux/386            platform: linux/amd64
+  #         # - tag: musl-hardened            platform: linux/amd64
+  #         # - tag: musl-hardened            platform: linux/ppc64le
+  #         # - tag: nomultilib            platform: linux/amd64
+  #         # - tag: nomultilib-systemd            platform: linux/amd64
+  #         # - tag: ppc64le-musl-hardened-openrc            platform: linux/ppc64le
+  #         # - tag: ppc64le-openrc            platform: linux/ppc64le
+  #         # - tag: ppc64le-systemd            platform: linux/ppc64le
+  #         # - tag: rv64_lp64-openrc            platform: linux/riscv64
+  #         # - tag: rv64_lp64-systemd            platform: linux/riscv64
+  #         # - tag: rv64_lp64d-openrc            platform: linux/riscv64
+  #         # - tag: rv64_lp64d-systemd            platform: linux/riscv64
+  #         # - tag: s390x            platform: linux/s390x
+  #         # - tag: systemd            platform: linux/386
+  #         # - tag: systemd            platform: linux/amd64
+  #         # - tag: systemd linux            platform: arm/v5
 
 
 ## TODO: KaOS

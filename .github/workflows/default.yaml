@@ -95,7 +95,7 @@ jobs:
         run: docker stop "$cont"
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
-  github-virtual-environments:
+  virtual-environments: # Virtual environments from GitHub
     needs: bootstrap
     runs-on: ${{ matrix.os }}
     strategy:
@@ -112,9 +112,12 @@ jobs:
       - run: tar -xvf fileinfo.tar
       - run: ./configure
       - run: cat src/config.h
+      - run: cat src/headers.h
       - run: cat src/fileinfo/static.h
       - run: make
       - run: make check
+        # TODO: android
+        # TODO: iOS
 
 # cross-platform-actions:
 #   needs: bootstrap

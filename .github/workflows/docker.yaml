@@ -168,592 +168,242 @@ jobs:
         platform:
           - amd64
         arch:
+          - aarch64_cortex
+          - aarch64_generic
+          - arm_cortex-a15_neon-vfpv4
+          - armvirt-32
+          - armvirt-64
+          - i386_pentium-mmx
+          - i386_pentium4
+          - malta-be
+          - mips_24kc
+          - x86_64
           - x86-64
-          - armvirt-32 # Error relocating /bin/grep: reallocarray: symbol not found
-          - armvirt-64 # Error relocating /bin/grep: reallocarray: symbol not found
-  # TODO: openwrt: https://hub.docker.com/r/openwrt/rootfs/tags
+          - x86-generic
+          - x86-geode
+          # docker-openmandriva:
+          #   env: { image: "openmandriva/${{ matrix.version }}" }
+          #   needs: bootstrap
+          #   runs-on: ubuntu-latest
+          #   steps: *docker-steps
+          #   strategy:
+          #     fail-fast: false
+          #     matrix:
+          #       platform:
+          #         - amd64
+          #       arch:
+          #         - cooker # no c compiler
+          #         - '4.2' # no c compiler
+          #         - '4.0'
+          #         - '3.0'
 
-  docker-openmandriva:
-    env: {image: "openmandriva/${{ matrix.version }}"}
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps:
-      # Setup multi-platform support for docker
-      - uses: docker/setup-qemu-action@v1.2.0
-      # Try to create a container for the given platform and image
-      - name: Create container
-        shell: bash
-        run: |
-          set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
-          set -e
+          # docker-opensuse:
+          #   env: { image: "opensuse/${{ matrix.version }}" }
+          #   needs: bootstrap
+          #   runs-on: ubuntu-latest
+          #   steps: *docker-steps
+          #   strategy:
+          #     fail-fast: false
+          #     matrix:
+          #       platform:
+          #         - amd64
+          #       version:
+          #         - leap:latest
+          #         - leap:15
+          #         - leap:42
+          #         - tumbleweed # no c compiler
+          #         - s390x
 
-          echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          # docker-slackware:
+          #   env: { image: "vbatts/slackware:${{ matrix.version }}" }
+          #   needs: bootstrap
+          #   runs-on: ubuntu-latest
+          #   steps: *docker-steps
+          #   strategy:
+          #     fail-fast: false
+          #     matrix:
+          #       platform:
+          #         - amd64
+          #       version:
+          #         - latest # no c compiler
+          #         - current
+          #         - '14.2'
+          #         - '14.1'
+          #         - '14.0'
+          #         - '13.1'
+          #         - '13.0'
 
-          if test "x$cont" = "x"; then
-            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            exit 1
-          fi
-      # Check platforms
-      - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        arch:
-          - cooker # no c compiler
-          - '4.2' # no c compiler
-          - '4.0'
-          - '3.0'
-  docker-opensuse:
-    env: {image: "opensuse/${{ matrix.version }}"}
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps:
-      # Setup multi-platform support for docker
-      - uses: docker/setup-qemu-action@v1.2.0
-      # Try to create a container for the given platform and image
-      - name: Create container
-        shell: bash
-        run: |
-          set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
-          set -e
+          # # C compiler doesn't work
+          # docker-chromebrew: # ChromeOS
+          #   env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
+          #   needs: bootstrap
+          #   runs-on: ubuntu-latest
+          #   steps: *docker-steps
+          #   strategy:
+          #     fail-fast: false
+          #     matrix:
+          #       platform:
+          #         - amd64
+          #       version:
+          #         - armv7l-fievel-m92
+          #         - i686-alex-m58
+          #         - x86_64-kip-m92
+          #         - x86_64-nocturne-m90
+          #       include:
+          #         - { version: armv7l-fievel-m91, platform: arm }
 
-          echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          # docker-gentoo:
+          #   env: { image: "gentoo/stage3:${{ matrix.tag }}" }
+          #   needs: bootstrap
+          #   runs-on: ubuntu-latest
+          #   steps: *docker-steps
+          #   strategy:
+          #     fail-fast: false
+          #     matrix:
+          #       include:
+          #         - { tag: amd64-hardened-nomultilib-openrc, platform: amd64 }
+          #         - { tag: amd64-hardened-openrc, platform: amd64 }
+          #         - { tag: amd64-musl-hardened, platform: amd64 }
+          #         - { tag: amd64-musl, platform: amd64 }
+          #         - { tag: amd64-nomultilib-openrc, platform: amd64 }
+          #         - { tag: amd64-nomultilib-systemd, platform: amd64 }
+          #         - { tag: amd64-openrc, platform: amd64 }
+          #         - { tag: amd64-systemd, platform: amd64 }
+          #         - { tag: arm64-systemd, platform: arm64 }
+          #         - { tag: arm64, platform: arm64 }
+          #         - { tag: armv5tel-openrc, platform: arm }
+          #         - { tag: armv5tel-systemd, platform: arm }
+          #         - { tag: armv6j_hardfp-openrc, platform: arm }
+          #         - { tag: armv6j_hardfp-systemd, platform: arm }
+          #         - { tag: armv6j-openrc, platform: arm }
+          #         - { tag: armv6j-systemd, platform: arm }
+          #         - { tag: armv7a_hardfp-openrc, platform: arm }
+          #         - { tag: armv7a_hardfp-systemd, platform: arm }
+          #         - { tag: armv7a-openrc, platform: arm }
+          #         - { tag: armv7a-systemd, platform: arm }
+          #         - { tag: hardened-nomultilib, platform: amd64 }
+          #         - { tag: hardened, platform: 386 }
+          #         - { tag: hardened, platform: amd64 }
+          #         - { tag: i686-hardened-openrc, platform: 386 }
+          #         - { tag: i686-musl, platform: 386 }
+          #         - { tag: i686-openrc, platform: 386 }
+          #         - { tag: i686-systemd, platform: 386 }
+          #         - { tag: latest, platform: 386 }
+          #         - { tag: latest, platform: amd64 }
 
-          if test "x$cont" = "x"; then
-            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            exit 1
-          fi
-      # Check platforms
-      - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - leap:latest
-          - leap:15
-          - leap:42
-          - tumbleweed # no c compiler
-          - s390x
-  docker-slackware:
-    env: {image: "vbatts/slackware:${{ matrix.version }}"}
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps:
-      # Setup multi-platform support for docker
-      - uses: docker/setup-qemu-action@v1.2.0
-      # Try to create a container for the given platform and image
-      - name: Create container
-        shell: bash
-        run: |
-          set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
-          set -e
+          #         # - tag: latest linux            platform: arm/v5
+          #         # - tag: musl linux/386            platform: linux/amd64
+          #         # - tag: musl-hardened            platform: linux/amd64
+          #         # - tag: musl-hardened            platform: linux/ppc64le
+          #         # - tag: nomultilib            platform: linux/amd64
+          #         # - tag: nomultilib-systemd            platform: linux/amd64
+          #         # - tag: ppc64le-musl-hardened-openrc            platform: linux/ppc64le
+          #         # - tag: ppc64le-openrc            platform: linux/ppc64le
+          #         # - tag: ppc64le-systemd            platform: linux/ppc64le
+          #         # - tag: rv64_lp64-openrc            platform: linux/riscv64
+          #         # - tag: rv64_lp64-systemd            platform: linux/riscv64
+          #         # - tag: rv64_lp64d-openrc            platform: linux/riscv64
+          #         # - tag: rv64_lp64d-systemd            platform: linux/riscv64
+          #         # - tag: s390x            platform: linux/s390x
+          #         # - tag: systemd            platform: linux/386
+          #         # - tag: systemd            platform: linux/amd64
+          #         # - tag: systemd linux            platform: arm/v5
+## TODO: KaOS
+## TODO: mint
+## TODO: pclinuxos
+## TODO: solus
+## TODO: nixos?
 
-          echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+## Unsupported
 
-          if test "x$cont" = "x"; then
-            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            exit 1
-          fi
-      # Check platforms
-      - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - latest # no c compiler
-          - current
-          - '14.2'
-          - '14.1'
-          - '14.0'
-          - '13.1'
-          - '13.0'
-  # C compiler doesn't work
-  docker-chromebrew: # ChromeOS
-    env: {image: "chromebrew/chromeos-${{ matrix.version }}:latest"}
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps:
-      # Setup multi-platform support for docker
-      - uses: docker/setup-qemu-action@v1.2.0
-      # Try to create a container for the given platform and image
-      - name: Create container
-        shell: bash
-        run: |
-          set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
-          set -e
+# - cirros:latest # no package manager
 
-          echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+# docker-qemu:
+#   env: { image: "qemu/${{ matrix.arch }}:latest" }
+#   needs: bootstrap
+#   runs-on: ubuntu-latest
+#   steps: *docker-steps
+#   strategy:
+#     fail-fast: false
+#     matrix:
+#       platform:
+#         - amd64
+#       arch:
+#         # - alpha
+#         # - alpha-slim
+#         # - amd64
+#         # - amd64-slim
+#         # - arm64
+#         # - arm64-slim
+#         # - armel
+#         # - armel-slim
+#         # - armhf
+#         # - armhf-slim
+#         # - hppa
+#         # - hppa-slim
+#         # - hurd-i386
+#         # - hurd-i386-slim
+#         # - i386
+#         # - i386-slim
+#         # - kfreebsd-amd64
+#         # - kfreebsd-amd64-slim
+#         # - kfreebsd-i386
+#         # - kfreebsd-i386-slim
+#         # - m68k
+#         # - m68k-slim
+#         # - mips
+#         # - mips-slim
+#         # - mipsel
+#         # - mipsel-slim
+#         # - powerpc
+#         # - powerpc-slim
+#         # - powerpcspe
+#         # - powerpcspe-slim
+#         # - ppc64
+#         # - ppc64-slim
+#         # - ppc64el
+#         # - ppc64el-slim
+#         # - s390x
+#         # - s390x-slim
+#         # - sh4
+#         # - sh4-slim
+#         # - sparc64
+#         # - sparc64-slim
+#         # - sparc64-slim-slim
+#         # - x32
+#         # - x32-slim
 
-          if test "x$cont" = "x"; then
-            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            exit 1
-          fi
-      # Check platforms
-      - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - armv7l-fievel-m92
-          - i686-alex-m58
-          - x86_64-kip-m92
-          - x86_64-nocturne-m90
-        include:
-          - {version: armv7l-fievel-m91, platform: arm}
-  docker-gentoo:
-    env: {image: "gentoo/stage3:${{ matrix.tag }}"}
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps:
-      # Setup multi-platform support for docker
-      - uses: docker/setup-qemu-action@v1.2.0
-      # Try to create a container for the given platform and image
-      - name: Create container
-        shell: bash
-        run: |
-          set +e
-          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
-          set -e
-
-          echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
-
-          if test "x$cont" = "x"; then
-            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
-            exit 1
-          fi
-      # Check platforms
-      - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
-      # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
-      # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-      # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
-      # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - {tag: amd64-hardened-nomultilib-openrc, platform: amd64}
-          - {tag: amd64-hardened-openrc, platform: amd64}
-          - {tag: amd64-musl-hardened, platform: amd64}
-          - {tag: amd64-musl, platform: amd64}
-          - {tag: amd64-nomultilib-openrc, platform: amd64}
-          - {tag: amd64-nomultilib-systemd, platform: amd64}
-          - {tag: amd64-openrc, platform: amd64}
-          - {tag: amd64-systemd, platform: amd64}
-          - {tag: arm64-systemd, platform: arm64}
-          - {tag: arm64, platform: arm64}
-          - {tag: armv5tel-openrc, platform: arm}
-          - {tag: armv5tel-systemd, platform: arm}
-          - {tag: armv6j_hardfp-openrc, platform: arm}
-          - {tag: armv6j_hardfp-systemd, platform: arm}
-          - {tag: armv6j-openrc, platform: arm}
-          - {tag: armv6j-systemd, platform: arm}
-          - {tag: armv7a_hardfp-openrc, platform: arm}
-          - {tag: armv7a_hardfp-systemd, platform: arm}
-          - {tag: armv7a-openrc, platform: arm}
-          - {tag: armv7a-systemd, platform: arm}
-          - {tag: hardened-nomultilib, platform: amd64}
-          - {tag: hardened, platform: 386}
-          - {tag: hardened, platform: amd64}
-          - {tag: i686-hardened-openrc, platform: 386}
-          - {tag: i686-musl, platform: 386}
-          - {tag: i686-openrc, platform: 386}
-          - {tag: i686-systemd, platform: 386}
-          - {tag: latest, platform: 386}
-          - {tag: latest, platform: amd64,}
-          # - tag: latest linux            platform: arm/v5
-          # - tag: musl linux/386            platform: linux/amd64
-          # - tag: musl-hardened            platform: linux/amd64
-          # - tag: musl-hardened            platform: linux/ppc64le
-          # - tag: nomultilib            platform: linux/amd64
-          # - tag: nomultilib-systemd            platform: linux/amd64
-          # - tag: ppc64le-musl-hardened-openrc            platform: linux/ppc64le
-          # - tag: ppc64le-openrc            platform: linux/ppc64le
-          # - tag: ppc64le-systemd            platform: linux/ppc64le
-          # - tag: rv64_lp64-openrc            platform: linux/riscv64
-          # - tag: rv64_lp64-systemd            platform: linux/riscv64
-          # - tag: rv64_lp64d-openrc            platform: linux/riscv64
-          # - tag: rv64_lp64d-systemd            platform: linux/riscv64
-          # - tag: s390x            platform: linux/s390x
-          # - tag: systemd            platform: linux/386
-          # - tag: systemd            platform: linux/amd64
-          # - tag: systemd linux            platform: arm/v5
-  ## TODO: KaOS
-  ## TODO: mint
-  ## TODO: pclinuxos
-  ## TODO: solus
-  ## TODO: nixos?
-
-  ## Unsupported
-
-  # - cirros:latest # no package manager
-
-  # docker-qemu:
-  #   env: { image: "qemu/${{ matrix.arch }}:latest" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       arch:
-  #         # - alpha
-  #         # - alpha-slim
-  #         # - amd64
-  #         # - amd64-slim
-  #         # - arm64
-  #         # - arm64-slim
-  #         # - armel
-  #         # - armel-slim
-  #         # - armhf
-  #         # - armhf-slim
-  #         # - hppa
-  #         # - hppa-slim
-  #         # - hurd-i386
-  #         # - hurd-i386-slim
-  #         # - i386
-  #         # - i386-slim
-  #         # - kfreebsd-amd64
-  #         # - kfreebsd-amd64-slim
-  #         # - kfreebsd-i386
-  #         # - kfreebsd-i386-slim
-  #         # - m68k
-  #         # - m68k-slim
-  #         # - mips
-  #         # - mips-slim
-  #         # - mipsel
-  #         # - mipsel-slim
-  #         # - powerpc
-  #         # - powerpc-slim
-  #         # - powerpcspe
-  #         # - powerpcspe-slim
-  #         # - ppc64
-  #         # - ppc64-slim
-  #         # - ppc64el
-  #         # - ppc64el-slim
-  #         # - s390x
-  #         # - s390x-slim
-  #         # - sh4
-  #         # - sh4-slim
-  #         # - sparc64
-  #         # - sparc64-slim
-  #         # - sparc64-slim-slim
-  #         # - x32
-  #         # - x32-slim
-
-  #         # - i386
-  #         # - arm
-  #         # - aarch64
-  #         # - x86-64
-  #         # - alpha
-  #         # - cris
-  #         # - lm32
-  #         # - moxie
-  #         # - ppc
-  #         # - sparc
-  #         # - ppcemb
-  #         # - sparc64
-  #         # - tricore
-  #         # - unicore32
-  #         # - microblazeel
-  #         # - m68k
-  #         # - microblaze
-  #         # - mipsel
-  #         # - mips
-  #         # - mips64
-  #         # - mips64el
-  #         # - sh4
-  #         # - ppc64
-  #         # - or32
-  #         # - sh4eb
-  #         # - xtensaeb
-  #         # - xtensa
-  #         # - cdrom
-  #         # - nbd
-  #         # - img
-  #         # - io
-  #         # - boot-command
-  #         # - ivshmem
-  #         # - ksm
-
-# # qemu/base
-# # qemu/tools
-
-# Multics: https://hub.docker.com/r/rattydave/alpine-multics
-# Cray 1: https://hub.docker.com/r/rattydave/cray1
-# VM/370: https://hub.docker.com/r/rattydave/docker-ubuntu-hercules-vm370
-# MVS: https://hub.docker.com/r/rattydave/docker-ubuntu-hercules-mvs
-# System/370: https://hub.docker.com/r/rattydave/docker-ubuntu-hercules-tss
-# Multiple: https://hub.docker.com/r/rattydave/alpine-simh
-# Cloud 9: https://hub.docker.com/r/rattydave/cloud9
-
-# Multics:
-# - https://hackaday.com/2021/08/07/multics-gets-a-new-release-52-years-after-launch/
-# - https://multics-wiki.swenson.org/index.php/Main_Page#Latest_Release
-# - https://en.wikipedia.org/wiki/Multics
-# - https://web.mit.edu/multics-history/source/Multics_Internet_Server/Multics_sources.html 
-# - https://www.multicians.org/
-# - http://ringzero.wikidot.com/start
-
-# https://hub.docker.com/u/mintproject
-# https://hub.docker.com/u/voidlinux
-
-# Android
-#   Android Wear
-#   Android TV
-# iOS
-
-# SELinux
-
-# TODO: compiler: gcc, llvm, icc
-# TODO: pre-statx linux (and other kernel implementations)
-# TODO: WSLv1, WSLv2, different bash ports (MSYS,MingW,Cygwin,GitBash)
-# TODO: filesystems: zfs, btrfs, ext4
-# TODO: setup-qemu
-
-#arm32v5
-#winamd64
-#windows-amd64
-
-### Arch as user
-# amd64
-# arm32v5
-# arm32v6
-# arm32v7
-# arm64v8
-# i386
-# mips64le
-# ppc64le
-# riscv64
-# s390x
-
-# winamd64
+#         # - i386
+#         # - arm
+#         # - aarch64
+#         # - x86-64
+#         # - alpha
+#         # - cris
+#         # - lm32
+#         # - moxie
+#         # - ppc
+#         # - sparc
+#         # - ppcemb
+#         # - sparc64
+#         # - tricore
+#         # - unicore32
+#         # - microblazeel
+#         # - m68k
+#         # - microblaze
+#         # - mipsel
+#         # - mips
+#         # - mips64
+#         # - mips64el
+#         # - sh4
+#         # - ppc64
+#         # - or32
+#         # - sh4eb
+#         # - xtensaeb
+#         # - xtensa
+#         # - cdrom
+#         # - nbd
+#         # - img
+#         # - io
+#         # - boot-command
+#         # - ivshmem
+#         # - ksm
