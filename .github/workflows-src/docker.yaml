@@ -1,31 +1,6 @@
-  # Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
-  docker-openwrtorg:
-    env: { image: "openwrtorg/rootfs:${{ matrix.arch }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        arch:
-          - aarch64_cortex
-          - aarch64_generic
-          - arm_cortex-a15_neon-vfpv4
-          - armvirt-32
-          - armvirt-64
-          - i386_pentium-mmx
-          - i386_pentium4
-          - malta-be
-          - mips_24kc
-          - x86_64
-          - x86-64
-          - x86-generic
-          - x86-geode
-
-  # docker-openmandriva:
-  #   env: { image: "openmandriva/${{ matrix.version }}" }
+  # # Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
+  # docker-openwrtorg:
+  #   env: { image: "openwrtorg/rootfs:${{ matrix.arch }}" }
   #   needs: bootstrap
   #   runs-on: ubuntu-latest
   #   steps: *docker-steps
@@ -35,46 +10,72 @@
   #       platform:
   #         - amd64
   #       arch:
-  #         - cooker # no c compiler
-  #         - '4.2' # no c compiler
-  #         - '4.0'
-  #         - '3.0'
+  #         - aarch64_cortex-a53
+  #         ## - aarch64_generic # Packages for gcc found, but incompatible with the architectures configured
+  #         - arm_cortex-a15_neon-vfpv4
+  #         - armvirt-32
+  #         - armvirt-64
+  #         - i386_pentium-mmx
+  #         - i386_pentium4
+  #         - malta-be
+  #         ## - mips_24kc # Container does not stay running
+  #         - x86_64
+  #         - x86-64
+  #         - x86-generic
+  #         - x86-geode
 
-  # docker-opensuse:
-  #   env: { image: "opensuse/${{ matrix.version }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       version:
-  #         - leap:latest
-  #         - leap:15
-  #         - leap:42
-  #         - tumbleweed # no c compiler
-  #         - s390x
+  docker-openmandriva:
+    env: { image: "openmandriva/${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: []
+        version: []
+        include:
+          - { version: cooker:latest, platform: amd64 }
+          - { version: cooker:latest, platform: arm64 }
+          - { version: 4.0:latest, platform: amd64 }
+          - { version: 3.0:latest, platform: amd64 }
+          - { version: 3.0:aarch64, platform: arm64 }
 
-  # docker-slackware:
-  #   env: { image: "vbatts/slackware:${{ matrix.version }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       version:
-  #         - latest # no c compiler
-  #         - current
-  #         - '14.2'
-  #         - '14.1'
-  #         - '14.0'
-  #         - '13.1'
-  #         - '13.0'
+  docker-opensuse:
+    env: { image: "opensuse/${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - leap:latest
+          - leap:15
+          - leap:42
+          - tumbleweed # no c compiler
+          - s390x
+
+  docker-slackware:
+    env: { image: "vbatts/slackware:${{ matrix.version }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - latest # no c compiler
+          - current
+          - '14.2'
+          - '14.1'
+          - '14.0'
+          - '13.1'
+          - '13.0'
 
   # # C compiler doesn't work
   # docker-chromebrew: # ChromeOS

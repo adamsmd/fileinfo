@@ -5,42 +5,44 @@
 
 note_using="Installing dependencies using"
 
-if apt-get --version >/dev/null 2>&1; then
-  echo "$note_using" apt-get
+try () {
+  if "$@" >/dev/null 2>&1; then
+    echo "$note_using" "$1"
+    return 0
+  else
+    return 1
+  fi
+}
+
+if try apt-get --version; then
   export DEBIAN_FRONTEND=noninteractive
-  apt-get update
+  apt-get update # TODO: test if we can omit
   apt-get install --assume-yes make
   apt-get install --assume-yes gcc \
     || apt-get install --assume-yes gcc5 # For Alma Linux p8
-elif tdnf --version >/dev/null 2>&1; then
-  echo "$note_using" tdnf
+elif try dnf --version; then
+  dnf install --assumeyes gcc make glibc-devel
+elif try tdnf --version; then
   tdnf install --assumeyes gcc make
-  # Fixes for Photon Linux
+  # For Photon Linux
   tdnf erase --assumeyes toybox || true
   tdnf install --assumeyes coreutils sed gawk binutils glibc-devel linux-api-headers || true
-elif yum --version >/dev/null 2>&1; then
-  echo "$note_using" yum
+elif try microdnf --help; then
+  microdnf install --assumeyes gcc make
+elif try yum --version; then
   yum install --assumeyes gcc make
-elif pacman --version >/dev/null 2>&1; then
-  echo "$note_using" pacman
+elif try pacman --version; then
   yes | pacman --sync --refresh gcc make
-elif apk --version >/dev/null 2>&1; then
-  echo "$note_using" apk
+elif try apk --version; then
   apk add --no-cache gcc libc-dev make
-elif swupd --version >/dev/null 2>&1; then
-  echo "$note_using" swupd
+elif try swupd --version; then
   swupd bundle-add --assume=yes c-basic make
-elif urpmi --version >/dev/null 2>&1; then
-  echo "$note_using" swupd
+elif try urpmi --version; then
   urpmi --auto gcc make
-elif opkg --version >/dev/null 2>&1; then
-  echo "$note_using" opkg
+elif try opkg --version; then
   mkdir /var/lock || true
   opkg update
   opkg install diffutils gcc make
-elif microdnf --help 2>/dev/null 2>&1; then
-  echo "$note_using" microdnf
-  microdnf install --assumeyes gcc make
 else
   echo "$note_using" '<nothing>'
 fi

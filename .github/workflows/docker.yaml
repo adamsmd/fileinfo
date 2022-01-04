@@ -95,9 +95,112 @@ jobs:
         run: docker stop "$cont"
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
-  # Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
-  docker-openwrtorg:
-    env: {image: "openwrtorg/rootfs:${{ matrix.arch }}"}
+  # # Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
+  # docker-openwrtorg:
+  #   env: { image: "openwrtorg/rootfs:${{ matrix.arch }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       arch:
+  #         - aarch64_cortex-a53
+  #         ## - aarch64_generic # Packages for gcc found, but incompatible with the architectures configured
+  #         - arm_cortex-a15_neon-vfpv4
+  #         - armvirt-32
+  #         - armvirt-64
+  #         - i386_pentium-mmx
+  #         - i386_pentium4
+  #         - malta-be
+  #         ## - mips_24kc # Container does not stay running
+  #         - x86_64
+  #         - x86-64
+  #         - x86-generic
+  #         - x86-geode
+
+  docker-openmandriva:
+    env: {image: "openmandriva/${{ matrix.version }}"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          set -e
+
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "cont=$cont"
+
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            exit 1
+          fi
+      # Check platforms
+      - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: docker exec "$cont" uname -a
+      # Create the working directory
+      - if: ${{ env.cont != 0 }}
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "workdir=$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: |
+          # don't use --mode since it is not compatible
+          docker exec "$cont" mkdir "$workdir" || \
+            docker exec --user=root "$cont" mkdir "$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: |
+          docker exec "$cont" chmod 0777 "$workdir" || \
+            docker exec --user=root "$cont" chmod 0777 "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ env.cont != 0 }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ env.cont != 0 }}
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ env.cont != 0 }}
+        run: docker stop "$cont"
+      - if: ${{ env.cont != 0 }}
+        run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: []
+        version: []
+        include:
+          - {version: 'cooker:latest', platform: amd64}
+          - {version: 'cooker:latest', platform: arm64}
+          - {version: '4.0:latest', platform: amd64}
+          - {version: '3.0:latest', platform: amd64}
+          - {version: '3.0:aarch64', platform: arm64}
+  docker-opensuse:
+    env: {image: "opensuse/${{ matrix.version }}"}
     needs: bootstrap
     runs-on: ubuntu-latest
     steps:
@@ -168,72 +271,92 @@ jobs:
       matrix:
         platform:
           - amd64
-        arch:
-          - aarch64_cortex
-          - aarch64_generic
-          - arm_cortex-a15_neon-vfpv4
-          - armvirt-32
-          - armvirt-64
-          - i386_pentium-mmx
-          - i386_pentium4
-          - malta-be
-          - mips_24kc
-          - x86_64
-          - x86-64
-          - x86-generic
-          - x86-geode
-          # docker-openmandriva:
-          #   env: { image: "openmandriva/${{ matrix.version }}" }
-          #   needs: bootstrap
-          #   runs-on: ubuntu-latest
-          #   steps: *docker-steps
-          #   strategy:
-          #     fail-fast: false
-          #     matrix:
-          #       platform:
-          #         - amd64
-          #       arch:
-          #         - cooker # no c compiler
-          #         - '4.2' # no c compiler
-          #         - '4.0'
-          #         - '3.0'
+        version:
+          - leap:latest
+          - leap:15
+          - leap:42
+          - tumbleweed # no c compiler
+          - s390x
+  docker-slackware:
+    env: {image: "vbatts/slackware:${{ matrix.version }}"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          set -e
 
-          # docker-opensuse:
-          #   env: { image: "opensuse/${{ matrix.version }}" }
-          #   needs: bootstrap
-          #   runs-on: ubuntu-latest
-          #   steps: *docker-steps
-          #   strategy:
-          #     fail-fast: false
-          #     matrix:
-          #       platform:
-          #         - amd64
-          #       version:
-          #         - leap:latest
-          #         - leap:15
-          #         - leap:42
-          #         - tumbleweed # no c compiler
-          #         - s390x
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "cont=$cont"
 
-          # docker-slackware:
-          #   env: { image: "vbatts/slackware:${{ matrix.version }}" }
-          #   needs: bootstrap
-          #   runs-on: ubuntu-latest
-          #   steps: *docker-steps
-          #   strategy:
-          #     fail-fast: false
-          #     matrix:
-          #       platform:
-          #         - amd64
-          #       version:
-          #         - latest # no c compiler
-          #         - current
-          #         - '14.2'
-          #         - '14.1'
-          #         - '14.0'
-          #         - '13.1'
-          #         - '13.0'
-
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            exit 1
+          fi
+      # Check platforms
+      - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: docker exec "$cont" uname -a
+      # Create the working directory
+      - if: ${{ env.cont != 0 }}
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "workdir=$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: |
+          # don't use --mode since it is not compatible
+          docker exec "$cont" mkdir "$workdir" || \
+            docker exec --user=root "$cont" mkdir "$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: |
+          docker exec "$cont" chmod 0777 "$workdir" || \
+            docker exec --user=root "$cont" chmod 0777 "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ env.cont != 0 }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ env.cont != 0 }}
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ env.cont != 0 }}
+        run: docker stop "$cont"
+      - if: ${{ env.cont != 0 }}
+        run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          - latest # no c compiler
+          - current
+          - '14.2'
+          - '14.1'
+          - '14.0'
+          - '13.1'
+          - '13.0'
           # # C compiler doesn't work
           # docker-chromebrew: # ChromeOS
           #   env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
