@@ -95,6 +95,7 @@ jobs:
         run: docker stop "$cont"
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
+  # Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
   docker-openwrtorg:
     env: {image: "openwrtorg/rootfs:${{ matrix.arch }}"}
     needs: bootstrap

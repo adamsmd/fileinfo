@@ -37,7 +37,7 @@ elif opkg --version >/dev/null 2>&1; then
   echo "$note_using" opkg
   mkdir /var/lock || true
   opkg update
-  opkg install grep gcc make
+  opkg install diffutils gcc make
 elif microdnf --help 2>/dev/null 2>&1; then
   echo "$note_using" microdnf
   microdnf install --assumeyes gcc make

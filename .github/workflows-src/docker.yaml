@@ -1,3 +1,4 @@
+  # Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
   docker-openwrtorg:
     env: { image: "openwrtorg/rootfs:${{ matrix.arch }}" }
     needs: bootstrap
