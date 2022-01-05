@@ -1,0 +1,150 @@
+## Note that symbolic names are often duplicates of the numeric names.
+## We keep both so that we automatically test new versions when those
+## symbolic names get updated to newer versions.
+
+## https://github.com/docker-library/official-images#architectures-other-than-amd64
+## https://github.com/docker-library/bashbrew/blob/v0.1.2/architecture/oci-platform.go
+
+## amd64         = linux/amd64
+## arm32v5       = linux/arm/v5
+## arm32v6       = linux/arm/v6
+## arm32v7       = linux/arm/v7
+## arm64v8       = linux/arm64/v8
+## i386          = linux/386
+## mips64le      = linux/mips64le
+## ppc64le       = linux/ppc64le
+## riscv64       = linux/riscv64
+## s390x         = linux/s390x
+## windows-amd64 = windows/amd64
+on: [push]
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: bin/bootstrap
+      - run: tar -cvf ../fileinfo.tar --exclude .git .
+      - run: mv ../fileinfo.tar .
+      - uses: actions/upload-artifact@v2
+        with:
+          name: bootstrap-output
+          path: fileinfo.tar
+  docker-steps:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          set -e
+
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "cont=$cont"
+
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            exit 1
+          fi
+      # Check platforms
+      - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: docker exec "$cont" uname -a
+      # Create the working directory
+      - if: ${{ env.cont != 0 }}
+        run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "workdir=$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: |
+          # don't use --mode since it is not compatible
+          docker exec "$cont" mkdir "$workdir" || \
+            docker exec --user=root "$cont" mkdir "$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: |
+          docker exec "$cont" chmod 0777 "$workdir" || \
+            docker exec --user=root "$cont" chmod 0777 "$workdir"
+      # Copy the artifact to the working directory
+      - if: ${{ env.cont != 0 }}
+        uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - if: ${{ env.cont != 0 }}
+        run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      # Install dependencies
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+      # Build
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" ./configure
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" make
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --workdir="$workdir" "$cont" make check
+      # Cleanup
+      - if: ${{ env.cont != 0 }}
+        run: docker stop "$cont"
+      - if: ${{ env.cont != 0 }}
+        run: docker rm --force --volumes "$cont"
+  android:
+    needs: bootstrap
+    runs-on: ubuntu-latest # TODO: macos-latest
+    # strategy:
+    #   fail-fast: false
+    #   # matrix:
+    # env: { image: "rockylinux:${{ matrix.version }}" }
+    env:
+      ANDROID_SDK_ROOT: /android
+      NDK: /android/ndk/23.1.7779620
+      ## Only choose one of these, depending on your build machine...
+      # TOOLCHAIN: ${{ env.NDK }}/toolchains/llvm/prebuilt/darwin-x86_64
+      TOOLCHAIN: ${{ env.NDK }}/toolchains/llvm/prebuilt/linux-x86_64
+      ## Only choose one of these, depending on your device...
+      # TARGET: aarch64-linux-android
+      # TARGET: armv7a-linux-androideabi
+      TARGET: i686-linux-android
+      # TARGET: x86_64-linux-android
+      ## Set this to your minSdkVersion.
+      API: 29
+      ## Configure and build.
+      AR: ${{ env.TOOLCHAIN }}/bin/llvm-ar
+      CC: ${{ env.TOOLCHAIN }}/bin/${{ env.TARGET }}${{ env.API }}-clang
+      AS: ${{ env.CC }}
+      CXX: ${{ env.TOOLCHAIN }}/bin/${{ env.TARGET }}${{ env.API }}-clang++
+      LD: ${{ env.TOOLCHAIN }}/bin/ld
+      RANLIB: ${{ env.TOOLCHAIN }}/bin/llvm-ranlib
+      STRIP: ${{ env.TOOLCHAIN }}/bin/llvm-strip
+    steps:
+      - uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - run: tar -xvf fileinfo.tar
+      - run: apt-get update
+      - run: apt-get install --assume-yes openjdk-11-jre
+      - run: mkdir "$ANDROID_SDK_ROOT"
+      - run: |
+          PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
+          echo "PATH=$PATH" >> $GITHUB_ENV
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          ndk: 23.1.7779620
+          script: |
+            ./configure --host="$TARGET"
+            cat src/config.h
+            cat src/headers.h
+            cat src/fileinfo/static.h
+            make
+            make check
+
+            adb push fileinfo-fields-dynamic /data/local/tmp/
+            adb shell chmod a+x /data/local/tmp/fileinfo-fields-dynamic
+            adb shell /data/local/tmp/fileinfo-fields-dynamic

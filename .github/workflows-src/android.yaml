@@ -1,0 +1,53 @@
+  android:
+    needs: bootstrap
+    runs-on: ubuntu-latest # TODO: macos-latest
+    # strategy:
+    #   fail-fast: false
+    #   # matrix:
+    # env: { image: "rockylinux:${{ matrix.version }}" }
+    env:
+      ANDROID_SDK_ROOT: /android
+      NDK: /android/ndk/23.1.7779620
+      ## Only choose one of these, depending on your build machine...
+      # TOOLCHAIN: ${{ env.NDK }}/toolchains/llvm/prebuilt/darwin-x86_64
+      TOOLCHAIN: ${{ env.NDK }}/toolchains/llvm/prebuilt/linux-x86_64
+      ## Only choose one of these, depending on your device...
+      # TARGET: aarch64-linux-android
+      # TARGET: armv7a-linux-androideabi
+      TARGET: i686-linux-android
+      # TARGET: x86_64-linux-android
+      ## Set this to your minSdkVersion.
+      API: 29
+      ## Configure and build.
+      AR: ${{ env.TOOLCHAIN }}/bin/llvm-ar
+      CC: ${{ env.TOOLCHAIN }}/bin/${{ env.TARGET }}${{ env.API }}-clang
+      AS: ${{ env.CC }}
+      CXX: ${{ env.TOOLCHAIN }}/bin/${{ env.TARGET }}${{ env.API }}-clang++
+      LD: ${{ env.TOOLCHAIN }}/bin/ld
+      RANLIB: ${{ env.TOOLCHAIN }}/bin/llvm-ranlib
+      STRIP: ${{ env.TOOLCHAIN }}/bin/llvm-strip
+    steps:
+      - uses: actions/download-artifact@v2
+        with: { name: bootstrap-output }
+      - run: tar -xvf fileinfo.tar
+      - run: apt-get update
+      - run: apt-get install --assume-yes openjdk-11-jre
+      - run: mkdir "$ANDROID_SDK_ROOT"
+      - run: |
+          PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
+          echo "PATH=$PATH" >> $GITHUB_ENV
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          ndk: 23.1.7779620
+          script: |
+            ./configure --host="$TARGET"
+            cat src/config.h
+            cat src/headers.h
+            cat src/fileinfo/static.h
+            make
+            make check
+
+            adb push fileinfo-fields-dynamic /data/local/tmp/
+            adb shell chmod a+x /data/local/tmp/fileinfo-fields-dynamic
+            adb shell /data/local/tmp/fileinfo-fields-dynamic
