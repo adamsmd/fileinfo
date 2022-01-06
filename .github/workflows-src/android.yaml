@@ -1,7 +1,9 @@
   test:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with: { name: bootstrap-output }
+      - run: tar -xvf fileinfo.tar
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
@@ -13,6 +15,7 @@
             ls -al
             which llvm-ranlib || true
             which llvm-ar || true
+            ./configure --host="i686-linux-android"
   # android:
   #   needs: bootstrap
   #   runs-on: macos-11
@@ -54,9 +57,6 @@
   #     # - run: sudo apt-get update
   #     # - run: sudo apt-get install --assume-yes openjdk-11-jre
 
-  #     - uses: actions/download-artifact@v2
-  #       with: { name: bootstrap-output }
-  #     - run: tar -xvf fileinfo.tar
 
   #     - uses: reactivecircus/android-emulator-runner@v2
   #       with:
