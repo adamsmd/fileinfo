@@ -5,6 +5,7 @@
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
       - run: tar -xvf fileinfo.tar
+      - run: echo ++++++++++++++ ${{ env.ANDROID_SDK_ROOT }}
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
@@ -12,6 +13,7 @@
           script: |
             echo true
             echo "$PATH"
+            echo -------------- ${{ env.ANDROID_SDK_ROOT }}
             pwd
             ls -al
             which llvm-ranlib || true
@@ -52,7 +54,7 @@
   #   #   fail-fast: false
   #   #   matrix:
   #   env:
-  #     ANDROID_SDK_ROOT: /android
+  #     ANDROID_SDK_ROOT: /android # /Users/runner/Library/Android/sdk/
   #     API: 29 # 15-31 ## minSdkVersion
   #     NDK_VERSION: 23.1.7779620
 
