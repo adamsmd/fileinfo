@@ -1,9 +1,9 @@
   android:
     needs: bootstrap
     runs-on: ubuntu-latest # TODO: macos-latest
-    strategy:
-      fail-fast: false
-      # matrix:
+    # strategy:
+    #   fail-fast: false
+    #   # matrix:
     env:
       ANDROID_SDK_ROOT: /android
       NDK_VERSION: 23.1.7779620
