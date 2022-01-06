@@ -31,6 +31,8 @@ elif try microdnf --help; then
   microdnf install --assumeyes gcc make
 elif try yum --version; then
   yum install --assumeyes gcc make
+elif try zypper --version; then
+  zypper install --no-confirm gcc make
 elif try pacman --version; then
   yes | pacman --sync --refresh gcc make
 elif try apk --version; then
@@ -39,6 +41,9 @@ elif try swupd --version; then
   swupd bundle-add --assume=yes c-basic make
 elif try urpmi --version; then
   urpmi --auto gcc make
+elif try slackpkg --version; then
+  slackpkg update
+  slackpkg install binutils gcc make glibc-devel libmpc
 elif try opkg --version; then
   mkdir /var/lock || true
   opkg update
