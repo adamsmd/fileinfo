@@ -1,6 +1,6 @@
   android:
     needs: bootstrap
-    runs-on: ${{ env.ACT && 'ubuntu-latest' || 'macos-latest' }}
+    runs-on: ${{ process.env.ACT && 'ubuntu-latest' || 'macos-latest' }}
     env:
       # Note that `ANDROID_SDK_ROOT` is set by `android-emulator-runner`
       API: 29 # 15-31 ## minSdkVersion
