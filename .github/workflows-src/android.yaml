@@ -12,10 +12,6 @@
       TARGET: i686-linux-android
       # TARGET: x86_64-linux-android
 
-      ## Only choose one of these, depending on your build machine...
-      BUILD: darwin-x86_64
-      # BUILD: linux-x86_64
-
     steps:
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
@@ -25,27 +21,6 @@
           api-level: ${{ env.API }}
           ndk: ${{ env.NDK }}
           script: |
-            echo true
-            echo "$PATH"
-            echo -------------- "$ANDROID_SDK_ROOT" $API $NDK $TARGET $BUILD
-            pwd
-            ls -al
-            uname
-            uname -a
-
-            ls -al /Users/runner/Library/Android/
-            ls -al /Users/runner/Library/Android/sdk/
-            ls -al /Users/runner/Library/Android/sdk/tools/
-            ls -al /Users/runner/Library/Android/sdk/tools/bin/
-            ls -al /Users/runner/Library/Android/sdk/platform-tools/
-            ls -al /Users/runner/Library/Android/sdk/ndk-bundle/
-            ls -al /Users/runner/Library/Android/sdk/ndk-bundle/prebuilt/
-            ls -al /Users/runner/Library/Android/sdk/cmdline-tools/latest/
-            ls -al /Users/runner/Library/Android/sdk/cmdline-tools/latest/bin/
-
-            find /Users/runner/Library/Android/ -name \*clang || true
-            find /Users/runner/Library/Android/ -name \*ranlib || true
-
             bin/android-configure --host="i686-linux-android"
             cat src/config.h
             cat src/headers.h
@@ -55,6 +30,9 @@
 
             file fileinfo-fields-dynamic
 
+            adb push fileinfo-fields-dynamic /data/local/tmp/
+            adb shell chmod a+x /data/local/tmp/fileinfo-fields-dynamic
+            adb shell /data/local/tmp/fileinfo-fields-dynamic
 
 
 

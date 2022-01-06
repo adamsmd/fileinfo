@@ -12,18 +12,13 @@ check () {
 
 check "ANDROID_SDK_ROOT"
 check "API"
-check "BUILD"
 check "NDK"
 check "TARGET"
 
-BIN_DIR="$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt/$BUILD/bin"
-echo --------------------- NDKs
-ls -al "$ANDROID_SDK_ROOT/ndk/"
-echo
-echo
-echo
-echo --------------------- BUILDs
-ls -al "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt/"
+## Only choose one of these, depending on your build machine...
+# BUILD: darwin-x86_64
+# BUILD: linux-x86_64
+BIN_DIR="$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt"/*/"bin"
 export     AR="$BIN_DIR/llvm-ar"
 export     CC="$BIN_DIR/$TARGET$API-clang"
 export     AS="$BIN_DIR/$TARGET$API-clang"
