@@ -1,14 +1,18 @@
   test:
     runs-on: macos-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: run tests
-        uses: reactivecircus/android-emulator-runner@v2
+      - uses: actions/checkout@v2
+      - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          script: echo true
+          ndk: 23.1.7779620
+          script: |
+            echo true
+            echo "$PATH"
+            pwd
+            ls -al
+            which llvm-ranlib || true
+            which llvm-ar || true
   # android:
   #   needs: bootstrap
   #   runs-on: macos-11
