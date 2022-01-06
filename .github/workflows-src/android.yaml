@@ -31,7 +31,10 @@
           echo RANLIB="$BIN_DIR/llvm-ranlib" >> $GITHUB_ENV
           echo  STRIP="$BIN_DIR/llvm-strip" >> $GITHUB_ENV
 
+      - run: whoami
       - run: sudo mkdir "$ANDROID_SDK_ROOT"
+      - run: sudo ls -al "$ANDROID_SDK_ROOT"
+      - run: sudo chmod a+rwx "$ANDROID_SDK_ROOT"
       - run: sudo apt-get update
       - run: sudo apt-get install --assume-yes openjdk-11-jre
 
