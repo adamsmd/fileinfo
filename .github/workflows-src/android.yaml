@@ -1,6 +1,6 @@
-  android:
+  android-macos:
     needs: bootstrap
-    runs-on: ${{ process.env.ACT && 'ubuntu-latest' || 'macos-latest' }}
+    runs-on: macos-latest
     env:
       # Note that `ANDROID_SDK_ROOT` is set by `android-emulator-runner`
       API: 29 # 15-31 ## minSdkVersion
@@ -43,6 +43,8 @@
             adb push fileinfo-fields-dynamic /data/local/tmp/
             adb shell chmod a+x /data/local/tmp/fileinfo-fields-dynamic
             adb shell /data/local/tmp/fileinfo-fields-dynamic
+
+# ${{ process.env.ACT && 'ubuntu-latest' || 
 
   # android:
   #   needs: bootstrap
