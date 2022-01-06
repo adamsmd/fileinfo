@@ -10,15 +10,17 @@ check () {
   fi
 }
 
+## Set by virtual environments
 check "ANDROID_SDK_ROOT"
+
+## Get by workflow
 check "API"
 check "NDK"
 check "TARGET"
 
-## Only choose one of these, depending on your build machine...
-# BUILD: darwin-x86_64
-# BUILD: linux-x86_64
-BIN_DIR="$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt"/*/"bin"
+## Chooses one of darwin-x86_64 or linux-x86_64 depending on your build machine
+BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt"/*/"bin")"
+
 export     AR="$BIN_DIR/llvm-ar"
 export     CC="$BIN_DIR/$TARGET$API-clang"
 export     AS="$BIN_DIR/$TARGET$API-clang"
