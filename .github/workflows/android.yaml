@@ -102,7 +102,6 @@ jobs:
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - run: tar -xvf fileinfo.tar
-      - run: echo ++++++++++++++ ${{ env.ANDROID_SDK_ROOT }}
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
@@ -110,7 +109,7 @@ jobs:
           script: |
             echo true
             echo "$PATH"
-            echo -------------- ${{ process.env.ANDROID_SDK_ROOT }}
+            echo -------------- "$ANDROID_SDK_ROOT"
             pwd
             ls -al
             which llvm-ranlib || true
