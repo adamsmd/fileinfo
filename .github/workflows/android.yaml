@@ -110,7 +110,7 @@ jobs:
           script: |
             echo true
             echo "$PATH"
-            echo -------------- ${{ env.ANDROID_SDK_ROOT }}
+            echo -------------- ${{ process.env.ANDROID_SDK_ROOT }}
             pwd
             ls -al
             which llvm-ranlib || true
