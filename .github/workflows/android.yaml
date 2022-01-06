@@ -95,7 +95,7 @@ jobs:
         run: docker stop "$cont"
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
-  test:
+  android:
     runs-on: macos-latest
     steps:
       - uses: actions/download-artifact@v2
@@ -112,18 +112,34 @@ jobs:
             ls -al
             which llvm-ranlib || true
             which llvm-ar || true
+
+            ls -al /Users/runner/Library/Android/sdk/tools/
+            ls -al /Users/runner/Library/Android/sdk/platform-tools/
+            ls -al /Users/runner/Library/Android/sdk/ndk-bundle/
+            ls -al /Users/runner/Library/Android/sdk/cmdline-tools/latest/
+            ls -al /Users/runner/Library/Android/sdk/cmdline-tools/latest/bin/
+            ls -al /Users/runner/Library/Android/sdk/platform-tools/
+
             ./configure --host="i686-linux-android"
-  # android:
-  #   needs: bootstrap
-  #   runs-on: macos-11
-  #   # runs-on: ubuntu-latest # TODO: macos-latest
-  #   # strategy:
-  #   #   fail-fast: false
-  #   #   matrix:
-  #   env:
-  #     ANDROID_SDK_ROOT: /android
-  #     API: 29 # 15-31 ## minSdkVersion
-  #     NDK_VERSION: 23.1.7779620
+            cat src/config.h
+            cat src/headers.h
+            cat src/fileinfo/static.h
+            make
+            make check
+
+            file fileinfo-fields-dynamic
+
+# android:
+#   needs: bootstrap
+#   runs-on: macos-11
+#   # runs-on: ubuntu-latest # TODO: macos-latest
+#   # strategy:
+#   #   fail-fast: false
+#   #   matrix:
+#   env:
+#     ANDROID_SDK_ROOT: /android
+#     API: 29 # 15-31 ## minSdkVersion
+#     NDK_VERSION: 23.1.7779620
 
 #     ## Only choose one of these, depending on your device...
 #     # TARGET: aarch64-linux-android

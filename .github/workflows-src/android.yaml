@@ -1,4 +1,4 @@
-  test:
+  android:
     runs-on: macos-latest
     steps:
       - uses: actions/download-artifact@v2
@@ -15,7 +15,28 @@
             ls -al
             which llvm-ranlib || true
             which llvm-ar || true
+
+            ls -al /Users/runner/Library/Android/sdk/tools/
+            ls -al /Users/runner/Library/Android/sdk/platform-tools/
+            ls -al /Users/runner/Library/Android/sdk/ndk-bundle/
+            ls -al /Users/runner/Library/Android/sdk/cmdline-tools/latest/
+            ls -al /Users/runner/Library/Android/sdk/cmdline-tools/latest/bin/
+            ls -al /Users/runner/Library/Android/sdk/platform-tools/
+
             ./configure --host="i686-linux-android"
+            cat src/config.h
+            cat src/headers.h
+            cat src/fileinfo/static.h
+            make
+            make check
+
+            file fileinfo-fields-dynamic
+
+
+
+
+
+
   # android:
   #   needs: bootstrap
   #   runs-on: macos-11
