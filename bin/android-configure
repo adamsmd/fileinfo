@@ -1,0 +1,28 @@
+#!/bin/sh
+
+script_name="$0"
+
+check () {
+  eval "tmp=\$$1"
+  if test "x$tmp" = "x"; then
+    echo "$script_name: error: variable \$$1 is not set"
+    exit 1
+  fi
+}
+
+check "ANDROID_SDK_ROOT"
+check "API"
+check "BUILD"
+check "NDK"
+check "TARGET"
+
+BIN_DIR="$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt/$BUILD/bin"
+export     AR="$BIN_DIR/llvm-ar"
+export     CC="$BIN_DIR/$TARGET$API-clang"
+export     AS="$BIN_DIR/$TARGET$API-clang"
+export    CXX="$BIN_DIR/$TARGET$API-clang++"
+export     LD="$BIN_DIR/ld"
+export RANLIB="$BIN_DIR/llvm-ranlib"
+export  STRIP="$BIN_DIR/llvm-strip"
+
+./configure "$@"

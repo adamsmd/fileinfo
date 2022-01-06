@@ -98,22 +98,35 @@ jobs:
   android:
     needs: bootstrap
     runs-on: macos-latest
+    env:
+      # Note that `ANDROID_SDK_ROOT` is set by `android-emulator-runner`
+      API: 29 # 15-31 ## minSdkVersion
+      NDK: 23.1.7779620
+      ## Only choose one of these, depending on your device...
+      # TARGET: aarch64-linux-android
+      # TARGET: armv7a-linux-androideabi
+      TARGET: i686-linux-android
+      # TARGET: x86_64-linux-android
+
+      ## Only choose one of these, depending on your build machine...
+      BUILD: darwin-x86_64
+      # BUILD: linux-x86_64
     steps:
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - run: tar -xvf fileinfo.tar
       - uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
-          ndk: 23.1.7779620
+          api-level: ${{ env.API }}
+          ndk: ${{ env.NDK }}
           script: |
             echo true
             echo "$PATH"
-            echo -------------- "$ANDROID_SDK_ROOT"
+            echo -------------- "$ANDROID_SDK_ROOT" $API $NDK $TARGET $BUILD
             pwd
             ls -al
-            which llvm-ranlib || true
-            which llvm-ar || true
+            uname
+            uname -a
 
             ls -al /Users/runner/Library/Android/
             ls -al /Users/runner/Library/Android/sdk/
@@ -128,7 +141,7 @@ jobs:
             find /Users/runner/Library/Android/ -name \*clang || true
             find /Users/runner/Library/Android/ -name \*ranlib || true
 
-            ./configure --host="i686-linux-android"
+            bin/android-configure --host="i686-linux-android"
             cat src/config.h
             cat src/headers.h
             cat src/fileinfo/static.h
