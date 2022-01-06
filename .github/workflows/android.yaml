@@ -114,12 +114,18 @@ jobs:
             which llvm-ranlib || true
             which llvm-ar || true
 
+            ls -al /Users/runner/Library/Android/
+            ls -al /Users/runner/Library/Android/sdk/
             ls -al /Users/runner/Library/Android/sdk/tools/
+            ls -al /Users/runner/Library/Android/sdk/tools/bin/
             ls -al /Users/runner/Library/Android/sdk/platform-tools/
             ls -al /Users/runner/Library/Android/sdk/ndk-bundle/
+            ls -al /Users/runner/Library/Android/sdk/ndk-bundle/prebuilt/
             ls -al /Users/runner/Library/Android/sdk/cmdline-tools/latest/
             ls -al /Users/runner/Library/Android/sdk/cmdline-tools/latest/bin/
-            ls -al /Users/runner/Library/Android/sdk/platform-tools/
+
+            find /Users/runner/Library/Android/ -name \*clang || true
+            find /Users/runner/Library/Android/ -name \*ranlib || true
 
             ./configure --host="i686-linux-android"
             cat src/config.h
