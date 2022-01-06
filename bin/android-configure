@@ -17,6 +17,13 @@ check "NDK"
 check "TARGET"
 
 BIN_DIR="$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt/$BUILD/bin"
+echo --------------------- NDKs
+ls -al "$ANDROID_SDK_ROOT/ndk/"
+echo
+echo
+echo
+echo --------------------- BUILDs
+ls -al "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt/$BUILD/"
 export     AR="$BIN_DIR/llvm-ar"
 export     CC="$BIN_DIR/$TARGET$API-clang"
 export     AS="$BIN_DIR/$TARGET$API-clang"
