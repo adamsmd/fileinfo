@@ -30,10 +30,10 @@
           echo     LD="$BIN_DIR/ld" >> $GITHUB_ENV
           echo RANLIB="$BIN_DIR/llvm-ranlib" >> $GITHUB_ENV
           echo  STRIP="$BIN_DIR/llvm-strip" >> $GITHUB_ENV
-      - run: mkdir "$ANDROID_SDK_ROOT"
 
-      - run: apt-get update
-      - run: apt-get install --assume-yes openjdk-11-jre
+      - run: sudo mkdir "$ANDROID_SDK_ROOT"
+      - run: sudo apt-get update
+      - run: sudo apt-get install --assume-yes openjdk-11-jre
 
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
