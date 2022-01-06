@@ -1,14 +1,17 @@
 #include "fileinfo/functions.h"
 #include "fileinfo/static.h"
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+  #include "config.h"
+#endif
+
 #include "headers.h"
 
 /* We cannot include fnctl.h and linux/fnctl.h at the same time */
 #ifndef HAVE_FCNTL_H
-#  ifdef HAVE_LINUX_FCNTL_H
-#    include <linux/fcntl.h>
-#  endif
+  #ifdef HAVE_LINUX_FCNTL_H
+    #include <linux/fcntl.h>
+  #endif
 #endif
 
 #ifdef HAVE_STRUCT_STATX
