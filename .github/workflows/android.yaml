@@ -95,60 +95,74 @@ jobs:
         run: docker stop "$cont"
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
-  android:
-    needs: bootstrap
-    runs-on: macos-11
-    # - ubuntu-latest # TODO: macos-latest
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    env:
-      ANDROID_SDK_ROOT: /android
-      API: 29 # 15-31 ## minSdkVersion
-      NDK_VERSION: 23.1.7779620
-      ## Only choose one of these, depending on your device...
-      # TARGET: aarch64-linux-android
-      # TARGET: armv7a-linux-androideabi
-      TARGET: i686-linux-android
-      # TARGET: x86_64-linux-android
-
-      ## Only choose one of these, depending on your build machine...
-      # BUILD: darwin-x86_64
-      BUILD: linux-x86_64
+  test:
+    runs-on: macos-latest
     steps:
-      - run: |
-          echo PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
-
-          BIN_DIR="/android/ndk/${{ env.NDK_VERSION }}/toolchains/llvm/prebuilt/${{ env.BUILD }}/bin"
-          echo     AR="$BIN_DIR/llvm-ar" >> $GITHUB_ENV
-          echo     CC="$BIN_DIR/${{ env.TARGET }}${{ env.API }}-clang" >> $GITHUB_ENV
-          echo     AS="$BIN_DIR/${{ env.TARGET }}${{ env.API }}-clang" >> $GITHUB_ENV
-          echo    CXX="$BIN_DIR/${{ env.TARGET }}${{ env.API }}-clang++" >> $GITHUB_ENV
-          echo     LD="$BIN_DIR/ld" >> $GITHUB_ENV
-          echo RANLIB="$BIN_DIR/llvm-ranlib" >> $GITHUB_ENV
-          echo  STRIP="$BIN_DIR/llvm-strip" >> $GITHUB_ENV
-      - run: whoami
-      - run: sudo mkdir "$ANDROID_SDK_ROOT"
-      - run: sudo ls -al "$ANDROID_SDK_ROOT"
-      - run: sudo chmod a+rwx "$ANDROID_SDK_ROOT"
-      - run: sudo apt-get update
-      - run: sudo apt-get install --assume-yes openjdk-11-jre
-      - uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - run: tar -xvf fileinfo.tar
-      - uses: reactivecircus/android-emulator-runner@v2
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: ${{ env.API }}
-          ndk: ${{ env.NDK_VERSION }}
-          script: |
-            ## Configure and build.
-            ./configure --host="${{ env.TARGET }}"
-            cat src/config.h
-            cat src/headers.h
-            cat src/fileinfo/static.h
-            make
-            make check
+          api-level: 29
+          script: echo true
+  # android:
+  #   needs: bootstrap
+  #   runs-on: macos-11
+  #   # runs-on: ubuntu-latest # TODO: macos-latest
+  #   # strategy:
+  #   #   fail-fast: false
+  #   #   matrix:
+  #   env:
+  #     ANDROID_SDK_ROOT: /android
+  #     API: 29 # 15-31 ## minSdkVersion
+  #     NDK_VERSION: 23.1.7779620
 
-            adb push fileinfo-fields-dynamic /data/local/tmp/
-            adb shell chmod a+x /data/local/tmp/fileinfo-fields-dynamic
-            adb shell /data/local/tmp/fileinfo-fields-dynamic
+#     ## Only choose one of these, depending on your device...
+#     # TARGET: aarch64-linux-android
+#     # TARGET: armv7a-linux-androideabi
+#     TARGET: i686-linux-android
+#     # TARGET: x86_64-linux-android
+
+#     ## Only choose one of these, depending on your build machine...
+#     BUILD: darwin-x86_64
+#     # BUILD: linux-x86_64
+#   steps:
+#     # - run: |
+#     #     echo PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
+
+#     #     BIN_DIR="/android/ndk/${{ env.NDK_VERSION }}/toolchains/llvm/prebuilt/${{ env.BUILD }}/bin"
+#     #     echo     AR="$BIN_DIR/llvm-ar" >> $GITHUB_ENV
+#     #     echo     CC="$BIN_DIR/${{ env.TARGET }}${{ env.API }}-clang" >> $GITHUB_ENV
+#     #     echo     AS="$BIN_DIR/${{ env.TARGET }}${{ env.API }}-clang" >> $GITHUB_ENV
+#     #     echo    CXX="$BIN_DIR/${{ env.TARGET }}${{ env.API }}-clang++" >> $GITHUB_ENV
+#     #     echo     LD="$BIN_DIR/ld" >> $GITHUB_ENV
+#     #     echo RANLIB="$BIN_DIR/llvm-ranlib" >> $GITHUB_ENV
+#     #     echo  STRIP="$BIN_DIR/llvm-strip" >> $GITHUB_ENV
+
+#     # - run: whoami
+#     # - run: sudo mkdir "$ANDROID_SDK_ROOT"
+#     # - run: sudo ls -al "$ANDROID_SDK_ROOT"
+#     # - run: sudo chmod a+rwx "$ANDROID_SDK_ROOT"
+#     # - run: sudo apt-get update
+#     # - run: sudo apt-get install --assume-yes openjdk-11-jre
+
+#     - uses: actions/download-artifact@v2
+#       with: { name: bootstrap-output }
+#     - run: tar -xvf fileinfo.tar
+
+#     - uses: reactivecircus/android-emulator-runner@v2
+#       with:
+#         api-level: ${{ env.API }}
+#         ndk: ${{ env.NDK_VERSION }}
+#         script: |
+#           ## Configure and build.
+#           ./configure --host="${{ env.TARGET }}"
+#           cat src/config.h
+#           cat src/headers.h
+#           cat src/fileinfo/static.h
+#           make
+#           make check
+
+#           adb push fileinfo-fields-dynamic /data/local/tmp/
+#           adb shell chmod a+x /data/local/tmp/fileinfo-fields-dynamic
+#           adb shell /data/local/tmp/fileinfo-fields-dynamic
