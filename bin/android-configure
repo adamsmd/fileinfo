@@ -23,7 +23,7 @@ echo
 echo
 echo
 echo --------------------- BUILDs
-ls -al "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt/$BUILD/"
+ls -al "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt/"
 export     AR="$BIN_DIR/llvm-ar"
 export     CC="$BIN_DIR/$TARGET$API-clang"
 export     AS="$BIN_DIR/$TARGET$API-clang"
