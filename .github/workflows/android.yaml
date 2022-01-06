@@ -96,6 +96,7 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
   android:
+    needs: bootstrap
     runs-on: macos-latest
     steps:
       - uses: actions/download-artifact@v2

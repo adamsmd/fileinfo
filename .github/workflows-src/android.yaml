@@ -1,4 +1,5 @@
   android:
+    needs: bootstrap
     runs-on: macos-latest
     steps:
       - uses: actions/download-artifact@v2
