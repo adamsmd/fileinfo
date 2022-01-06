@@ -98,13 +98,13 @@ jobs:
   android:
     needs: bootstrap
     runs-on: ubuntu-latest # TODO: macos-latest
-    # strategy:
-    #   fail-fast: false
-    #   # matrix:
-    # env: { image: "rockylinux:${{ matrix.version }}" }
+    strategy:
+      fail-fast: false
+      # matrix:
     env:
       ANDROID_SDK_ROOT: /android
-      NDK: /android/ndk/23.1.7779620
+      NDK_VERSION: 23.1.7779620
+      NDK: /android/ndk/${{ env.NDK_VERSION }}
       ## Only choose one of these, depending on your build machine...
       # TOOLCHAIN: ${{ env.NDK }}/toolchains/llvm/prebuilt/darwin-x86_64
       TOOLCHAIN: ${{ env.NDK }}/toolchains/llvm/prebuilt/linux-x86_64
@@ -114,7 +114,7 @@ jobs:
       TARGET: i686-linux-android
       # TARGET: x86_64-linux-android
       ## Set this to your minSdkVersion.
-      API: 29
+      API: 29 # 15-31
       ## Configure and build.
       AR: ${{ env.TOOLCHAIN }}/bin/llvm-ar
       CC: ${{ env.TOOLCHAIN }}/bin/${{ env.TARGET }}${{ env.API }}-clang
@@ -130,13 +130,11 @@ jobs:
       - run: apt-get update
       - run: apt-get install --assume-yes openjdk-11-jre
       - run: mkdir "$ANDROID_SDK_ROOT"
-      - run: |
-          PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
-          echo "PATH=$PATH" >> $GITHUB_ENV
+      - run: echo "PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          ndk: 23.1.7779620
+          ndk: ${{ env.NDK_VERSION }}
           script: |
             ./configure --host="$TARGET"
             cat src/config.h
