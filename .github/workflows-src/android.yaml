@@ -1,6 +1,7 @@
   android:
     needs: bootstrap
-    runs-on: ubuntu-latest # TODO: macos-latest
+    runs-on: macos-11
+      # - ubuntu-latest # TODO: macos-latest
     # strategy:
     #   fail-fast: false
     #   matrix:
