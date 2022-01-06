@@ -97,7 +97,7 @@ jobs:
         run: docker rm --force --volumes "$cont"
   android-macos:
     needs: bootstrap
-    runs-on: macos-latest
+    runs-on: ${{ ACT && 'ubuntu-latest' || 'macos-latest' }}
     env:
       # Note that `ANDROID_SDK_ROOT` is set by `android-emulator-runner`
       API: 29 # 15-31 ## minSdkVersion
