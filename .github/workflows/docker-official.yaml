@@ -37,7 +37,12 @@ jobs:
             exit 1
           fi
       # Check platforms
+      - run: whoami
       - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$user"
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # Create the working directory
@@ -46,23 +51,18 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - if: ${{ env.cont != 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
       - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
@@ -397,7 +397,12 @@ jobs:
             exit 1
           fi
       # Check platforms
+      - run: whoami
       - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$user"
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # Create the working directory
@@ -406,23 +411,18 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - if: ${{ env.cont != 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
       - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
@@ -473,7 +473,12 @@ jobs:
             exit 1
           fi
       # Check platforms
+      - run: whoami
       - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$user"
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # Create the working directory
@@ -482,23 +487,18 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - if: ${{ env.cont != 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
       - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
@@ -549,7 +549,12 @@ jobs:
             exit 1
           fi
       # Check platforms
+      - run: whoami
       - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$user"
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # Create the working directory
@@ -558,23 +563,18 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - if: ${{ env.cont != 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
       - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
@@ -624,7 +624,12 @@ jobs:
             exit 1
           fi
       # Check platforms
+      - run: whoami
       - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$user"
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # Create the working directory
@@ -633,23 +638,18 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - if: ${{ env.cont != 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
       - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
@@ -702,7 +702,12 @@ jobs:
             exit 1
           fi
       # Check platforms
+      - run: whoami
       - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$user"
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # Create the working directory
@@ -711,23 +716,18 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - if: ${{ env.cont != 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
       - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
@@ -788,7 +788,12 @@ jobs:
             exit 1
           fi
       # Check platforms
+      - run: whoami
       - run: uname -a
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - if: ${{ env.cont != 0 }}
+        run: echo "user=$user"
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
       # Create the working directory
@@ -797,23 +802,18 @@ jobs:
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=$workdir"
       - if: ${{ env.cont != 0 }}
-        run: |
-          # don't use --mode since it is not compatible
-          docker exec "$cont" mkdir "$workdir" || \
-            docker exec --user=root "$cont" mkdir "$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: |
-          docker exec "$cont" chmod 0777 "$workdir" || \
-            docker exec --user=root "$cont" chmod 0777 "$workdir"
+        run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - if: ${{ env.cont != 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - if: ${{ env.cont != 0 }}
+        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
       - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" bin/install-deps
+        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure

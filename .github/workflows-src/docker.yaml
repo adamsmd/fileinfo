@@ -17,68 +17,67 @@
 ## s390x         = linux/s390x
 ## windows-amd64 = windows/amd64
 
-  # Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
-  docker-openwrtorg:
-    env: { image: "openwrtorg/rootfs:${{ matrix.arch }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        arch:
-          - aarch64_cortex-a53
-          ## - aarch64_generic # Packages for gcc found, but incompatible with the architectures configured
-          - arm_cortex-a15_neon-vfpv4
-          - armvirt-32
-          - armvirt-64
-          - i386_pentium-mmx
-          - i386_pentium4
-          - malta-be
-          ## - mips_24kc # Container does not stay running
-          - x86_64
-          - x86-64
-          - x86-generic
-          - x86-geode
+  # ## Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
+  # docker-openwrtorg:
+  #   env: { image: "openwrtorg/rootfs:${{ matrix.arch }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       arch:
+  #         - aarch64_cortex-a53
+  #         ## - aarch64_generic # Packages for gcc found, but incompatible with the architectures configured
+  #         - arm_cortex-a15_neon-vfpv4
+  #         - armvirt-32
+  #         - armvirt-64
+  #         - i386_pentium-mmx
+  #         - i386_pentium4
+  #         - malta-be
+  #         ## - mips_24kc # Container does not stay running
+  #         - x86_64
+  #         - x86-64
+  #         - x86-generic
+  #         - x86-geode
 
-  docker-openmandriva:
-    env: { image: "openmandriva/${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-          - arm64
-        version:
-          - cooker:latest
-        include:
-          - { version: 4.0:latest, platform: amd64 }
-          ## - { version: 3.0:latest, platform: amd64 } ## update fails
-          - { version: 3.0:aarch64, platform: arm64 }
+  # docker-openmandriva:
+  #   env: { image: "openmandriva/${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #         - arm64
+  #       version:
+  #         - cooker:latest
+  #       include:
+  #         - { version: 4.0:latest, platform: amd64 }
+  #         ## - { version: 3.0:latest, platform: amd64 } ## update fails
+  #         - { version: 3.0:aarch64, platform: arm64 }
 
-  docker-opensuse:
-    env: { image: "opensuse/${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - leap:latest
-          - leap:15
-          - leap:42
-          - tumbleweed
-          - s390x
+  # docker-opensuse:
+  #   env: { image: "opensuse/${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       version:
+  #         - leap:latest
+  #         - leap:15
+  #         - leap:42
+  #         - tumbleweed
+  #         - s390x
 
-  # # TODO
   # docker-slackware:
   #   env: { image: "vbatts/slackware:${{ matrix.version }}" }
   #   needs: bootstrap
@@ -90,8 +89,8 @@
   #       platform:
   #         - amd64
   #       version:
-  #         - latest # no c compiler
-  #         - current
+  #         ## - current # unstable branch and doesn't update properly
+  #         - latest
   #         - '14.2'
   #         - '14.1'
   #         - '14.0'
@@ -110,77 +109,74 @@
   #       platform:
   #         - amd64
   #       version:
-  #         - armv7l-fievel-m92
-  #         - i686-alex-m58
-  #         - x86_64-kip-m92
-  #         - x86_64-nocturne-m90
-  #       include:
-  #         - { version: armv7l-fievel-m91, platform: arm }
+  #         # - armv7l-fievel-m92
+  #         # - i686-alex-m58
+  #         # - x86_64-kip-m92 # works
+  #         # - x86_64-nocturne-m90 # works
+  #       # include:
+  #       #   - { version: armv7l-fievel-m91, platform: arm }
 
-  # # TODO
-  # docker-gentoo:
-  #   env: { image: "gentoo/stage3:${{ matrix.tag }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       include:
-  #         - { tag: amd64-hardened-nomultilib-openrc, platform: amd64 }
-  #         - { tag: amd64-hardened-openrc, platform: amd64 }
-  #         - { tag: amd64-musl-hardened, platform: amd64 }
-  #         - { tag: amd64-musl, platform: amd64 }
-  #         - { tag: amd64-nomultilib-openrc, platform: amd64 }
-  #         - { tag: amd64-nomultilib-systemd, platform: amd64 }
-  #         - { tag: amd64-openrc, platform: amd64 }
-  #         - { tag: amd64-systemd, platform: amd64 }
-  #         - { tag: arm64-systemd, platform: arm64 }
-  #         - { tag: arm64, platform: arm64 }
-  #         - { tag: armv5tel-openrc, platform: arm }
-  #         - { tag: armv5tel-systemd, platform: arm }
-  #         - { tag: armv6j_hardfp-openrc, platform: arm }
-  #         - { tag: armv6j_hardfp-systemd, platform: arm }
-  #         - { tag: armv6j-openrc, platform: arm }
-  #         - { tag: armv6j-systemd, platform: arm }
-  #         - { tag: armv7a_hardfp-openrc, platform: arm }
-  #         - { tag: armv7a_hardfp-systemd, platform: arm }
-  #         - { tag: armv7a-openrc, platform: arm }
-  #         - { tag: armv7a-systemd, platform: arm }
-  #         - { tag: hardened-nomultilib, platform: amd64 }
-  #         - { tag: hardened, platform: 386 }
-  #         - { tag: hardened, platform: amd64 }
-  #         - { tag: i686-hardened-openrc, platform: 386 }
-  #         - { tag: i686-musl, platform: 386 }
-  #         - { tag: i686-openrc, platform: 386 }
-  #         - { tag: i686-systemd, platform: 386 }
-  #         - { tag: latest, platform: 386 }
-  #         - { tag: latest, platform: amd64 }
-
-  #         # - tag: latest linux            platform: arm/v5
-  #         # - tag: musl linux/386            platform: linux/amd64
-  #         # - tag: musl-hardened            platform: linux/amd64
-  #         # - tag: musl-hardened            platform: linux/ppc64le
-  #         # - tag: nomultilib            platform: linux/amd64
-  #         # - tag: nomultilib-systemd            platform: linux/amd64
-  #         # - tag: ppc64le-musl-hardened-openrc            platform: linux/ppc64le
-  #         # - tag: ppc64le-openrc            platform: linux/ppc64le
-  #         # - tag: ppc64le-systemd            platform: linux/ppc64le
-  #         # - tag: rv64_lp64-openrc            platform: linux/riscv64
-  #         # - tag: rv64_lp64-systemd            platform: linux/riscv64
-  #         # - tag: rv64_lp64d-openrc            platform: linux/riscv64
-  #         # - tag: rv64_lp64d-systemd            platform: linux/riscv64
-  #         # - tag: s390x            platform: linux/s390x
-  #         # - tag: systemd            platform: linux/386
-  #         # - tag: systemd            platform: linux/amd64
-  #         # - tag: systemd linux            platform: arm/v5
+  # TODO
+  docker-gentoo:
+    env: { image: "gentoo/stage3:${{ matrix.tag }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: []
+        version: []
+        include:
+          # - { tag: amd64-openrc, platform: amd64 }
+          # - { tag: arm64-systemd, platform: arm64 }
+          # - { tag: arm64, platform: arm64 }
+          # - { tag: armv6j_hardfp-openrc, platform: arm }
+          # - { tag: armv6j_hardfp-systemd, platform: arm }
+          # - { tag: armv7a-systemd, platform: arm }
+          # - { tag: hardened-nomultilib, platform: amd64 }
+          # - { tag: hardened, platform: 386 }
+          # - { tag: hardened, platform: amd64 }
+          # - { tag: i686-hardened-openrc, platform: 386 }
+          # - { tag: i686-musl, platform: 386 }
+          # - { tag: i686-openrc, platform: 386 }
+          # - { tag: i686-systemd, platform: 386 }
+          - { tag: latest, platform: 386 }
+          - { tag: latest, platform: amd64 }
+          - { tag: latest, platform: arm/v5 }
+          - { tag: latest, platform: arm/v6 }
+          - { tag: latest, platform: arm/v7 }
+          - { tag: latest, platform: arm64 }
+          - { tag: latest, platform: ppc64le }
+          - { tag: latest, platform: riscv64 }
+          - { tag: latest, platform: s390x }
+          # - { tag: musl-hardened, platform: amd64 }
+          # - { tag: musl-hardened, platform: ppc64le }
+          # - { tag: musl, platform: 386 }
+          # - { tag: musl, platform: amd64 }
+          # - { tag: nomultilib-systemd, platform: amd64 }
+          # - { tag: ppc64le-musl-hardened-openrc, platform: ppc64le }
+          # - { tag: ppc64le-openrc, platform: ppc64le }
+          # - { tag: ppc64le-systemd, platform: ppc64le }
+          # - { tag: rv64_lp64-openrc, platform: riscv64 }
+          # - { tag: rv64_lp64-systemd, platform: riscv64 }
+          # - { tag: rv64_lp64d-openrc, platform: riscv64 }
+          # - { tag: rv64_lp64d-systemd, platform: riscv64 }
+          # - { tag: s390x, platform: s390x }
+          # - { tag: systemd, platform: 386 }
+          # - { tag: systemd, platform: amd64 }
+          # - { tag: systemd, platform: arm/v5 }
+          # - { tag: systemd, platform: arm/v6 }
+          # - { tag: systemd, platform: arm/v7 }
+          # - { tag: systemd, platform: arm64 }
+          # - { tag: systemd, platform: ppc64le }
+          # - { tag: systemd, platform: riscv64 }
 
 
 ## TODO: KaOS
 ## TODO: mint
 ## TODO: pclinuxos
 ## TODO: solus
-## TODO: nixos?
 
 ## Unsupported
 
@@ -300,11 +296,6 @@
 
 # https://hub.docker.com/u/mintproject
 # https://hub.docker.com/u/voidlinux
-
-# Android
-#   Android Wear
-#   Android TV
-# iOS
 
 # SELinux
 
