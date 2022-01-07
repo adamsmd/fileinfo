@@ -8,6 +8,7 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([subdir-objects foreign -Wall -Werror])
+DX_INIT_DOXYGEN([fileinfo]) # TODO: optional
 
 ################
 # Standard sections
