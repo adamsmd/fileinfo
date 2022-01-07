@@ -97,9 +97,8 @@ jobs:
         run: docker rm --force --volumes "$cont"
   android-macos:
     needs: bootstrap
-    runs-on: ${{ ACT && 'ubuntu-latest' || 'macos-latest' }}
+    runs-on: macos-latest
     env:
-      # Note that `ANDROID_SDK_ROOT` is set by `android-emulator-runner`
       API: 29 # 15-31 ## minSdkVersion
       NDK: 23.1.7779620 # TODO: auto-detect
       ## Only choose one of these, depending on your device...
@@ -138,7 +137,13 @@ jobs:
             adb push fileinfo-fields-dynamic /data/local/tmp/
             adb shell chmod a+x /data/local/tmp/fileinfo-fields-dynamic
             adb shell /data/local/tmp/fileinfo-fields-dynamic
-          # ${{ process.env.ACT && 'ubuntu-latest' || 
+  android-ubuntu:
+    if: ${{ env.ACT }}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ACTING
+        # ${{ process.env.ACT && 'ubuntu-latest' || 
 
 # android:
 #   needs: bootstrap
