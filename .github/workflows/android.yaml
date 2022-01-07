@@ -95,11 +95,36 @@ jobs:
         run: docker stop "$cont"
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
-  android-macos:
-    needs: bootstrap
-    runs-on: macos-latest
+  is-act:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ env.ACT }}
+  android:
+    needs: [bootstrap, is-act]
+    runs-on: ${{ needs.is-act.outputs.result && 'ubuntu-latest' || 'macos-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        api:
+          # - 15
+          # - 16
+          # - 17
+          # - 18
+          # - 19
+          # - 20
+          # - 21
+          # - 22
+          # - 23
+          # - 24
+          # - 25
+          # - 26
+          # - 27
+          # - 28
+          - 29
+          # - 30
+          # - 31
     env:
-      API: 29 # 15-31 ## minSdkVersion
+      API: ${{ matrix.api }} # 15-31 ## minSdkVersion
       NDK: 23.1.7779620 # TODO: auto-detect
       ## Only choose one of these, depending on your device...
       # TARGET: aarch64-linux-android
@@ -124,83 +149,21 @@ jobs:
         with:
           api-level: ${{ env.API }}
           ndk: ${{ env.NDK }}
+          # target: TODO
+          # arch: TODO
+          # profile: TODO
           script: |
-            bin/android-configure --host="${{ env.TARGET }}"
+            ./configure-android --host="${{ env.TARGET }}"
             cat src/config.h
             cat src/headers.h
             cat src/fileinfo/static.h
             make
             make check
 
-            file fileinfo-fields-dynamic
-
             adb push fileinfo-fields-dynamic /data/local/tmp/
             adb shell chmod a+x /data/local/tmp/fileinfo-fields-dynamic
             adb shell /data/local/tmp/fileinfo-fields-dynamic
-  android-ubuntu:
-    if: ${{ env.ACT }}
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo ACTING
-        # ${{ process.env.ACT && 'ubuntu-latest' || 
 
-# android:
-#   needs: bootstrap
-#   # runs-on: macos-11
-#   runs-on: ubuntu-latest # TODO: macos-latest
-#   # strategy:
-#   #   fail-fast: false
-#   #   matrix:
-#   env:
-#     # ANDROID_SDK_ROOT: /android # /Users/runner/Library/Android/sdk/
-#     API: 29 # 15-31 ## minSdkVersion
-#     NDK_VERSION: 23.1.7779620
-
-#     ## Only choose one of these, depending on your device...
-#     # TARGET: aarch64-linux-android
-#     # TARGET: armv7a-linux-androideabi
-#     TARGET: i686-linux-android
-#     # TARGET: x86_64-linux-android
-
-#     ## Only choose one of these, depending on your build machine...
-#     # BUILD: darwin-x86_64
-#     BUILD: linux-x86_64
-#   steps:
-#     - run: ls -al /usr/local/lib/android/sdk/
-#     - run: echo -------------- $ANDROID_SDK_ROOT ------------
-#     # - run: |
-#     #     # echo PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
-
-#     #     # BIN_DIR="/android/ndk/${{ env.NDK_VERSION }}/toolchains/llvm/prebuilt/${{ env.BUILD }}/bin"
-#     #     # echo     AR="$BIN_DIR/llvm-ar" >> $GITHUB_ENV
-#     #     # echo     CC="$BIN_DIR/${{ env.TARGET }}${{ env.API }}-clang" >> $GITHUB_ENV
-#     #     # echo     AS="$BIN_DIR/${{ env.TARGET }}${{ env.API }}-clang" >> $GITHUB_ENV
-#     #     # echo    CXX="$BIN_DIR/${{ env.TARGET }}${{ env.API }}-clang++" >> $GITHUB_ENV
-#     #     # echo     LD="$BIN_DIR/ld" >> $GITHUB_ENV
-#     #     # echo RANLIB="$BIN_DIR/llvm-ranlib" >> $GITHUB_ENV
-#     #     # echo  STRIP="$BIN_DIR/llvm-strip" >> $GITHUB_ENV
-
-#     # - run: whoami
-#     # - run: sudo mkdir "$ANDROID_SDK_ROOT"
-#     # - run: sudo ls -al "$ANDROID_SDK_ROOT"
-#     # - run: sudo chmod a+rwx "$ANDROID_SDK_ROOT"
-#     # - run: sudo apt-get update
-#     # - run: sudo apt-get install --assume-yes openjdk-11-jre
-
-#     # - uses: reactivecircus/android-emulator-runner@v2
-#     #   with:
-#     #     api-level: ${{ env.API }}
-#     #     ndk: ${{ env.NDK_VERSION }}
-#     #     script: |
-#     #       ## Configure and build.
-#     #       ./configure --host="${{ env.TARGET }}"
-#     #       cat src/config.h
-#     #       cat src/headers.h
-#     #       cat src/fileinfo/static.h
-#     #       make
-#     #       make check
-
-#     #       adb push fileinfo-fields-dynamic /data/local/tmp/
-#     #       adb shell chmod a+x /data/local/tmp/fileinfo-fields-dynamic
-#     #       adb shell /data/local/tmp/fileinfo-fields-dynamic
+            adb push fileinfo-file-dynamic /data/local/tmp/
+            adb shell chmod a+x /data/local/tmp/fileinfo-file-dynamic
+            adb shell /data/local/tmp/fileinfo-file-dynamic .
