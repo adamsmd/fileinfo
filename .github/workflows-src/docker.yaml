@@ -126,7 +126,7 @@
       fail-fast: false
       matrix:
         platform: []
-        version: []
+        tag: []
         include:
           # - { tag: amd64-openrc, platform: amd64 }
           # - { tag: arm64-systemd, platform: arm64 }
