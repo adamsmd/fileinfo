@@ -269,8 +269,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: []
-        tag: []
+        platform: [amd64]
+        tag: [latest]
         include:
           # - { tag: amd64-openrc, platform: amd64 }
           # - { tag: arm64-systemd, platform: arm64 }
