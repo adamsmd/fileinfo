@@ -5,14 +5,15 @@
 ### What?
 
 Portable functions for collecting all the meta-data a file system has about a
-file.
+file (e.g., modification time).
 
 ### Why?
 
-So people implementing backup, archival or change tracking don't have to deal
-with the subtleties in platform differences (e.g., `struct stat.gen` exists on
-only some platforms) or in collecting *all* meta-data (e.g., the flags in
-`FS_IOC_GETFLAGS`).
+So other software implementing backup, archival or change tracking don't have to
+deal with the subtleties of platform differences (e.g., `struct stat.gen` exists
+on only some platforms) or the difficulties in being sure one has collected
+*all* meta-data (e.g., the flags in `FS_IOC_GETFLAGS`, which are not in `struct
+stat`).
 
 ### When?
 
@@ -20,7 +21,7 @@ This library is still in development and is not yet functional.
 
 ### Where?
 
-This library aims to support all platforms (within reason). Among others, this
+This library aims to support all platforms within reason. Among others, this
 includes:
 
 - Linux
@@ -28,14 +29,23 @@ includes:
 - MacOS
 - Android
 - iOS
-- BSD (FreeBSD, OpenBSD, NetBSD)
+- BSD (FreeBSD, OpenBSD, NetBSD, etc.)
 
-See `PLATFORMS.md` for details.
+Towards this goal, this library uses [GitHub
+Actions](https://github.com/adamsmd/fileinfo/actions) to test as many
+platform configurations as possible.
 
 ### How?
 
-The `./configure` script tests every known way to access
-meta-data
+The `./configure` script tests various ways to access file meta-data. Functions
+are then exposed for retrieving this data (see `src/fileinfo.c`) and structs and
+macros are defined for accessing parts of this meta-data (see
+`src/fileinfo/static.h.in`).
+
+Information about how these meta-data parts are laid out in memory is also
+exposed (see `src/fileinfo/dynamic.h`), so users of this library can do things
+like platform-oblivious serialization.  See `tests/fileinfo-file-dynamic.c` for
+an example.
 
 ### Who?
 

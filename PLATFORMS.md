@@ -25,13 +25,15 @@ not that they work and are fully implemented.
   - [ ] QNX
   - [ ] Minix
   - [x] Linux
-    - [ ] ChromeOS
+    - [x] Chrome OS
     - [ ] SE Linux
     - [x] Arch
     - [x] Gentoo
     - [x] Debian
       - [x] Ubuntu
-      - [ ] gLinux
+        - [ ] Mint
+      - [ ] ~~gLinux~~ (No public releases)
+      - [ ] ~~Goobuntu~~ (No public releases)
     - [x] Fedora
       - [x] CentOS
     - [x] openSUSE
@@ -54,12 +56,13 @@ not that they work and are fully implemented.
     - [x] Darwin
       - [x] macOS
       - [ ] macOS Server
-      - [ ] iOS
+      - [x] iOS
         - [ ] watchOS
         - [ ] tvOS
         - [ ] iPadOS
   - [ ] GNU/Hurd
-  - [ ] Sun
+  - [ ] SunOS
+  - [ ] Xenix (Microsoft)
   - [x] Solaris
     - [ ] Oracle Solaris
     - [ ] OpenSolaris
@@ -72,10 +75,14 @@ not that they work and are fully implemented.
   - [ ] Redox
   - [ ] Cray
 - [x] Windows
-  - [ ] Windows 7
-  - [ ] Windows 10
-  - [x] Windows Server
-    - [ ] ReactOS
+  - [ ] Win16
+  - [ ] Win32
+  - [ ] Win64
+  - [ ] WinNT
+    - [ ] Windows 7
+    - [ ] Windows 10
+    - [x] Windows Server
+      - [ ] ReactOS
 - [ ] DOS
   - [ ] MS-DOS 1.25 (FOSS)
   - [ ] MS-DOS 2.0 (FOSS)
@@ -86,6 +93,7 @@ not that they work and are fully implemented.
 - [ ] BareMetal <https://en.wikipedia.org/wiki/BareMetal>
 - [ ] Fuchsia <https://en.wikipedia.org/wiki/Fuchsia_(operating_system)>
 - [ ] L4
+  - [ ] SeL4
 - [ ] Mach
 - [ ] Cosmos
 - [ ] ITS <https://github.com/PDP-10/its>
@@ -108,6 +116,7 @@ not that they work and are fully implemented.
 - [ ] OS/2
   - [ ] AcraOS
 - [ ] Singularity
+- [ ] BlackBerry
 
 ## Platform Documentation
 
