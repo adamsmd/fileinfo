@@ -10,10 +10,10 @@ check () {
   fi
 }
 
-## Set by virtual environments
+## Set by the virtual environments
 check "ANDROID_SDK_ROOT"
 
-## Get by workflow
+## Set by the workflow
 check "API"
 check "NDK"
 check "TARGET"
