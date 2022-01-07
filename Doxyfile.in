@@ -31,3 +31,13 @@ PROJECT_NAME           = "fileinfo"
 # left blank the current directory will be used.
 
 OUTPUT_DIRECTORY       = @DX_DOCDIR@
+
+#---------------------------------------------------------------------------
+# Configuration options related to the man page output
+#---------------------------------------------------------------------------
+
+# If the GENERATE_MAN tag is set to YES, doxygen will generate man pages for
+# classes and files.
+# The default value is: NO.
+
+GENERATE_MAN           = YES
