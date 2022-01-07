@@ -120,7 +120,8 @@ jobs:
       - run: cat src/fileinfo/static.h
       - run: make
       - run: make check
-        # TODO: android
+      - run: ./fileinfo-fields-dynamic
+      - run: ./fileinfo-file-dynamic .
         # TODO: iOS
 
 # cross-platform-actions:

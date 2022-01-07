@@ -19,8 +19,9 @@
       - run: cat src/fileinfo/static.h
       - run: make
       - run: make check
+      - run: ./fileinfo-fields-dynamic
+      - run: ./fileinfo-file-dynamic .
 
-# TODO: android
 # TODO: iOS
 
   # cross-platform-actions:
