@@ -11,19 +11,16 @@ jobs:
         with:
           name: bootstrap-output
           path: fileinfo.tar
-
   is-act:
     runs-on: ubuntu-latest
-    outputs: { result: "${{ env.ACT }}" }
-    steps: [{ run: true }] ## Keep the schema happy
-
+    outputs: {result: "${{ env.ACT }}"}
+    steps: [{run: true}] ## Keep the schema happy
   docker-steps:
     if: false
     runs-on: ubuntu-latest
-    steps: &docker-steps
+    steps:
       # Setup multi-platform support for docker
       - uses: docker/setup-qemu-action@v1.2.0
-
       # Try to create a container for the given platform and image
       - name: Create container
         shell: bash
@@ -39,12 +36,10 @@ jobs:
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
-
       # Check platforms
       - run: uname -a
       - if: ${{ env.cont != 0 }}
         run: docker exec "$cont" uname -a
-
       # Create the working directory
       - if: ${{ env.cont != 0 }}
         run: echo "workdir=/workdir" >> $GITHUB_ENV
@@ -59,18 +54,15 @@ jobs:
         run: |
           docker exec "$cont" chmod 0777 "$workdir" || \
             docker exec --user=root "$cont" chmod 0777 "$workdir"
-
       # Copy the artifact to the working directory
       - if: ${{ env.cont != 0 }}
         uses: actions/download-artifact@v2
-        with: { name: bootstrap-output }
+        with: {name: bootstrap-output}
       - if: ${{ env.cont != 0 }}
         run: docker cp - <fileinfo.tar "$cont":"$workdir"
-
       # Install dependencies
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" bin/install-deps
-
       # Build
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" ./configure
@@ -84,9 +76,33 @@ jobs:
         run: docker exec --workdir="$workdir" "$cont" make
       - if: ${{ env.cont != 0 }}
         run: docker exec --workdir="$workdir" "$cont" make check
-
       # Cleanup
       - if: ${{ env.cont != 0 }}
         run: docker stop "$cont"
       - if: ${{ env.cont != 0 }}
         run: docker rm --force --volumes "$cont"
+  ios: # Apple iOS
+    needs: bootstrap
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          # - macos-11
+          - macos-10.15
+    steps:
+      - uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - run: tar -xvf fileinfo.tar
+      - run: .github/iconfigure arm64
+      - run: cat src/config.h
+      - run: cat src/headers.h
+      - run: cat src/fileinfo/static.h
+      - run: make
+      - run: make check
+      - run: file ./fileinfo-fields-dynamic
+      - run: file ./fileinfo-file-dynamic
+      - uses: futureware-tech/simulator-action@v1
+        with:
+          model: 'iPhone 8'
+      - uses: mxschmitt/action-tmate@v3

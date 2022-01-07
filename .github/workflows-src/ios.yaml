@@ -19,3 +19,7 @@
       - run: make check
       - run: file ./fileinfo-fields-dynamic
       - run: file ./fileinfo-file-dynamic
+      - uses: futureware-tech/simulator-action@v1
+        with:
+          model: 'iPhone 8'
+      - uses: mxschmitt/action-tmate@v3

@@ -1,4 +1,4 @@
-on: [push]
+on: [workflow_dispatch]
 jobs:
   bootstrap:
     runs-on: ubuntu-latest
@@ -104,27 +104,6 @@ jobs:
       - run: make check
       - run: ./fileinfo-fields-dynamic
       - run: ./fileinfo-file-dynamic .
-  ios: # Virtual environments from GitHub
-    needs: bootstrap
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          # - macos-11
-          - macos-10.15
-    steps:
-      - uses: actions/download-artifact@v2
-        with: {name: bootstrap-output}
-      - run: tar -xvf fileinfo.tar
-      - run: ./iconfigure arm64
-      - run: cat src/config.h
-      - run: cat src/headers.h
-      - run: cat src/fileinfo/static.h
-      - run: make
-      - run: make check
-      - run: file ./fileinfo-fields-dynamic
-      - run: file ./fileinfo-file-dynamic
 
 # cross-platform-actions:
 #   needs: bootstrap

@@ -1,4 +1,4 @@
-on: [push]
+on: [workflow_dispatch]
 jobs:
   bootstrap:
     runs-on: ubuntu-latest
@@ -137,7 +137,7 @@ jobs:
           # arch: TODO
           # profile: TODO
           script: |
-            ./configure-android --host="${{ env.TARGET }}"
+            .github/configure-android --host="${{ env.TARGET }}"
             cat src/config.h
             cat src/headers.h
             cat src/fileinfo/static.h
