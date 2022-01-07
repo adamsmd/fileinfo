@@ -1,7 +1,7 @@
   is-act:
     runs-on: ubuntu-latest
-    outputs:
-      result: ${{ env.ACT }}
+    outputs: { result: "${{ env.ACT }}" }
+    steps: [{ run: true }] ## Keep the schema happy
 
   android:
     needs: [bootstrap, is-act]

@@ -97,8 +97,8 @@ jobs:
         run: docker rm --force --volumes "$cont"
   is-act:
     runs-on: ubuntu-latest
-    outputs:
-      result: ${{ env.ACT }}
+    outputs: {result: "${{ env.ACT }}"}
+    steps: [{run: true}] ## Keep the schema happy
   android:
     needs: [bootstrap, is-act]
     runs-on: ${{ needs.is-act.outputs.result && 'ubuntu-latest' || 'macos-latest' }}
