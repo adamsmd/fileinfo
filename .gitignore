@@ -466,3 +466,5 @@ iOSInjectionProject/
 /src/fileinfo/static.h
 /src/headers.h
 /src/stamp-h1
+/Doxyfile
+/doxygen-doc/
