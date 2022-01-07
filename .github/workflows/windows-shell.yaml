@@ -29,6 +29,10 @@ jobs:
         with:
           name: bootstrap-output
           path: fileinfo.tar
+  is-act:
+    runs-on: ubuntu-latest
+    outputs: {result: "${{ env.ACT }}"}
+    steps: [{run: true}] ## Keep the schema happy
   docker-steps:
     if: false
     runs-on: ubuntu-latest
@@ -97,10 +101,10 @@ jobs:
         run: docker rm --force --volumes "$cont"
   windows-shell:
     needs: bootstrap
-    runs-on: windows-2019
-    # - windows-2022
-    # - windows-2019
-    # - windows-2016
+    runs-on:
+      # - windows-2022
+      - windows-2019
+      # - windows-2016
     steps:
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
