@@ -105,7 +105,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        api:
+        target: ## Choose only one of these, depending on your device...
+          # - aarch64-linux-android
+          # - armv7a-linux-androideabi
+          - i686-linux-android
+          # - x86_64-linux-android
+        api: ## minSdkVersion
           # - 15
           # - 16
           # - 17
@@ -124,13 +129,10 @@ jobs:
           # - 30
           # - 31
     env:
-      API: ${{ matrix.api }} # 15-31 ## minSdkVersion
+      API: ${{ matrix.api }}
       NDK: 23.1.7779620 # TODO: auto-detect
-      ## Only choose one of these, depending on your device...
-      # TARGET: aarch64-linux-android
-      # TARGET: armv7a-linux-androideabi
-      TARGET: i686-linux-android
-      # TARGET: x86_64-linux-android
+      TARGET: ${{ matrix.target }}
+      ANDROID_DIR: /data/local/tmp
     steps:
       - if: ${{ env.ACT }}
         run: |
@@ -160,10 +162,10 @@ jobs:
             make
             make check
 
-            adb push fileinfo-fields-dynamic /data/local/tmp/
-            adb shell chmod a+x /data/local/tmp/fileinfo-fields-dynamic
-            adb shell /data/local/tmp/fileinfo-fields-dynamic
+            adb push fileinfo-fields-dynamic "$ANDROID_DIR"/
+            adb shell chmod a+x "$ANDROID_DIR"/fileinfo-fields-dynamic
+            adb shell "$ANDROID_DIR"/fileinfo-fields-dynamic
 
-            adb push fileinfo-file-dynamic /data/local/tmp/
-            adb shell chmod a+x /data/local/tmp/fileinfo-file-dynamic
-            adb shell /data/local/tmp/fileinfo-file-dynamic .
+            adb push fileinfo-file-dynamic "$ANDROID_DIR"/tmp/
+            adb shell chmod a+x "$ANDROID_DIR"/fileinfo-file-dynamic
+            adb shell "$ANDROID_DIR"/fileinfo-file-dynamic .
