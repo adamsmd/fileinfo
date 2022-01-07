@@ -116,7 +116,6 @@
   #       # include:
   #       #   - { version: armv7l-fievel-m91, platform: arm }
 
-  # TODO
   docker-gentoo:
     env: { image: "gentoo/stage3:${{ matrix.tag }}" }
     needs: bootstrap
@@ -128,49 +127,49 @@
         platform: [ amd64 ]
         tag: [ latest ]
         include:
-          # - { tag: amd64-openrc, platform: amd64 }
-          # - { tag: arm64-systemd, platform: arm64 }
-          # - { tag: arm64, platform: arm64 }
-          # - { tag: armv6j_hardfp-openrc, platform: arm }
-          # - { tag: armv6j_hardfp-systemd, platform: arm }
-          # - { tag: armv7a-systemd, platform: arm }
-          # - { tag: hardened-nomultilib, platform: amd64 }
-          # - { tag: hardened, platform: 386 }
-          # - { tag: hardened, platform: amd64 }
-          # - { tag: i686-hardened-openrc, platform: 386 }
-          # - { tag: i686-musl, platform: 386 }
-          # - { tag: i686-openrc, platform: 386 }
-          # - { tag: i686-systemd, platform: 386 }
-          - { tag: latest, platform: 386 }
-          - { tag: latest, platform: amd64 }
-          - { tag: latest, platform: arm/v5 }
-          - { tag: latest, platform: arm/v6 }
-          - { tag: latest, platform: arm/v7 }
-          - { tag: latest, platform: arm64 }
-          - { tag: latest, platform: ppc64le }
-          - { tag: latest, platform: riscv64 }
-          - { tag: latest, platform: s390x }
-          # - { tag: musl-hardened, platform: amd64 }
-          # - { tag: musl-hardened, platform: ppc64le }
-          # - { tag: musl, platform: 386 }
-          # - { tag: musl, platform: amd64 }
-          # - { tag: nomultilib-systemd, platform: amd64 }
-          # - { tag: ppc64le-musl-hardened-openrc, platform: ppc64le }
-          # - { tag: ppc64le-openrc, platform: ppc64le }
-          # - { tag: ppc64le-systemd, platform: ppc64le }
-          # - { tag: rv64_lp64-openrc, platform: riscv64 }
-          # - { tag: rv64_lp64-systemd, platform: riscv64 }
-          # - { tag: rv64_lp64d-openrc, platform: riscv64 }
-          # - { tag: rv64_lp64d-systemd, platform: riscv64 }
-          # - { tag: s390x, platform: s390x }
-          # - { tag: systemd, platform: 386 }
-          # - { tag: systemd, platform: amd64 }
-          # - { tag: systemd, platform: arm/v5 }
-          # - { tag: systemd, platform: arm/v6 }
-          # - { tag: systemd, platform: arm/v7 }
-          # - { tag: systemd, platform: arm64 }
-          # - { tag: systemd, platform: ppc64le }
-          # - { tag: systemd, platform: riscv64 }
+          - { tag: amd64-openrc, platform: amd64 }
+          - { tag: arm64-systemd, platform: arm64 }
+          - { tag: arm64, platform: arm64 }
+          - { tag: armv6j_hardfp-openrc, platform: arm }
+          - { tag: armv6j_hardfp-systemd, platform: arm }
+          - { tag: armv7a-systemd, platform: arm }
+          - { tag: hardened-nomultilib, platform: amd64 }
+          - { tag: hardened, platform: 386 }
+          - { tag: hardened, platform: amd64 }
+          - { tag: i686-hardened-openrc, platform: 386 }
+          - { tag: i686-musl, platform: 386 }
+          - { tag: i686-openrc, platform: 386 }
+          - { tag: i686-systemd, platform: 386 }
+          # - { tag: latest, platform: 386 }
+          # - { tag: latest, platform: amd64 }
+          # - { tag: latest, platform: arm/v5 }
+          # - { tag: latest, platform: arm/v6 }
+          # - { tag: latest, platform: arm/v7 }
+          # - { tag: latest, platform: arm64 }
+          # - { tag: latest, platform: ppc64le }
+          # - { tag: latest, platform: riscv64 }
+          # - { tag: latest, platform: s390x }
+          - { tag: musl-hardened, platform: amd64 }
+          - { tag: musl-hardened, platform: ppc64le }
+          - { tag: musl, platform: 386 }
+          - { tag: musl, platform: amd64 }
+          - { tag: nomultilib-systemd, platform: amd64 }
+          - { tag: ppc64le-musl-hardened-openrc, platform: ppc64le }
+          - { tag: ppc64le-openrc, platform: ppc64le }
+          - { tag: ppc64le-systemd, platform: ppc64le }
+          - { tag: rv64_lp64-openrc, platform: riscv64 }
+          - { tag: rv64_lp64-systemd, platform: riscv64 }
+          - { tag: rv64_lp64d-openrc, platform: riscv64 }
+          - { tag: rv64_lp64d-systemd, platform: riscv64 }
+          - { tag: s390x, platform: s390x }
+          - { tag: systemd, platform: 386 }
+          - { tag: systemd, platform: amd64 }
+          - { tag: systemd, platform: arm/v5 }
+          - { tag: systemd, platform: arm/v6 }
+          - { tag: systemd, platform: arm/v7 }
+          - { tag: systemd, platform: arm64 }
+          - { tag: systemd, platform: ppc64le }
+          - { tag: systemd, platform: riscv64 }
 
 
 ## TODO: KaOS
@@ -275,6 +274,32 @@
   #         # - ivshmem
   #         # - ksm
 
+
+  # # https://hub.docker.com/u/mintproject
+  # docker-gentoo:
+  #   env: { image: "gentoo/stage3:${{ matrix.tag }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform: [ amd64 ]
+
+
+  # # https://hub.docker.com/u/voidlinux
+  # docker-gentoo:
+  #   env: { image: "gentoo/stage3:${{ matrix.tag }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform: [ amd64 ]
+
+
+
 # # qemu/base
 # # qemu/tools
 
@@ -294,16 +319,11 @@
 # - https://www.multicians.org/
 # - http://ringzero.wikidot.com/start
 
-# https://hub.docker.com/u/mintproject
-# https://hub.docker.com/u/voidlinux
-
-# SELinux
 
 # TODO: compiler: gcc, llvm, icc
 # TODO: pre-statx linux (and other kernel implementations)
 # TODO: WSLv1, WSLv2, different bash ports (MSYS,MingW,Cygwin,GitBash)
 # TODO: filesystems: zfs, btrfs, ext4
-# TODO: setup-qemu
 
 #arm32v5
 #winamd64
