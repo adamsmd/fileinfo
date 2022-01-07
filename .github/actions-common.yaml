@@ -31,6 +31,11 @@ jobs:
           name: bootstrap-output
           path: fileinfo.tar
 
+  is-act:
+    runs-on: ubuntu-latest
+    outputs: { result: "${{ env.ACT }}" }
+    steps: [{ run: true }] ## Keep the schema happy
+
   docker-steps:
     if: false
     runs-on: ubuntu-latest

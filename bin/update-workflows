@@ -4,6 +4,6 @@ set -ex
 rm -rf .github/workflows/*
 for i in .github/workflows-src/*.yaml; do
   yq e 'explode(.)' \
-    <(cat .github/docker-steps.src.yaml "$i") \
+    <(cat .github/actions-common.yaml "$i") \
     >.github/workflows/"${i#.github/workflows-src/}"
 done
