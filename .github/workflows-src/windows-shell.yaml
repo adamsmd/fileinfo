@@ -1,9 +1,9 @@
   windows-shell:
     needs: bootstrap
-    runs-on: windows-2019
-          # - windows-2022
-          # - windows-2019
-          # - windows-2016
+    runs-on:
+      # - windows-2022
+      - windows-2019
+      # - windows-2016
     steps:
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
