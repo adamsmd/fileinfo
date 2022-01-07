@@ -45,7 +45,15 @@ size_t const fileinfo_fields_length = FILEINFO_FIELDS_LENGTH;
 
 /* TODO: define field accessors */
 
-int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *output) {
+/**
+ * @brief Get info about `pathname`
+ *
+ * @param[in] pathname The filename to get information about
+ * @param[in] follow_symlink Whether to follow symlinks
+ * @param[out] output A pointer to the `fileinfo` struct into which to write the information about `pathname`.
+ * @return bool True if the data was successfully retrieved.
+ */
+bool fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *output) {
   #if defined(HAVE_STRUCT_STATX)
     /* TODO: dirfd support */
     int flags = follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW;
@@ -98,8 +106,6 @@ int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outpu
   #else
     #error "unimplemented case for fileinfo_get_stat"
   #endif
-
-  return 0;
 }
 
 /* TODO: intmax_t fileinfo_get_field (size_t index, fileinfo const *) */

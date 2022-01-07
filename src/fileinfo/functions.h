@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-int fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *output);
+bool fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *output);
 
 #ifdef __cplusplus
 }
