@@ -8,7 +8,6 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([subdir-objects foreign -Wall -Werror])
-DX_INIT_DOXYGEN([fileinfo]) # TODO: optional
 
 ################
 # Standard sections
@@ -789,4 +788,9 @@ for i in src/fileinfo/*.h.in; do
   AC_CONFIG_FILES(${i%.in})
 done
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Doxyfile])
+DX_MAN_FEATURE([ON])
+DX_PDF_FEATURE([OFF])
+DX_PS_FEATURE([OFF])
+DX_INIT_DOXYGEN([fileinfo]) # TODO: optional
 AC_OUTPUT
