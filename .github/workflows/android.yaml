@@ -166,6 +166,6 @@ jobs:
             adb shell chmod a+x "$ANDROID_DIR"/fileinfo-fields-dynamic
             adb shell "$ANDROID_DIR"/fileinfo-fields-dynamic
 
-            adb push fileinfo-file-dynamic "$ANDROID_DIR"/tmp/
+            adb push fileinfo-file-dynamic "$ANDROID_DIR"/
             adb shell chmod a+x "$ANDROID_DIR"/fileinfo-file-dynamic
             adb shell "$ANDROID_DIR"/fileinfo-file-dynamic .
