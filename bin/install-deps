@@ -68,6 +68,9 @@ elif try crew --version; then
   # include /usr/local/lib64.  (I don't know why it isn't already there.) Also
   # has to be sudo not just running as root for some reason.
   sudo ldconfig /usr/local/lib64
+elif try xbps-install --version; then
+  xbps-install --sync
+  xbps-install --yes gcc make
 else
   echo "$note_using" '<nothing>'
   echo "::set-output name=package-manager::<nothing>"

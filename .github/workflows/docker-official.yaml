@@ -27,6 +27,7 @@ jobs:
         run: |
           set +e
           cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
@@ -387,6 +388,7 @@ jobs:
         run: |
           set +e
           cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
@@ -463,6 +465,7 @@ jobs:
         run: |
           set +e
           cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
@@ -539,6 +542,7 @@ jobs:
         run: |
           set +e
           cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
@@ -614,6 +618,7 @@ jobs:
         run: |
           set +e
           cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
@@ -692,6 +697,7 @@ jobs:
         run: |
           set +e
           cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
@@ -778,6 +784,7 @@ jobs:
         run: |
           set +e
           cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
