@@ -2,103 +2,112 @@
 
 ## Platform Requirements
 
-- Be testable (currently via a GitHub Actions (docker?))
-- Have a C compiler
-- Be able to collect info on a file specified by a char*
-- Be detectable (currently via Autoconf)
-- May be cut for maintenance vs usage
+Note that these requirements are driven by practicality more than by any
+particular philosophical position.
 
-## Potential Targets
+- Be testable (currently via GitHub Actions)
+- Be able to (somehow) run './configure'
+- Be able to (somehow) run 'make'
+- Have a notion of filename as a `char*`
 
-Many of these are impractical
+Platforms may be cut if their maintenance cost is too high relative to their
+usage.
 
-- Unix
-  - QNX
-  - Minix
-  - Linux
-    - ChromeOS
-    - SE Linux
-    - Arch
-    - Gentoo
-    - Debian
-      - Ubuntu
-      - gLinux
-    - Fedora
-      - CentOS
-    - openSUSE
-    - SUSE Linux Enterprise
-    - nixOS
-    - OpenWRT
-    - Android
-      - WearOS
-      - Android-x86
-        - Android TV x86
-  - BSD
-    - FreeBSD
-      - ? GhostBSD
-      - ? DragonFlyBSD
-      - ? TrueOS
-      - ? DragonFlyBSD
-      - ? OSv
-    - NetBSD
-      - OpenBSD
-    - Darwin
-      - macOS
-      - macOS Server
-      - iOS
-        - watchOS
-        - tvOS
-        - iPadOS
-  - GNU/Hurd
-  - Solaris
-    - Oracle Solaris
-    - OpenSolaris
-      - OpenIndiana
-      - illumos
-      - SmartOS
-  - HP-UX
-  - IBM AIX
-  - Irix
-  - Sun
-  - Redox
-  - Cray
-- BareMetal
-- Fuchsia
-- L4
-- Mach
-- Cosmos
-- ITS <https://github.com/PDP-10/its>
-- Plan 9
-  - Inferno
-- VxWorks
-- PhantomOS
-- DOS
-  - MS-DOS 1.25 (FOSS)
-  - MS-DOS 2.0 (FOSS)
-  - FreeDOS
-  - QDOS
-  - OpenDOS
-  - PC DOS
-- Windows
-  - Windows 7
-  - Windows 10
-  - Windows Server
-    - ReactOS
-- RISC OS
-- BeOS
-  - Haiku
-- Genode
-- OpenVMS
-- AmigaOS
-  - AmigaOS
-  - AROS
-  - Syllable Desktop
-  - MorphOS
-- Multics
-- OpenServer
-- OS/2
-  - AcraOS
-- Singularity
+## Potential Platform
+
+Many of these are impractical.  The purpose of listing them is to ensure we
+consider them all.
+
+Check marks in the following indicate we have GitHub Actions for testing these,
+not that they work and are fully implemented.
+
+- [x] Unix
+  - [ ] QNX
+  - [ ] Minix
+  - [x] Linux
+    - [ ] ChromeOS
+    - [ ] SE Linux
+    - [x] Arch
+    - [x] Gentoo
+    - [x] Debian
+      - [x] Ubuntu
+      - [ ] gLinux
+    - [x] Fedora
+      - [x] CentOS
+    - [x] openSUSE
+    - [ ] SUSE Linux Enterprise
+    - [ ] nixOS
+    - [x] OpenWRT
+    - [x] Android
+      - [ ] WearOS
+      - [ ] Android-x86
+        - [ ] Android TV x86
+  - [x] BSD
+    - [x] FreeBSD
+      - [ ] ? GhostBSD
+      - [ ] ? DragonFlyBSD
+      - [ ] ? TrueOS
+      - [ ] ? DragonFlyBSD
+      - [ ] ? OSv
+    - [x] NetBSD
+      - [x] OpenBSD
+    - [x] Darwin
+      - [x] macOS
+      - [ ] macOS Server
+      - [ ] iOS
+        - [ ] watchOS
+        - [ ] tvOS
+        - [ ] iPadOS
+  - [ ] GNU/Hurd
+  - [ ] Sun
+  - [x] Solaris
+    - [ ] Oracle Solaris
+    - [ ] OpenSolaris
+      - [ ] OpenIndiana
+      - [ ] illumos
+      - [ ] SmartOS
+  - [ ] HP-UX
+  - [ ] IBM AIX
+  - [ ] Irix
+  - [ ] Redox
+  - [ ] Cray
+- [x] Windows
+  - [ ] Windows 7
+  - [ ] Windows 10
+  - [x] Windows Server
+    - [ ] ReactOS
+- [ ] DOS
+  - [ ] MS-DOS 1.25 (FOSS)
+  - [ ] MS-DOS 2.0 (FOSS)
+  - [ ] FreeDOS
+  - [ ] QDOS
+  - [ ] OpenDOS
+  - [ ] PC DOS
+- [ ] BareMetal <https://en.wikipedia.org/wiki/BareMetal>
+- [ ] Fuchsia <https://en.wikipedia.org/wiki/Fuchsia_(operating_system)>
+- [ ] L4
+- [ ] Mach
+- [ ] Cosmos
+- [ ] ITS <https://github.com/PDP-10/its>
+- [ ] Plan 9
+  - [ ] Inferno
+- [ ] VxWorks
+- [ ] PhantomOS
+- [ ] RISC OS
+- [ ] BeOS
+  - [ ] Haiku
+- [ ] Genode
+- [ ] OpenVMS
+- [ ] AmigaOS
+  - [ ] AmigaOS
+  - [ ] AROS
+  - [ ] Syllable Desktop
+  - [ ] MorphOS
+- [ ] Multics
+- [ ] OpenServer
+- [ ] OS/2
+  - [ ] AcraOS
+- [ ] Singularity
 
 ## Platform Documentation
 
