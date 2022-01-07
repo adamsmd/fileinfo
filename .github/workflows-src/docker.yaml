@@ -1,28 +1,28 @@
-  # # Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
-  # docker-openwrtorg:
-  #   env: { image: "openwrtorg/rootfs:${{ matrix.arch }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       arch:
-  #         - aarch64_cortex-a53
-  #         ## - aarch64_generic # Packages for gcc found, but incompatible with the architectures configured
-  #         - arm_cortex-a15_neon-vfpv4
-  #         - armvirt-32
-  #         - armvirt-64
-  #         - i386_pentium-mmx
-  #         - i386_pentium4
-  #         - malta-be
-  #         ## - mips_24kc # Container does not stay running
-  #         - x86_64
-  #         - x86-64
-  #         - x86-generic
-  #         - x86-geode
+  # Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
+  docker-openwrtorg:
+    env: { image: "openwrtorg/rootfs:${{ matrix.arch }}" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        arch:
+          - aarch64_cortex-a53
+          ## - aarch64_generic # Packages for gcc found, but incompatible with the architectures configured
+          - arm_cortex-a15_neon-vfpv4
+          - armvirt-32
+          - armvirt-64
+          - i386_pentium-mmx
+          - i386_pentium4
+          - malta-be
+          ## - mips_24kc # Container does not stay running
+          - x86_64
+          - x86-64
+          - x86-generic
+          - x86-geode
 
   docker-openmandriva:
     env: { image: "openmandriva/${{ matrix.version }}" }
@@ -39,7 +39,7 @@
           - cooker:latest
         include:
           - { version: 4.0:latest, platform: amd64 }
-          - { version: 3.0:latest, platform: amd64 }
+          ## - { version: 3.0:latest, platform: amd64 } ## update fails
           - { version: 3.0:aarch64, platform: arm64 }
 
   docker-opensuse:
@@ -56,29 +56,30 @@
           - leap:latest
           - leap:15
           - leap:42
-          - tumbleweed # no c compiler
+          - tumbleweed
           - s390x
 
-  docker-slackware:
-    env: { image: "vbatts/slackware:${{ matrix.version }}" }
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    steps: *docker-steps
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - amd64
-        version:
-          - latest # no c compiler
-          - current
-          - '14.2'
-          - '14.1'
-          - '14.0'
-          - '13.1'
-          - '13.0'
+  # # TODO
+  # docker-slackware:
+  #   env: { image: "vbatts/slackware:${{ matrix.version }}" }
+  #   needs: bootstrap
+  #   runs-on: ubuntu-latest
+  #   steps: *docker-steps
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - amd64
+  #       version:
+  #         - latest # no c compiler
+  #         - current
+  #         - '14.2'
+  #         - '14.1'
+  #         - '14.0'
+  #         - '13.1'
+  #         - '13.0'
 
-  # # C compiler doesn't work
+  # # TODO
   # docker-chromebrew: # ChromeOS
   #   env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
   #   needs: bootstrap
@@ -97,6 +98,7 @@
   #       include:
   #         - { version: armv7l-fievel-m91, platform: arm }
 
+  # # TODO
   # docker-gentoo:
   #   env: { image: "gentoo/stage3:${{ matrix.tag }}" }
   #   needs: bootstrap
