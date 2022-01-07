@@ -24,13 +24,11 @@ This library aims to support all platforms (within reason). Among others, this
 includes:
 
 - Linux
-- Android
-- FreeBSD
-- OpenBSD
-- NetBSD
-- MacOS
-- iOS
 - Windows
+- MacOS
+- Android
+- iOS
+- BSD (FreeBSD, OpenBSD, NetBSD)
 
 See `PLATFORMS.md` for details.
 
