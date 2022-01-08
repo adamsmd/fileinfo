@@ -93,6 +93,7 @@ jobs:
           # - armv7a-linux-androideabi
           - i686-linux-android
           # - x86_64-linux-android
+          # TODO: other ABIs in older NDKs
         api: ## minSdkVersion
           # - 15
           # - 16
@@ -115,18 +116,19 @@ jobs:
       API: ${{ matrix.api }}
       NDK: 23.1.7779620 # TODO: auto-detect
       TARGET: ${{ matrix.target }}
-      ANDROID_DIR: /data/local/tmp
+      DEST_DIR: /data/local/tmp
     steps:
+      ## Ensure $ANDROID_SDK_ROOT is setup as it is missing on `act`
+      - run: |
+          if [ -z "$ANDROID_SDK_ROOT" ]; then
+            echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          fi
+      - run: sudo mkdir -p "$ANDROID_SDK_ROOT" || true
+      - run: sudo chmod a+rwx "$ANDROID_SDK_ROOT"
       - if: ${{ env.ACT }}
-        run: |
-          ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-
-          sudo mkdir -p "$ANDROID_SDK_ROOT"
-          sudo chmod a+rwx "$ANDROID_SDK_ROOT"
-
-          sudo apt-get update
-          sudo apt-get install --assume-yes openjdk-11-jre
+        run: sudo apt-get update
+      - if: ${{ env.ACT }}
+        run: sudo apt-get install --assume-yes default-jre
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - run: tar -xvf fileinfo.tar
@@ -145,10 +147,10 @@ jobs:
             make
             make check
 
-            adb push fileinfo-fields-dynamic "$ANDROID_DIR"/
-            adb shell chmod a+x "$ANDROID_DIR"/fileinfo-fields-dynamic
-            adb shell "$ANDROID_DIR"/fileinfo-fields-dynamic
+            adb push fileinfo-fields-dynamic "$DEST_DIR"/
+            adb shell chmod a+x "$DEST_DIR"/fileinfo-fields-dynamic
+            adb shell "$DEST_DIR"/fileinfo-fields-dynamic
 
-            adb push fileinfo-file-dynamic "$ANDROID_DIR"/
-            adb shell chmod a+x "$ANDROID_DIR"/fileinfo-file-dynamic
-            adb shell "$ANDROID_DIR"/fileinfo-file-dynamic .
+            adb push fileinfo-file-dynamic "$DEST_DIR"/
+            adb shell chmod a+x "$DEST_DIR"/fileinfo-file-dynamic
+            adb shell "$DEST_DIR"/fileinfo-file-dynamic .
