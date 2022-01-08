@@ -10,10 +10,13 @@ file (e.g., modification time).
 ### Why?
 
 So other software implementing backup, archival or change tracking don't have to
-deal with the subtleties of platform differences (e.g., `struct stat.gen` exists
-on only some platforms) or the difficulties in being sure one has collected
-*all* meta-data (e.g., the flags in `FS_IOC_GETFLAGS`, which are not in `struct
-stat`).
+deal with:
+
+- the subtleties of platform differences (e.g., `struct stat.gen` exists on only
+  some platforms),
+- the difficulties in being sure one has collected *all* meta-data (e.g., the
+  flags in `FS_IOC_GETFLAGS`, which are not in `struct stat`) or
+- the challenges of testing this on all the different platforms.
 
 ### When?
 
@@ -50,12 +53,21 @@ an example.
 ### Who?
 
 TODO: Who?
+Pass the torch
+Distro (dpkg)
 
 ## Examples
 
-TODO: dynamic examples
+See `tests/fileinfo-fields-dynamic.c` for an example program that prints all
+known attributes.
 
 TODO: static examples
+
+```C
+TODO: s.nsec
+```
+
+TODO: Regardless of where nsec is located
 
 ## Setup
 
@@ -67,10 +79,13 @@ TODO: dependencies
 
 ### Building
 
-    bin/bootstrap
-    ./configure
-    make
-    make check
+```Shell
+bin/bootstrap # needed only if you don't have ./configure, Makefile, etc.
+./configure
+make
+make check
+make install
+```
 
 The script `bin/clean` removes all generated files.
 
