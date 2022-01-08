@@ -88,17 +88,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: ## Choose only one of these, depending on your device...
-          # - aarch64-linux-android
-          # - armv7a-linux-androideabi
-          - i686-linux-android
-          # - x86_64-linux-android
-          # TODO: other ABIs in older NDKs
-        api: ## minSdkVersion
-          # - 15
-          # - 16
-          # - 17
-          # - 18
+        arch:
+          - x86
+          # - x86_64 (requires: API 21+)
+          # - arm64-v8a (require Android 4.2+ (API 17+) and are limited to fewer API levels (e.g. 30))
+        type: # Device type
+          - default # works (API 29)
+          # - google_apis # works (API 29)
+          # - playstore # works (API 29)
+          # - android-wear
+          # - android-wear-cn
+          # - android-tv # works (API 29)
+          # - google-tv
+          ## - aosp_atd (requires: api-level: 30, arch: x86)
+          ## - google_atd (requires: api-level: 30, arch: x86)
+        api: # Minimum API level supported is 15 (Android 4.0.3)
+          # - 15 # works
+          # - 16 # missing llvm-ranlib
+          # - 17 # missing llvm-ranlib
+          # - 18 # missing llvm-ranlib
           # - 19
           # - 20
           # - 21
@@ -109,14 +117,19 @@ jobs:
           # - 26
           # - 27
           # - 28
-          - 29
+          - 29 # works
           # - 30
           # - 31
     env:
       API: ${{ matrix.api }}
-      NDK: 23.1.7779620 # TODO: auto-detect
-      TARGET: ${{ matrix.target }}
-      DEST_DIR: /data/local/tmp
+      ARCH: ${{ matrix.arch }}
+      NDK: ${{ matrix.api >= 19 && '23.1.7779620' || '16.1.4479499' }}
+      # https://developer.android.com/ndk/downloads/revision_history
+      # https://github.com/android/ndk/wiki/Unsupported-Downloads
+      # Android NDK r16b (December 2017) (API 14-27) NDK: 16.1.4479499
+      # Android NDK r23 LTS (August 2021) (API 16+) NDK: 23.1.7779620
+
+      DEST_DIR: /data/local/tmp # A directory which is writable and not noexec
     steps:
       ## Ensure $ANDROID_SDK_ROOT is setup as it is missing on `act`
       - run: |
@@ -128,19 +141,19 @@ jobs:
       - if: ${{ env.ACT }}
         run: sudo apt-get update
       - if: ${{ env.ACT }}
-        run: sudo apt-get install --assume-yes default-jre
+        run: sudo apt-get install --assume-yes default-jre # Needed by android-emulator-runner
+      - if: ${{ env.ACT }}
+        run: sudo apt-get install --assume-yes libncurses5 # Some `clang` need this
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
       - run: tar -xvf fileinfo.tar
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ env.API }}
+          target: ${{ matrix.type }}
           ndk: ${{ env.NDK }}
-          # target: TODO
-          # arch: TODO
-          # profile: TODO
           script: |
-            .github/configure-android --host="${{ env.TARGET }}"
+            .github/configure-android
             cat src/config.h
             cat src/headers.h
             cat src/fileinfo/static.h

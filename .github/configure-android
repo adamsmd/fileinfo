@@ -11,22 +11,43 @@ check () {
 }
 
 ## Set by the virtual environments
-check "ANDROID_SDK_ROOT"
+check ANDROID_SDK_ROOT
 
 ## Set by the workflow
-check "API"
-check "NDK"
-check "TARGET"
+check ARCH
+check API
+
+case "$ARCH" in
+  x86) TARGET=i686-linux-android;;
+  # - aarch64-linux-android
+  # - armv7a-linux-androideabi
+  # - x86_64-linux-android
+  # TODO: other ABIs in older NDKs
+  *) echo "$script_name: error: unknown ARCH: $ARCH"; exit 1;;
+esac
 
 ## Chooses one of darwin-x86_64 or linux-x86_64 depending on your build machine
-BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/llvm/prebuilt"/*/"bin")"
+BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk"/*/"toolchains/llvm/prebuilt"/*/"bin")"
+# echo ls $BIN_DIR
+# ls -al "$BIN_DIR"
+
+# /usr/local/lib/android/sdk/ndk/16.1.4479499/toolchains/llvm/prebuilt/linux-x86_64/bin/clang
 
 export     AR="$BIN_DIR/llvm-ar"
-export     CC="$BIN_DIR/$TARGET$API-clang"
-export     AS="$BIN_DIR/$TARGET$API-clang"
-export    CXX="$BIN_DIR/$TARGET$API-clang++"
+for i in $TARGET$API- ''; do
+  export  CC="$BIN_DIR/${i}clang"
+  export CXX="$BIN_DIR/${i}clang++"
+  if [ -e "$CC" ]; then break; fi
+done
+
+#   break;
+# done
+# export     AS="$BIN_DIR/$TARGET$API-clang"
+# export     CC="$BIN_DIR/clang"
+export     AS="$CC"
+# export    CXX="$BIN_DIR/clang++"
 export     LD="$BIN_DIR/ld"
 export RANLIB="$BIN_DIR/llvm-ranlib"
 export  STRIP="$BIN_DIR/llvm-strip"
 
-./configure "$@"
+./configure --host="$TARGET" "$@"

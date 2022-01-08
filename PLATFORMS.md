@@ -37,7 +37,7 @@ not that they work and are fully implemented.
     - [x] Fedora
       - [x] CentOS
     - [x] openSUSE
-    - [ ] SUSE Linux Enterprise
+    - [ ] SUSE Linux Enterprise <https://www.suse.com/download/sles/>
     - [ ] nixOS
     - [x] OpenWRT
     - [x] Android
@@ -105,7 +105,9 @@ not that they work and are fully implemented.
 - [ ] BeOS
   - [ ] Haiku
 - [ ] Genode
-- [ ] OpenVMS
+- [ ] VMS/VAX
+  - [ ] OpenVMS
+  - [ ] PDP-11
 - [ ] AmigaOS
   - [ ] AmigaOS
   - [ ] AROS
@@ -179,3 +181,6 @@ Other platform documentation sources: <https://www.unix.com/man-page-repository.
 - <https://pkg.go.dev/github.com/gentlemanautomaton/volmgmt/fileattr>
 - <https://pkg.go.dev/github.com/splace/os/xattribs>
 - <https://pkg.go.dev/github.com/bsm/arff>
+- Android
+  - <https://developer.android.com/reference/android/system/Os#fstat(java.io.FileDescriptor)>
+  - <https://developer.android.com/reference/android/system/Os>
