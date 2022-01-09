@@ -19,9 +19,9 @@ check API
 
 case "$ARCH" in
   x86) TARGET=i686-linux-android;;
-  # - aarch64-linux-android
-  # - armv7a-linux-androideabi
-  # - x86_64-linux-android
+  x86_64) TARGET=x86_64-linux-android;;
+  #???) TARGET=armv7a-linux-androideabi;;
+  arm64-v8a) TARGET=aarch64-linux-android;;
   # TODO: other ABIs in older NDKs
   *) echo "$script_name: error: unknown ARCH: $ARCH"; exit 1;;
 esac
@@ -40,8 +40,6 @@ for i in $TARGET$API- ''; do
   if [ -e "$CC" ]; then break; fi
 done
 
-#   break;
-# done
 # export     AS="$BIN_DIR/$TARGET$API-clang"
 # export     CC="$BIN_DIR/clang"
 export     AS="$CC"
