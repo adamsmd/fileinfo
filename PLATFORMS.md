@@ -109,7 +109,6 @@ not that they work and are fully implemented.
   - [ ] OpenVMS
   - [ ] PDP-11
 - [ ] AmigaOS
-  - [ ] AmigaOS
   - [ ] AROS
   - [ ] Syllable Desktop
   - [ ] MorphOS
