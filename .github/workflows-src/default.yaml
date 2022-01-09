@@ -13,6 +13,7 @@
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
       - run: tar -xvf fileinfo.tar
+
       - run: ./configure
       - run: cat src/config.h
       - run: cat src/headers.h

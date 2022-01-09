@@ -1,6 +1,8 @@
-## Unsupported images:
+## Non-official, Non-multiarch Docker Images
 ##
-## qemu/*:latest # docker of QEmu not a docker of an image that runs on QEmu
+## Omitted images:
+##
+## - qemu/*:latest - docker of QEmu not a docker of an image that runs on QEmu
 
   ## Note that openwrt/rootfs is a duplicate of openwrtorg/rootfs.
   docker-openwrtorg:
@@ -82,23 +84,23 @@
           - '13.1'
           - '13.0'
 
-  # docker-chromebrew: # ChromeOS
-  #   env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       version:
-  #         # - armv7l-fievel-m92 # TODO
-  #         # - i686-alex-m58 # TODO
-  #         - x86_64-kip-m92 # works
-  #         - x86_64-nocturne-m90 # works
-  #       # include:
-  #       #   - { version: armv7l-fievel-m91, platform: arm }
+  docker-chromebrew: # ChromeOS but with packages
+    env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps: *docker-steps
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        version:
+          # - armv7l-fievel-m92 # version `GLIBCXX_3.4.29' not found
+          # - i686-alex-m58 # version `CXXABI_1.3.9' not found
+          - x86_64-kip-m92
+          - x86_64-nocturne-m90
+        include:
+          - { version: armv7l-fievel-m91, platform: arm }
 
   docker-gentoo:
     env: { image: "gentoo/stage3:${{ matrix.tag }}" }

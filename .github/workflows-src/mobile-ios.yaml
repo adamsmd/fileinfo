@@ -11,6 +11,7 @@
       - uses: actions/download-artifact@v2
         with: { name: bootstrap-output }
       - run: tar -xvf fileinfo.tar
+
       - run: .github/iconfigure arm64
       - run: cat src/config.h
       - run: cat src/headers.h

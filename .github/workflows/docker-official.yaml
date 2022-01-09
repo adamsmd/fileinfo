@@ -5,7 +5,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: bin/bootstrap
-      - run: tar -cvf ../fileinfo.tar --exclude .git .
+      - run: tar -cvf ../fileinfo.tar --exclude .git --owner 0 --group 0 .
       - run: mv ../fileinfo.tar .
       - uses: actions/upload-artifact@v2
         with:
@@ -31,36 +31,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -119,36 +127,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -192,36 +208,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -266,36 +290,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -333,36 +365,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -422,36 +462,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -504,36 +552,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -566,36 +622,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -630,36 +694,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -699,36 +771,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -764,36 +844,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -821,36 +909,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -895,36 +991,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -954,36 +1058,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -1013,36 +1125,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -1071,36 +1191,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -1132,36 +1260,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"
@@ -1201,36 +1337,44 @@ jobs:
           set -e
 
           echo "cont=$cont" >> $GITHUB_ENV
-          echo "cont=$cont"
+          echo "::set-output name=cont::$cont"
 
           if test "x$cont" = "x"; then
             echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
             exit 1
           fi
       # Check platforms
-      - run: whoami
       - run: uname -a
-      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - run: echo "user=$user"
+      - run: id
       - run: docker exec "$cont" uname -a
-      # Create the working directory
-      - run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - run: echo "workdir=$workdir"
-      - run: docker exec --user=root "$cont" mkdir "$workdir"
-      # Copy the artifact to the working directory
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
       - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
-      # Install dependencies
-      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
       # Build
-      - run: docker exec --workdir="$workdir" "$cont" ./configure
-      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - run: docker exec --workdir="$workdir" "$cont" make
-      - run: docker exec --workdir="$workdir" "$cont" make check
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
       # Cleanup
       - run: docker stop "$cont"
       - run: docker rm --force --volumes "$cont"

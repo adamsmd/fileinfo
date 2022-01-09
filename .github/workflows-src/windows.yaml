@@ -223,7 +223,7 @@
 # Microsoft Visual Studio/2019/Enterprise/MSBuild/Microsoft/VisualStudio/v16.0/AppxPackage/Install.ps1
 # Microsoft Visual Studio/2019/Enterprise/MSBuild/Microsoft/VisualStudio/v16.0/AppxPackage/LogSideloadingTelemetry.ps1
 
-# # find Microsoft\ Visual\ Studio\ 14.0/ -iname \*.bat                                                                                                                                                              
+# # find Microsoft\ Visual\ Studio\ 14.0/ -iname \*.bat
 # Microsoft Visual Studio 14.0/Common7/Tools/VCVarsPhoneQueryRegistry.bat
 # Microsoft Visual Studio 14.0/Common7/Tools/vcvarsqueryregistry.bat
 # Microsoft Visual Studio 14.0/Common7/Tools/vsvars32.bat
