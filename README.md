@@ -59,7 +59,11 @@ Distro (dpkg)
 ## Examples
 
 See `tests/fileinfo-fields-dynamic.c` for an example program that prints all
-known attributes.
+known attributes.  The essential part is
+
+```C
+TODO: dynamic example
+```
 
 TODO: static examples
 

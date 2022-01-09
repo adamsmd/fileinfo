@@ -22,7 +22,7 @@ Check marks in the following indicate we have GitHub Actions for testing these,
 not that they work and are fully implemented.
 
 - [x] Unix
-  - [ ] QNX
+  - [ ] QNX (BlackBerry)
   - [ ] Minix
   - [x] Linux
     - [x] Chrome OS
@@ -53,6 +53,7 @@ not that they work and are fully implemented.
       - [ ] ? OSv
     - [x] NetBSD
       - [x] OpenBSD
+    - [ ] NextStep
     - [x] Darwin
       - [x] macOS
       - [ ] macOS Server
@@ -83,6 +84,7 @@ not that they work and are fully implemented.
     - [ ] Windows 10
     - [x] Windows Server
       - [ ] ReactOS
+  - [ ] Cygwin, MSYS, and MSYS2 MingW32
 - [ ] DOS
   - [ ] MS-DOS 1.25 (FOSS)
   - [ ] MS-DOS 2.0 (FOSS)

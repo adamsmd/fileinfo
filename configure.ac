@@ -680,7 +680,7 @@ AC_CHECK_DECLS([
   STATX_MNT_ID
   ], [], [], [[#include <linux/stat.h>]])
 
-#### TODO fields
+#### TODO: fields
 
 # TODO: Solaris: char     st_fstype[_ST_FSTYPSZ]; /* Null-terminated type of filesystem */
 
