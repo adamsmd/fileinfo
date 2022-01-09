@@ -192,7 +192,7 @@
           ## - ppc64 # doesn't stay running
           ## - ppc64le # doesn't stay running
 
-  docker-multiarch-voidlinux:
+  docker-multiarch-voidlinux: # TODO: fails due to network?
     env: { image: "multiarch/voidlinux:${{ matrix.tag }}" }
     needs: bootstrap
     runs-on: ubuntu-latest

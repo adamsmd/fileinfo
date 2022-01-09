@@ -46,7 +46,7 @@
         include:
           - { version: 4.0:latest, platform: amd64 }
           ## - { version: 3.0:latest, platform: amd64 } # update fails
-          - { version: 3.0:aarch64, platform: arm64 }
+          - { version: 3.0:aarch64, platform: arm64 } # TODO: network errors
 
   docker-opensuse:
     env: { image: "opensuse/${{ matrix.version }}" }
@@ -62,8 +62,9 @@
           - leap:latest
           - leap:15
           - leap:42
-          - tumbleweed
-          - s390x
+          - tumbleweed:latest
+        ## include:
+          ## - { version: s390x:tumbleweed, platform: s390x } # unpacking of archive failed: cpio: Bad magic
 
   docker-slackware:
     env: { image: "vbatts/slackware:${{ matrix.version }}" }
@@ -82,7 +83,7 @@
           - '14.1'
           - '14.0'
           - '13.1'
-          - '13.0'
+          - '13.0' # TODO: compile error
 
   docker-chromebrew: # ChromeOS but with packages
     env: { image: "chromebrew/chromeos-${{ matrix.version }}:latest" }
@@ -95,12 +96,12 @@
         platform:
           - amd64
         version:
-          # - armv7l-fievel-m92 # version `GLIBCXX_3.4.29' not found
-          # - i686-alex-m58 # version `CXXABI_1.3.9' not found
+          ## - armv7l-fievel-m92 # version `GLIBCXX_3.4.29' not found
+          ## - i686-alex-m58 # version `CXXABI_1.3.9' not found
           - x86_64-kip-m92
           - x86_64-nocturne-m90
-        include:
-          - { version: armv7l-fievel-m91, platform: arm }
+        ## include:
+          ## - { version: armv7l-fievel-m91, platform: arm } # version `GLIBCXX_3.4.29' not found
 
   docker-gentoo:
     env: { image: "gentoo/stage3:${{ matrix.tag }}" }
