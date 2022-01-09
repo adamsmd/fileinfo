@@ -105,6 +105,40 @@ jobs:
       - run: make check
       - run: ./fileinfo-fields-dynamic
       - run: ./fileinfo-file-dynamic .
+        # sudo docker container ls|col1|xargs sudo docker container stop
+        # sudo rm -rf .act-artifact-server/ && bin/update-workflows && sudo ~/.local/bin/act -j docker-chromebrew
+        # sudo /usr/bin/docker run --rm --privileged tonistiigi/binfmt:latest --install all
+
+        ## TODO: KaOS
+        ## TODO: pclinuxos
+        ## TODO: solus
+        ## TODO: mint
+
+        # QEMU: https://docs.openstack.org/image-guide/obtain-images.html
+        # QEMU/Vagrant: https://app.vagrantup.com/boxes/search?utf8=%E2%9C%93&sort=updated&provider=&q=freebsd
+        # QEMU: https://virtualboxes.org/images/
+        # QEMU: https://github.com/palmercluff/qemu-images
+
+        # Multics: https://hub.docker.com/r/rattydave/alpine-multics
+        # Cray 1: https://hub.docker.com/r/rattydave/cray1
+        # VM/370: https://hub.docker.com/r/rattydave/docker-ubuntu-hercules-vm370
+        # MVS: https://hub.docker.com/r/rattydave/docker-ubuntu-hercules-mvs
+        # System/370: https://hub.docker.com/r/rattydave/docker-ubuntu-hercules-tss
+        # Multiple: https://hub.docker.com/r/rattydave/alpine-simh
+        # Cloud 9: https://hub.docker.com/r/rattydave/cloud9
+
+        # Multics:
+        # - https://hackaday.com/2021/08/07/multics-gets-a-new-release-52-years-after-launch/
+        # - https://multics-wiki.swenson.org/index.php/Main_Page#Latest_Release
+        # - https://en.wikipedia.org/wiki/Multics
+        # - https://web.mit.edu/multics-history/source/Multics_Internet_Server/Multics_sources.html 
+        # - https://www.multicians.org/
+        # - http://ringzero.wikidot.com/start
+
+        # TODO: compiler: gcc, llvm, icc
+        # TODO: pre-statx linux (and other kernel implementations)
+        # TODO: WSLv1, WSLv2, different bash ports (MSYS,MingW,Cygwin,GitBash)
+        # TODO: filesystems: zfs, btrfs, ext4
 
 # cross-platform-actions:
 #   needs: bootstrap
