@@ -40,48 +40,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
   ## Official Docker Images
   ##
   ## Note that symbolic names are often duplicates of the numeric names. We keep
@@ -146,48 +128,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -237,48 +201,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -329,48 +275,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -414,48 +342,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -521,48 +431,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -621,48 +513,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -701,48 +575,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -783,48 +639,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -870,48 +708,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -953,48 +773,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -1028,48 +830,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -1120,48 +904,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -1197,48 +963,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -1274,48 +1022,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -1350,48 +1080,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -1429,48 +1141,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
@@ -1516,48 +1210,30 @@ jobs:
       # Check platforms
       - run: whoami
       - run: uname -a
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "user=$user"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec "$cont" uname -a
+      - run: echo "user=$(docker exec "$cont" whoami)" >> $GITHUB_ENV
+      - run: echo "user=$user"
+      - run: docker exec "$cont" uname -a
       # Create the working directory
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=/workdir" >> $GITHUB_ENV
-      - if: ${{ env.cont != 0 }}
-        run: echo "workdir=$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" mkdir "$workdir"
+      - run: echo "workdir=/workdir" >> $GITHUB_ENV
+      - run: echo "workdir=$workdir"
+      - run: docker exec --user=root "$cont" mkdir "$workdir"
       # Copy the artifact to the working directory
-      - if: ${{ env.cont != 0 }}
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with: {name: bootstrap-output}
-      - if: ${{ env.cont != 0 }}
-        run: docker cp - <fileinfo.tar "$cont":"$workdir"
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
+      - run: docker cp - <fileinfo.tar "$cont":"$workdir"
+      - run: docker exec --user=root "$cont" chown -R "$user:$user" "$workdir"
       # Install dependencies
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
+      - run: docker exec --user=root "$cont" "$workdir"/bin/install-deps
       # Build
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" ./configure
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/config.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make
-      - if: ${{ env.cont != 0 }}
-        run: docker exec --workdir="$workdir" "$cont" make check
+      - run: docker exec --workdir="$workdir" "$cont" ./configure
+      - run: docker exec --workdir="$workdir" "$cont" cat src/config.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/headers.h
+      - run: docker exec --workdir="$workdir" "$cont" cat src/fileinfo/static.h
+      - run: docker exec --workdir="$workdir" "$cont" make
+      - run: docker exec --workdir="$workdir" "$cont" make check
       # Cleanup
-      - if: ${{ env.cont != 0 }}
-        run: docker stop "$cont"
-      - if: ${{ env.cont != 0 }}
-        run: docker rm --force --volumes "$cont"
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
     strategy:
       fail-fast: false
       matrix:
