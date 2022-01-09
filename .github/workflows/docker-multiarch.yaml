@@ -82,152 +82,415 @@ jobs:
   ## - multiarch/goxc - Build tool for Go
   ## - multiarch/bussybox - Has no package manager
 
-  # docker-multiarch-alpine:
-  #   env: { image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       arch:
-  #         - aarch64
-  #         - amd64
-  #         - arm64
-  #         - armhf
-  #         - armv7
-  #         - i386
-  #         - ppc64le
-  #         - x86
-  #         - x86_64
-  #       version:
-  #         - latest-stable
-  #         - edge
-  #         - v3.14
-  #         - v3.13
-  #         - v3.12
-  #         - v3.11
+  docker-multiarch-alpine:
+    env: {image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
+          set -e
 
-  # docker-multiarch-ubuntu-core:
-  #   env: { image: "multiarch/ubuntu-core:${{ matrix.arch }}-${{ matrix.version }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       arch:
-  #         - amd64
-  #         - arm64
-  #         - armhf
-  #         - i386
-  #         - ppc64el
-  #         - s390x
-  #         - x86
-  #         - x86_64
-  #       version:
-  #         - bionic
-  #         - focal
-  #         - hirsute
-  #         - trusty
-  #         - xenial
-  #       exclude:
-  #         - { arch: amd64, version: hirsute }
-  #         - { arch: i386, version: focal }
-  #         - { arch: i386, version: hirsute }
-  #         - { arch: s390, version: trusty }
-  #         - { arch: s390, version: xenial }
-  #         - { arch: x86, version: focal }
-  #         - { arch: x86, version: hirsute }
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "::set-output name=cont::$cont"
 
-  # docker-multiarch-ubuntu-debootstrap:
-  #   env: { image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}-slim" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       arch:
-  #         - amd64
-  #         - arm64
-  #         - armhf
-  #         - i386
-  #         - ppc64el
-  #         - powerpc
-  #       version:
-  #         - bionic
-  #         - focal
-  #         - hirsute
-  #         - trusty
-  #         - xenial
-  #       exclude:
-  #         - { arch: arm64, version: hirsute }
-  #         - { arch: powerpc, version: bionic }
-  #         - { arch: powerpc, version: focal }
-  #         - { arch: powerpc, version: hirsute }
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            exit 1
+          fi
+      # Check platforms
+      - run: uname -a
+      - run: id
+      - run: docker exec "$cont" uname -a
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
+      - uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
+      # Build
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
+      # Cleanup
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        arch:
+          - aarch64
+          - amd64
+          - arm64
+          - armhf
+          - armv7
+          - i386
+          - ppc64le
+          - x86
+          - x86_64
+        version:
+          - latest-stable
+          - edge
+          - v3.14
+          - v3.13
+          - v3.12
+          - v3.11
+  docker-multiarch-ubuntu-core:
+    env: {image: "multiarch/ubuntu-core:${{ matrix.arch }}-${{ matrix.version }}"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
+          set -e
 
-  # docker-multiarch-debian-debootstrap:
-  #   env: { image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}-slim" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       arch:
-  #         - amd64
-  #         - arm64
-  #         - armel
-  #         - armhf
-  #         - i386
-  #         - mips
-  #         - mips64el
-  #         - mipsel
-  #         - ppc64el
-  #         - s390x
-  #       version:
-  #         - bullseye
-  #         - buster
-  #         - sid
-  #         - stretch
-  #       include:
-  #         - { arch: powerpc, version: sid-slim }
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "::set-output name=cont::$cont"
 
-  # docker-multiarch-fedora:
-  #   env: { image: "multiarch/fedora:${{ matrix.version }}-${{ matrix.arch }}" }
-  #   needs: bootstrap
-  #   runs-on: ubuntu-latest
-  #   steps: *docker-steps
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - amd64
-  #       arch:
-  #         - aarch64
-  #         - ppc64le
-  #         - s390x
-  #         - x86_64
-  #       version:
-  #         - 34
-  #         - 33
-  #         - 32
-  #         - 31
-  #         - 30
-  #         - 29
-  #       exclude:
-  #         - { arch: ppc64le, version: 30 }
-  #         - { arch: ppc64le, version: 31 }
-  #         - { arch: ppc64le, version: 32 }
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            exit 1
+          fi
+      # Check platforms
+      - run: uname -a
+      - run: id
+      - run: docker exec "$cont" uname -a
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
+      - uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
+      # Build
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
+      # Cleanup
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        arch:
+          - amd64
+          - arm64
+          - armhf
+          - i386
+          - ppc64el
+          - s390x
+          - x86
+          - x86_64
+        version:
+          - bionic
+          - focal
+          - hirsute
+          - trusty
+          - xenial
+        exclude:
+          - {arch: amd64, version: hirsute}
+          - {arch: i386, version: focal}
+          - {arch: i386, version: hirsute}
+          - {arch: s390x, version: trusty}
+          - {arch: s390x, version: xenial}
+          - {arch: x86, version: focal}
+          - {arch: x86, version: hirsute}
+  docker-multiarch-ubuntu-debootstrap:
+    env: {image: "multiarch/ubuntu-debootstrap:${{ matrix.arch }}-${{ matrix.version }}-slim"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
+          set -e
+
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "::set-output name=cont::$cont"
+
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            exit 1
+          fi
+      # Check platforms
+      - run: uname -a
+      - run: id
+      - run: docker exec "$cont" uname -a
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
+      - uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
+      # Build
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
+      # Cleanup
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        arch:
+          - amd64
+          - arm64
+          - armhf
+          - i386
+          - ppc64el
+          - powerpc
+        version:
+          - bionic
+          - focal
+          - hirsute
+          - trusty
+          - xenial
+        exclude:
+          - {arch: arm64, version: hirsute}
+          - {arch: powerpc, version: bionic}
+          - {arch: powerpc, version: focal}
+          - {arch: powerpc, version: hirsute}
+          - {arch: powerpc, version: trusty} # doesn't stay running
+          - {arch: powerpc, version: xenial} # doesn't stay running
+  docker-multiarch-debian-debootstrap:
+    env: {image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}-slim"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
+          set -e
+
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "::set-output name=cont::$cont"
+
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            exit 1
+          fi
+      # Check platforms
+      - run: uname -a
+      - run: id
+      - run: docker exec "$cont" uname -a
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
+      - uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
+      # Build
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
+      # Cleanup
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        arch:
+          - amd64
+          - arm64
+          - armel
+          - armhf
+          - i386
+          ## - mips # doesn't stay running
+          - mips64el
+          ##- mipsel # doesn't stay running
+          - ppc64el
+          - s390x
+        version:
+          - bullseye
+          - buster
+          - sid
+          - stretch
+        include:
+          - {arch: powerpc, version: sid}
+  docker-multiarch-fedora:
+    env: {image: "multiarch/fedora:${{ matrix.version }}-${{ matrix.arch }}"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
+          set -e
+
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "::set-output name=cont::$cont"
+
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            exit 1
+          fi
+      # Check platforms
+      - run: uname -a
+      - run: id
+      - run: docker exec "$cont" uname -a
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
+      - uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
+      # Build
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
+      # Cleanup
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        arch:
+          - aarch64
+          - ppc64le
+          - s390x
+          - x86_64
+        version:
+          - 34
+          - 33
+          - 32
+          - 31
+          - 30
+          - 29
+        exclude:
+          - {arch: ppc64le, version: 30}
+          - {arch: ppc64le, version: 31}
+          - {arch: ppc64le, version: 32}
   docker-multiarch-centos:
     env: {image: "multiarch/centos:${{ matrix.version }}-iso-slim"}
     needs: bootstrap
@@ -295,37 +558,89 @@ jobs:
           - 7 # works
           - 7-aarch64 # works
           - 7-amd64 # works
-          - 7-armhfp # works
-          ## - 7-i386 # container doesn't stay running
-          ## - 7-ppc64 # container doesn't stay running
-          ## - 7-ppc64le # container doesn't stay running
+          ## - 7-armhfp # yum segfaults
+          ## - 7-i386 # doesn't stay running
+          ## - 7-ppc64 # doesn't stay running
+          ## - 7-ppc64le # doesn't stay running
           - 7.3 # works
           - 7.3-aarch64 # works
           - 7.3-amd64 # works
-          - 7.3-armhfp # works
-          ## - 7.3-ppc64 # container doesn't stay running
-          ## - 7.3-ppc64le # container doesn't stay running
+          ## - 7.3-armhfp # yum segfaults
+          ## - 7.3-ppc64 # doesn't stay running
+          ## - 7.3-ppc64le # doesn't stay running
           - 7.6 # works
           - 7.6-amd64 # works
-          - 7.6-armhfp # works
+          ## - 7.6-armhfp # yum segfaults
           - aarch64 # works
           - amd64 # works
-          - armhfp # works
-          ## - i386 # container doesn't stay running
+          ## - armhfp # yum segfaults
+          ## - i386 # doesn't stay running
           - latest # works
-          ## - ppc64 # container doesn't stay running
-          ## - ppc64le # container doesn't stay running
+          ## - ppc64 # doesn't stay running
+          ## - ppc64le # doesn't stay running
+  docker-multiarch-voidlinux:
+    env: {image: "multiarch/voidlinux:${{ matrix.tag }}"}
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      # Setup multi-platform support for docker
+      - uses: docker/setup-qemu-action@v1.2.0
+      # Try to create a container for the given platform and image
+      - name: Create container
+        shell: bash
+        run: |
+          set +e
+          cont=$(docker run --pull=missing --init --detach --platform linux/${{ matrix.platform }} ${{ env.image }} tail -f /dev/null)
+          echo "Docker exit code: $?"
+          set -e
 
-# docker-multiarch-voidlinux:
-#   env: { image: "multiarch/voidlinux:${{ matrix.tag }}" }
-#   needs: bootstrap
-#   runs-on: ubuntu-latest
-#   steps: *docker-steps
-#   strategy:
-#     fail-fast: false
-#     matrix:
-#       platform:
-#         - amd64
-#       tag:
-#         - amd64-latest
-#         - armhf-latest
+          echo "cont=$cont" >> $GITHUB_ENV
+          echo "::set-output name=cont::$cont"
+
+          if test "x$cont" = "x"; then
+            echo "::error ::Container launch failed (${{ matrix.platform }}, ${{ env.image }})."
+            exit 1
+          fi
+      # Check platforms
+      - run: uname -a
+      - run: id
+      - run: docker exec "$cont" uname -a
+      - run: docker exec "$cont" id
+      - run: echo "uid=$(docker exec "$cont" id -u)" >> $GITHUB_ENV
+      - run: echo "gid=$(docker exec "$cont" id -g)" >> $GITHUB_ENV
+      - run: echo "::set-output name=uid::$user"
+      - run: echo "::set-output name=gid::$user"
+      # Copy the artifact to the container
+      #
+      # The extra dance we do here is to get around the fact that (1) not all
+      # images use the `root` user and (2) not all images have `sudo`.  Thus, we
+      # want to make sure we copy the files already with the right user and
+      # group.
+      - uses: actions/download-artifact@v2
+        with: {name: bootstrap-output}
+      - run: mkdir -p root/fileinfo
+      - run: cd root/fileinfo && tar -xf ../../fileinfo.tar
+      - run: cd root          && tar -cf ../fileinfo-uid.tar fileinfo --owner="$uid" --group="$gid"
+      - run: docker cp - "$cont":/ <fileinfo-uid.tar
+      # Build
+      - run: echo "exec=docker exec --workdir=/fileinfo $cont" >> $GITHUB_ENV
+      - run: $exec /fileinfo/bin/install-deps
+      - run: $exec ./configure || { $exec cat config.log; false; }
+      - run: $exec cat src/config.h
+      - run: $exec cat src/headers.h
+      - run: $exec cat src/fileinfo/static.h
+      - run: $exec make
+      - run: $exec make check
+      - run: $exec ./fileinfo-fields-dynamic
+      - run: $exec ./fileinfo-file-dynamic .
+      # Cleanup
+      - run: docker stop "$cont"
+      - run: docker rm --force --volumes "$cont"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+        tag:
+          - amd64-latest
+          - armhf-latest
