@@ -1,11 +1,12 @@
 ## Docker images from https://hub.docker.com/u/multiarch and https://github.com/multiarch
 ##
-## Omitted Images:
+## Omitted images:
+##
 ## - qemu-user-static - The binaries for QEMU
 ## - crossbuild - Environment for producing binaries for multiple architectures
 ## - true - Contains just the `true` program
 ## - goxc - Build tool for Go
-## - bussybox - No package manager
+## - bussybox - Has no package manager
 
   docker-multiarch-alpine:
     env: { image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}" }
