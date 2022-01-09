@@ -6,8 +6,8 @@
       matrix:
         arch:
           - x86
-          # - x86_64 (requires: API 21+)
-          # - arm64-v8a (require Android 4.2+ (API 17+) and are limited to fewer API levels (e.g. 30))
+          # - x86_64 # (requires: API 21+)
+          # - arm64-v8a # (require Android 4.2+ (API 17+) and are limited to fewer API levels (e.g. 30))
         type: # Device type
           - default # works (API 29)
           # - google_apis # works (API 29)
@@ -19,7 +19,7 @@
           ## - aosp_atd (requires: api-level: 30, arch: x86)
           ## - google_atd (requires: api-level: 30, arch: x86)
         api: # Minimum API level supported is 15 (Android 4.0.3)
-          # - 15 # works
+          # - 15 # missing llvm-ranlib
           # - 16 # missing llvm-ranlib
           # - 17 # missing llvm-ranlib
           # - 18 # missing llvm-ranlib
@@ -30,16 +30,16 @@
           # - 23
           # - 24
           # - 25
-          # - 26
-          # - 27
-          # - 28
-          - 29 # works
+          # - 26 # works: x86/default
+          # - 27 # works: x86/default
+          # - 28 # works: x86/default
+          - 29 # works: x86/default
           # - 30
           # - 31
     env:
       API: ${{ matrix.api }}
       ARCH: ${{ matrix.arch }}
-      NDK: ${{ matrix.api >= 19 && '23.1.7779620' || '16.1.4479499' }}
+      NDK: ${{ matrix.api <= 19 && '16.1.4479499' || '23.1.7779620' }}
         # https://developer.android.com/ndk/downloads/revision_history
         # https://github.com/android/ndk/wiki/Unsupported-Downloads
         # Android NDK r16b (December 2017) (API 14-27) NDK: 16.1.4479499
@@ -49,10 +49,7 @@
 
     steps:
       ## Ensure $ANDROID_SDK_ROOT is setup as it is missing on `act`
-      - run: |
-          if [ -z "$ANDROID_SDK_ROOT" ]; then
-            echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-          fi
+      - run: echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}" >> $GITHUB_ENV
       - run: sudo mkdir -p "$ANDROID_SDK_ROOT" || true
       - run: sudo chmod a+rwx "$ANDROID_SDK_ROOT"
 

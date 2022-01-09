@@ -410,8 +410,8 @@ jobs:
           - buster
           - sid
           - stretch
-        include:
-          - {arch: powerpc, version: sid}
+        ## include:
+        ## - { platform: amd64, arch: powerpc, version: sid } # doesn't stay running
   docker-multiarch-fedora:
     env: {image: "multiarch/fedora:${{ matrix.version }}-${{ matrix.arch }}"}
     needs: bootstrap

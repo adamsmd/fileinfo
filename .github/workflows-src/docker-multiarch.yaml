@@ -2,11 +2,11 @@
 ##
 ## Omitted images:
 ##
-## - qemu-user-static - The binaries for QEMU
-## - crossbuild - Environment for producing binaries for multiple architectures
-## - true - Contains just the `true` program
-## - goxc - Build tool for Go
-## - bussybox - Has no package manager
+## - multiarch/qemu-user-static - The binaries for QEMU
+## - multiarch/crossbuild - Environment for producing binaries for multiple architectures
+## - multiarch/true - Contains just the `true` program
+## - multiarch/goxc - Build tool for Go
+## - multiarch/bussybox - Has no package manager
 
   docker-multiarch-alpine:
     env: { image: "multiarch/alpine:${{ matrix.arch }}-${{ matrix.version }}" }
@@ -65,8 +65,8 @@
           - { arch: amd64, version: hirsute }
           - { arch: i386, version: focal }
           - { arch: i386, version: hirsute }
-          - { arch: s390, version: trusty }
-          - { arch: s390, version: xenial }
+          - { arch: s390x, version: trusty }
+          - { arch: s390x, version: xenial }
           - { arch: x86, version: focal }
           - { arch: x86, version: hirsute }
 
@@ -98,6 +98,8 @@
           - { arch: powerpc, version: bionic }
           - { arch: powerpc, version: focal }
           - { arch: powerpc, version: hirsute }
+          - { arch: powerpc, version: trusty } # doesn't stay running
+          - { arch: powerpc, version: xenial } # doesn't stay running
 
   docker-multiarch-debian-debootstrap:
     env: { image: "multiarch/debian-debootstrap:${{ matrix.arch }}-${{ matrix.version }}-slim" }
@@ -115,9 +117,9 @@
           - armel
           - armhf
           - i386
-          - mips
+          ## - mips # doesn't stay running
           - mips64el
-          - mipsel
+          ##- mipsel # doesn't stay running
           - ppc64el
           - s390x
         version:
@@ -125,8 +127,8 @@
           - buster
           - sid
           - stretch
-        include:
-          - { arch: powerpc, version: sid-slim }
+        ## include:
+          ## - { platform: amd64, arch: powerpc, version: sid } # doesn't stay running
 
   docker-multiarch-fedora:
     env: { image: "multiarch/fedora:${{ matrix.version }}-${{ matrix.arch }}" }
@@ -166,29 +168,29 @@
         platform:
           - amd64
         version:
-          - 7
-          - 7-aarch64
-          - 7-amd64
-          - 7-armhfp
-          - 7-i386
-          - 7-ppc64
-          - 7-ppc64le
-          - 7.3
-          - 7.3-aarch64
-          - 7.3-amd64
-          - 7.3-armhfp
-          - 7.3-ppc64
-          - 7.3-ppc64le
-          - 7.6
-          - 7.6-amd64
-          - 7.6-armhfp
-          - aarch64
-          - amd64
-          - armhfp
-          - i386
-          - latest
-          - ppc64
-          - ppc64le
+          - 7 # works
+          - 7-aarch64 # works
+          - 7-amd64 # works
+          ## - 7-armhfp # yum segfaults
+          ## - 7-i386 # doesn't stay running
+          ## - 7-ppc64 # doesn't stay running
+          ## - 7-ppc64le # doesn't stay running
+          - 7.3 # works
+          - 7.3-aarch64 # works
+          - 7.3-amd64 # works
+          ## - 7.3-armhfp # yum segfaults
+          ## - 7.3-ppc64 # doesn't stay running
+          ## - 7.3-ppc64le # doesn't stay running
+          - 7.6 # works
+          - 7.6-amd64 # works
+          ## - 7.6-armhfp # yum segfaults
+          - aarch64 # works
+          - amd64 # works
+          ## - armhfp # yum segfaults
+          ## - i386 # doesn't stay running
+          - latest # works
+          ## - ppc64 # doesn't stay running
+          ## - ppc64le # doesn't stay running
 
   docker-multiarch-voidlinux:
     env: { image: "multiarch/voidlinux:${{ matrix.tag }}" }
