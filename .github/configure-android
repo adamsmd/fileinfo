@@ -17,35 +17,114 @@ check ANDROID_SDK_ROOT
 check ARCH
 check API
 
+if ls "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/null 2>&1; then
+  BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk/"*"/toolchains")"
+  SYSROOT=""
+  SYSROOT="$SYSROOT -isystem $(echo "$ANDROID_SDK_ROOT/ndk/"*"/sysroot/usr/include/")"
+  SYSROOT="$SYSROOT -isysroot $(echo "$ANDROID_SDK_ROOT/ndk/"*"/sysroot")"
+  SYSROOT="$SYSROOT --sysroot=$(echo "$ANDROID_SDK_ROOT/ndk/"*"/platforms/android-$API")"
+  ARCH_INC="$(echo "$ANDROID_SDK_ROOT/ndk/"*"/sysroot/usr/include")"
+  mips64el-linux-android/asm/types.h
+  case "$ARCH" in
+    armeabi-v7a)
+      BIN_DIR="$(echo "$BIN_DIR/arm-linux-androideabi-"*)"
+      SYSROOT="$SYSROOT/arch-arm"
+      TRIPLE=arm-linux-androideabi;;
+    arm64-v8a)
+      BIN_DIR="$(echo "$BIN_DIR/aarch64-linux-android-"*)"
+      SYSROOT="$SYSROOT/arch-arm64"
+      TRIPLE="aarch64-linux-android";;
+    x86)
+      BIN_DIR="$(echo "$BIN_DIR/x86-"*)"
+      SYSROOT="$SYSROOT/arch-x86"
+      TRIPLE="i686-linux-android";;
+    x86_64)
+      BIN_DIR="$(echo "$BIN_DIR/x86_64-"*)"
+      SYSROOT="$SYSROOT/arch-x86_64"
+      TRIPLE="x86_64-linux-android";;
+    # TODO: other ABIs in older NDKs
+    *) echo "$script_name: error: unknown ARCH: $ARCH"; exit 1;;
+  esac
+  BIN_DIR="$(echo "$BIN_DIR/prebuilt/"*"/bin")"
+
+  AR="$BIN_DIR/$TRIPLE-ar"
+  CC="$BIN_DIR/$TRIPLE-gcc $SYSROOT -isystem $ARCH_INC/$TRIPLE"
+  CXX="$BIN_DIR/$TRIPLE-g++ $SYSROOT"
+  AS="$BIN_DIR/$TRIPLE-as"
+  LD="$BIN_DIR/$TRIPLE-ld $SYSROOT"
+  RANLIB="$BIN_DIR/$TRIPLE-ranlib"
+  STRIP="$BIN_DIR/$TRIPLE-strip"
+else
+
+# /usr/local/lib/android/sdk/ndk/16.1.4479499/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin/
+# aarch64-linux-android-gcc         aarch64-linux-android-gcc-ranlib  aarch64-linux-android-ld.bfd      aarch64-linux-android-ranlib      
+# root@albert:/home/adamsmd/s/backup/fileinfo.git# ls /usr/local/lib/android/sdk/ndk/16.1.4479499/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-
+# arm-linux-androideabi-addr2line   arm-linux-androideabi-cpp         arm-linux-androideabi-gcc-4.9     arm-linux-androideabi-gcov        arm-linux-androideabi-ld.gold     arm-linux-androideabi-readelf
+# arm-linux-androideabi-ar          arm-linux-androideabi-dwp         arm-linux-androideabi-gcc-4.9.x   arm-linux-androideabi-gcov-tool   arm-linux-androideabi-nm          arm-linux-androideabi-size
+# arm-linux-androideabi-as          arm-linux-androideabi-elfedit     arm-linux-androideabi-gcc-ar      arm-linux-androideabi-gprof       arm-linux-androideabi-objcopy     arm-linux-androideabi-strings
+# arm-linux-androideabi-c++         arm-linux-androideabi-g++         arm-linux-androideabi-gcc-nm      arm-linux-androideabi-ld          arm-linux-androideabi-objdump     arm-linux-androideabi-strip
+# arm-linux-androideabi-c++filt     arm-linux-androideabi-gcc         arm-linux-androideabi-gcc-ranlib  arm-linux-androideabi-ld.bfd      arm-linux-androideabi-ranlib      
+# root@albert:/home/adamsmd/s/backup/fileinfo.git# ls /usr/local/lib/android/sdk/ndk/16.1.4479499/toolchains/mips64el-linux-android-4.9/prebuilt/linux-x86_64/bin/mips64el-linux-android-
+# mips64el-linux-android-addr2line   mips64el-linux-android-cpp         mips64el-linux-android-gcc-4.9.x   mips64el-linux-android-gcov-tool   mips64el-linux-android-objcopy     mips64el-linux-android-strings
+# mips64el-linux-android-ar          mips64el-linux-android-elfedit     mips64el-linux-android-gcc-ar      mips64el-linux-android-gprof       mips64el-linux-android-objdump     mips64el-linux-android-strip
+# mips64el-linux-android-as          mips64el-linux-android-g++         mips64el-linux-android-gcc-nm      mips64el-linux-android-ld          mips64el-linux-android-ranlib      
+# mips64el-linux-android-c++         mips64el-linux-android-gcc         mips64el-linux-android-gcc-ranlib  mips64el-linux-android-ld.bfd      mips64el-linux-android-readelf     
+# mips64el-linux-android-c++filt     mips64el-linux-android-gcc-4.9     mips64el-linux-android-gcov        mips64el-linux-android-nm          mips64el-linux-android-size        
+# root@albert:/home/adamsmd/s/backup/fileinfo.git# ls /usr/local/lib/android/sdk/ndk/16.1.4479499/toolchains/mipsel-linux-android-4.9/prebuilt/linux-x86_64/bin/mipsel-linux-android-
+# mipsel-linux-android-addr2line   mipsel-linux-android-cpp         mipsel-linux-android-gcc-4.9.x   mipsel-linux-android-gcov-tool   mipsel-linux-android-objcopy     mipsel-linux-android-strings
+# mipsel-linux-android-ar          mipsel-linux-android-elfedit     mipsel-linux-android-gcc-ar      mipsel-linux-android-gprof       mipsel-linux-android-objdump     mipsel-linux-android-strip
+# mipsel-linux-android-as          mipsel-linux-android-g++         mipsel-linux-android-gcc-nm      mipsel-linux-android-ld          mipsel-linux-android-ranlib      
+# mipsel-linux-android-c++         mipsel-linux-android-gcc         mipsel-linux-android-gcc-ranlib  mipsel-linux-android-ld.bfd      mipsel-linux-android-readelf     
+# mipsel-linux-android-c++filt     mipsel-linux-android-gcc-4.9     mipsel-linux-android-gcov        mipsel-linux-android-nm          mipsel-linux-android-size        
+# root@albert:/home/adamsmd/s/backup/fileinfo.git# ls /usr/local/lib/android/sdk/ndk/16.1.4479499/toolchains/x86-4.9/prebuilt/linux-x86_64/bin/i686-linux-android-
+# i686-linux-android-addr2line   i686-linux-android-cpp         i686-linux-android-gcc-4.9     i686-linux-android-gcov        i686-linux-android-ld.gold     i686-linux-android-readelf
+# i686-linux-android-ar          i686-linux-android-dwp         i686-linux-android-gcc-4.9.x   i686-linux-android-gcov-tool   i686-linux-android-nm          i686-linux-android-size
+# i686-linux-android-as          i686-linux-android-elfedit     i686-linux-android-gcc-ar      i686-linux-android-gprof       i686-linux-android-objcopy     i686-linux-android-strings
+# i686-linux-android-c++         i686-linux-android-g++         i686-linux-android-gcc-nm      i686-linux-android-ld          i686-linux-android-objdump     i686-linux-android-strip
+# i686-linux-android-c++filt     i686-linux-android-gcc         i686-linux-android-gcc-ranlib  i686-linux-android-ld.bfd      i686-linux-android-ranlib      
+# root@albert:/home/adamsmd/s/backup/fileinfo.git# ls /usr/local/lib/android/sdk/ndk/16.1.4479499/toolchains/x86_64-4.9/prebuilt/linux-x86_64/bin/x86_64-linux-android-
+# x86_64-linux-android-addr2line   x86_64-linux-android-cpp         x86_64-linux-android-gcc-4.9     x86_64-linux-android-gcov        x86_64-linux-android-ld.gold     x86_64-linux-android-readelf
+# x86_64-linux-android-ar          x86_64-linux-android-dwp         x86_64-linux-android-gcc-4.9.x   x86_64-linux-android-gcov-tool   x86_64-linux-android-nm          x86_64-linux-android-size
+# x86_64-linux-android-as          x86_64-linux-android-elfedit     x86_64-linux-android-gcc-ar      x86_64-linux-android-gprof       x86_64-linux-android-objcopy     x86_64-linux-android-strings
+# x86_64-linux-android-c++         x86_64-linux-android-g++         x86_64-linux-android-gcc-nm      x86_64-linux-android-ld          x86_64-linux-android-objdump     x86_64-linux-android-strip
+# x86_64-linux-android-c++filt     x86_64-linux-android-gcc         x86_64-linux-android-gcc-ranlib  x86_64-linux-android-ld.bfd      x86_64-linux-android-ranlib      
+
+
+# See https://developer.android.com/ndk/guides/other_build_systems
+# See https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md
 case "$ARCH" in
-  x86) TARGET=i686-linux-android;;
-  x86_64) TARGET=x86_64-linux-android;;
-  #???) TARGET=armv7a-linux-androideabi;;
-  arm64-v8a) TARGET=aarch64-linux-android;;
+  armeabi-v7a) ABI=armeabi-v7a; TRIPLE=armv7a-linux-androideabi;;
+  arm64-v8a)   ABI=aarch64-v8a; TRIPLE=aarch64-linux-android;;
+  x86)         ABI=x86;         TRIPLE=i686-linux-android;;
+  x86_64)      ABI=x86_64;      TRIPLE=x86_64-linux-android;;
   # TODO: other ABIs in older NDKs
   *) echo "$script_name: error: unknown ARCH: $ARCH"; exit 1;;
 esac
 
+
 ## Chooses one of darwin-x86_64 or linux-x86_64 depending on your build machine
-BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk"/*/"toolchains/llvm/prebuilt"/*/"bin")"
+BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/llvm/prebuilt/"*"/bin")"
+#BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/$GCC-"*"/prebuilt/"*"/bin")"
 # echo ls $BIN_DIR
 # ls -al "$BIN_DIR"
 
 # /usr/local/lib/android/sdk/ndk/16.1.4479499/toolchains/llvm/prebuilt/linux-x86_64/bin/clang
 
-export     AR="$BIN_DIR/llvm-ar"
-for i in $TARGET$API- ''; do
-  export  CC="$BIN_DIR/${i}clang"
-  export CXX="$BIN_DIR/${i}clang++"
-  if [ -e "$CC" ]; then break; fi
-done
+AR="$BIN_DIR/llvm-ar"
+CC="$BIN_DIR/$TRIPLE$API-clang"
+CXX="$BIN_DIR/$TRIPLE$API-clang++"
+AS="$CC"
+LD="$BIN_DIR/ld"
+RANLIB="$BIN_DIR/llvm-ranlib"
+STRIP="$BIN_DIR/llvm-strip"
+fi
 
-# export     AS="$BIN_DIR/$TARGET$API-clang"
-# export     CC="$BIN_DIR/clang"
-export     AS="$CC"
-# export    CXX="$BIN_DIR/clang++"
-export     LD="$BIN_DIR/ld"
-export RANLIB="$BIN_DIR/llvm-ranlib"
-export  STRIP="$BIN_DIR/llvm-strip"
+export AR
+export CC
+export CXX
+export AS
+export LD
+export RANLIB
+export STRIP
 
-./configure --host="$TARGET" "$@"
+./configure --host="$TRIPLE" "$@" || { cat config.log; false; }
