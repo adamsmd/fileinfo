@@ -12,7 +12,7 @@
         with: { name: bootstrap-output }
       - run: tar -xvf fileinfo.tar
 
-      - run: .github/iconfigure arm64
+      - run: .github/configure-ios arm64
       - run: cat src/config.h
       - run: cat src/headers.h
       - run: cat src/fileinfo/static.h
