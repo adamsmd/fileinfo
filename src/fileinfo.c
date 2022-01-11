@@ -98,7 +98,7 @@ bool fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *outp
       #define LSTAT STAT
     #endif
 
-    if (0 == follow_symlink ? STAT(pathname, &output->stat) : STAT(pathname, &output->stat)) {
+    if (follow_symlink ? STAT(pathname, &output->stat) : LSTAT(pathname, &output->stat)) {
       return true;
     } else {
       return false;
