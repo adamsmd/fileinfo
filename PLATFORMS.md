@@ -22,8 +22,11 @@ Check marks in the following indicate we have GitHub Actions for testing these,
 not that they work and are fully implemented.
 
 - [x] Unix
-  - [ ] QNX (BlackBerry)
+  - [ ] QNX
+    - [ ] BlackBerry 10
   - [ ] Minix
+    - [ ] Minix-vmd
+    - [ ] Minix 3
   - [x] Linux
     - [x] Chrome OS
     - [ ] SE Linux
@@ -45,14 +48,15 @@ not that they work and are fully implemented.
       - [ ] Android-x86
         - [ ] Android TV x86
   - [x] BSD
-    - [x] FreeBSD
-      - [ ] ? GhostBSD
-      - [ ] ? DragonFlyBSD
-      - [ ] ? TrueOS
-      - [ ] ? DragonFlyBSD
-      - [ ] ? OSv
-    - [x] NetBSD
-      - [x] OpenBSD
+    - [ ] 386BSD
+      - [x] FreeBSD
+        - [ ] ? GhostBSD
+        - [ ] ? DragonFlyBSD
+        - [ ] ? TrueOS
+        - [ ] ? DragonFlyBSD
+        - [ ] ? OSv
+      - [x] NetBSD
+        - [x] OpenBSD
     - [ ] NextStep
     - [x] Darwin
       - [x] macOS
@@ -60,21 +64,31 @@ not that they work and are fully implemented.
       - [x] iOS
         - [ ] watchOS
         - [ ] tvOS
+        - [ ] audioOS
         - [ ] iPadOS
+    - [ ] SunOS
+    - [ ] Ultrix
   - [ ] GNU/Hurd
   - [ ] SunOS
   - [ ] Xenix (Microsoft)
-  - [x] Solaris
-    - [ ] Oracle Solaris
-    - [ ] OpenSolaris
-      - [ ] OpenIndiana
-      - [ ] illumos
-      - [ ] SmartOS
-  - [ ] HP-UX
-  - [ ] IBM AIX
-  - [ ] Irix
+  - [ ] System V
+    - [ ] A/UX
+    - [ ] IBM AIX
+    - [ ] HP-UX
+    - [ ] IRIX
+    - [ ] OpenServer
+    - [x] Solaris
+      - [ ] Oracle Solaris
+      - [ ] OpenSolaris
+        - [ ] OpenIndiana
+        - [ ] illumos
+        - [ ] SmartOS
+    - [ ] Tru64 UNIX
+    - [ ] UnixWare
+    - [ ] Xenix
   - [ ] Redox
   - [ ] Cray
+    - [ ] UNICOS
 - [x] Windows
   - [ ] Win16
   - [ ] Win32
@@ -85,6 +99,7 @@ not that they work and are fully implemented.
     - [x] Windows Server
       - [ ] ReactOS
   - [ ] Cygwin, MSYS, and MSYS2 MingW32
+- [ ] Classic Mac
 - [ ] DOS
   - [ ] MS-DOS 1.25 (FOSS)
   - [ ] MS-DOS 2.0 (FOSS)
@@ -112,14 +127,59 @@ not that they work and are fully implemented.
   - [ ] PDP-11
 - [ ] AmigaOS
   - [ ] AROS
+    - [ ] AspireOS
+    - [ ] Broadway
+    - [ ] Icaros Desktop
   - [ ] Syllable Desktop
   - [ ] MorphOS
 - [ ] Multics
 - [ ] OpenServer
 - [ ] OS/2
   - [ ] AcraOS
-- [ ] Singularity
 - [ ] BlackBerry
+- [ ] Micro-Kernel-based OS
+  - [ ] Symbian
+  - [ ] FreeRTOS
+  - [ ] Genode
+  - [ ] EROS
+    - [ ] CapROS
+  - [ ] HelenOS
+  - [ ] L4-based
+    - [ ] L4Linux
+    - [ ] PikeOS
+    - [ ] REX OS
+    - [ ] Wombat
+  - [ ] MERT / UNIX-RT
+  - [ ] Singularity
+    - [ ] Midori
+  - [ ] MkLinux
+  - [ ] NuttX
+  - [ ] OS2000
+  - [ ] Phantom OS
+  - [ ] RIOT
+  - [ ] TI-RTOS
+  - [ ] Tinix
+  - [ ] Zephyr
+  - [ ] Coherent
+  - [ ] LynxOS
+  - [ ] MOS
+  - [ ] Research Unix
+  - [ ] SerenityOS
+  - [ ] Ardwino
+  - [ ] RasberyPi
+- [ ] Compatibility layers
+  - [ ] Eunice
+  - [ ] Interix
+  - [ ] MachTen
+  - [ ] Microsoft POSIX subsystem
+  - [ ] MKS Toolkit
+  - [ ] PASE
+  - [ ] P.I.P.S.
+  - [ ] PWS/VSE-AF
+  - [ ] UNIX System Services
+  - [ ] UserLAnd Technologies
+  - [ ] Windows Services for UNIX
+  - [ ] Windows Subsystem for Linux
 
 ## Platform Documentation
 
