@@ -1,5 +1,6 @@
 #include "fileinfo/functions.h"
 #include "fileinfo/static.h"
+#include "fileinfo/dynamic.h"
 
 #ifdef HAVE_CONFIG_H
   #include "config.h"
@@ -15,14 +16,19 @@
 #endif
 
 /* Taken from `man stat64` and `man lstat64` as the headers don't have these functions.*/
-extern int stat64(const char *pathname, struct stat *statbuf);
-extern int lstat64(const char *pathname, struct stat *statbuf);
+#if defined(HAVE_STRUCT_STAT64)
+  #define STRUCT_STAT64 struct stat64
+#else
+  #define STRUCT_STAT64 struct stat
+#endif
+extern int stat64(const char *pathname, STRUCT_STAT64 *statbuf);
+extern int lstat64(const char *pathname, STRUCT_STAT64 *statbuf);
 
 /******************************************************************************/
 
 static inline int fileinfo_get_stat_helper(const char *pathname, bool follow_symlink, struct stat *output) {
   #define CALL_FSTATAT(func) return func(AT_FDCWD, pathname, output, follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW)
-  #define CALL_STAT(func, lfunc) return follow_symlink ? func(pathname, output) : lfunc(pathname, output)
+  #define CALL_STAT(func, lfunc) return follow_symlink ? func(pathname, (STRUCT_STAT64*)output) : lfunc(pathname, (STRUCT_STAT64*)output)
 
   /* TODO: _stat32? */
   #if defined(HAVE_FSTATAT64)
