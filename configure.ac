@@ -47,12 +47,14 @@ AC_HEADER_STDBOOL
 
 CHECK_INCLUDE_HEADERS([ \
   assert.h \
+  errno.h \
   fcntl.h \
   linux/stat.h \
   stdbool.h \
   stddef.h \
   sys/mkdev.h \
   sys/stat.h \
+  sys/syscall.h \
   sys/sysmacros.h \
   sys/types.h \
   unistd.h \

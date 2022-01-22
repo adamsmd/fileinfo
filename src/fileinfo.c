@@ -14,19 +14,92 @@
   #endif
 #endif
 
-#ifdef HAVE_STRUCT_STATX
-  #ifdef HAVE_STATX
-    /* Taken from `man statx` as the headers don't have this function.*/
-    extern int statx(
-      int dirfd, const char *pathname, int flags, unsigned int mask, struct statx *statxbuf);
+/* TODO: try 64 first */
+static inline int fileinfo_get_stat_helper(const char *pathname, bool follow_symlink, struct stat *output) {
+  #if defined(HAVE_FSTATAT64) || defined(HAVE_FSTATAT)
+    #if defined(HAVE_FSTATAT64)
+      #define STAT fstatat64
+    #elif defined(HAVE_FSTATAT)
+      #define STAT fstatat
+    #else
+      #error "internal error: impossible case"
+    #endif
+
+    return STAT(AT_FDCWD, pathname, output, follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW);
+    /* TODO: _stat32? */
+  #elif defined(HAVE_STAT64) || defined(HAVE__STAT64) || defined(HAVE_STAT)
+    #if defined(HAVE_STAT64)
+      #define STAT stat64
+    #elif defined(HAVE__STAT64)
+      #define STAT _stat64
+    #elif defined(HAVE_STAT)
+      #define STAT stat
+    #else
+      #error "internal error: impossible case"
+    #endif
+
+    #if defined(HAVE_LSTAT64)
+      #define LSTAT lstat64
+    #elif defined(HAVE_LSTAT)
+      #define LSTAT lstat
+    #else
+      #define LSTAT STAT
+    #endif
+
+    return follow_symlink ? STAT(pathname, output) : LSTAT(pathname, output);
   #else
-    #include <sys/syscall.h>
-    /* Older glibc didn't have a statx function, so we use syscall */
-    static int statx(
-        int dirfd, const char *pathname, int flags, unsigned int mask, struct statx *statxbuf) {
-      return (int)syscall(SYS_statx, dirfd, pathname, flags, mask, statxbuf);
-    }
+    #error "unimplemented case for fileinfo_get_stat_helper"
   #endif
+}
+
+#ifdef HAVE_STRUCT_STATX
+  /* Some glibc statx implementations do not support AT_SYMLINK_NOFOLLOW so we implement statx ourselves */
+  /* Older glibc didn't have a statx function, so we use syscall */
+  static inline struct statx_timestamp statx_timestamp_from_timespec(struct timespec tv) {
+    struct statx_timestamp ret;
+    ret.tv_sec = (__s64)tv.tv_sec;
+    ret.tv_nsec = (__u32)tv.tv_nsec;
+    return ret;
+  }
+
+  static inline int statx_syscall(const char *pathname, bool follow_symlink, struct statx *statxbuf) {
+    long ret = syscall(SYS_statx, AT_FDCWD, pathname, follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW, STATX_ALL, statxbuf);
+
+    if (ret == 0 || errno != ENOSYS) {
+      return (int) ret;
+    } else {
+      struct stat output;
+
+      ret = fileinfo_get_stat_helper(pathname, follow_symlink, &output);
+
+      if (ret != 0) { return (int) ret; }
+
+      statxbuf->stx_mask = (__u32)STATX_BASIC_STATS;
+      statxbuf->stx_blksize = (__u32)output.st_blksize;
+      /* stx_attributes */
+      statxbuf->stx_nlink = (__u32)output.st_nlink;
+      statxbuf->stx_uid = (__u32)output.st_uid;
+      statxbuf->stx_gid = (__u32)output.st_gid;
+      statxbuf->stx_mode = (__u16)output.st_mode;
+      statxbuf->stx_ino = (__u64)output.st_ino;
+      statxbuf->stx_size = (__u64)output.st_size;
+      statxbuf->stx_blocks = (__u64)output.st_blocks;
+      statxbuf->stx_attributes_mask = (__u64)0;
+
+      statxbuf->stx_atime = statx_timestamp_from_timespec(output.st_atim);
+      /* stx_btime */
+      statxbuf->stx_ctime = statx_timestamp_from_timespec(output.st_ctim);
+      statxbuf->stx_mtime = statx_timestamp_from_timespec(output.st_mtim);
+
+      statxbuf->stx_rdev_major = (__u32)major(output.st_rdev);
+      statxbuf->stx_rdev_minor = (__u32)minor(output.st_rdev);
+      statxbuf->stx_dev_major = (__u32)major(output.st_dev);
+      statxbuf->stx_dev_minor = (__u32)minor(output.st_dev);
+      /* stx_mnt_id */
+
+      return 0;
+    }
+  }
 #endif
 
 size_t const fileinfo_size = sizeof(fileinfo);
@@ -56,55 +129,20 @@ size_t const fileinfo_fields_length = FILEINFO_FIELDS_LENGTH;
 bool fileinfo_get_stat(const char *pathname, bool follow_symlink, fileinfo *output) {
   #if defined(HAVE_STRUCT_STATX)
     /* TODO: dirfd support */
-    int flags = follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW;
-    if (0 == statx(AT_FDCWD, pathname, flags, STATX_ALL, &output->stat)) {
+    if (0 == statx_syscall(pathname, follow_symlink, &output->stat)) {
       return true;
     } else {
       return false;
       /* TODO: error based on errno */
     }
     /* TODO: if use_statx make_dev(base) */
-  #elif defined(HAVE_FSTATAT64) || defined(HAVE_FSTATAT)
-    #if defined(HAVE_FSTATAT64)
-      #define STAT fstatat64
-    #elif defined(HAVE_FSTATAT)
-      #define STAT fstatat
-    #else
-      #error "internal error: impossible case"
-    #endif
-    if (0 == STAT(AT_FDCWD, pathname, &output->stat, follow_symlink ? AT_SYMLINK_FOLLOW : AT_SYMLINK_NOFOLLOW)) {
+  #else
+    if (0 == fileinfo_get_stat_helper(pathname, follow_symlink, &output->stat)) {
       return true;
     } else {
       return false;
       /* TODO: error based on errno */
     }
-    /* TODO: _stat32? */
-  #elif defined(HAVE_STAT64) || defined(HAVE__STAT64) || defined(HAVE_STAT)
-    #if defined(HAVE_STAT64)
-      #define STAT stat64
-    #elif defined(HAVE__STAT64)
-      #define STAT _stat64
-    #elif defined(HAVE_STAT)
-      #define STAT stat
-    #else
-      #error "internal error: impossible case"
-    #endif
-
-    #if defined(HAVE_LSTAT64)
-      #define LSTAT lstat64
-    #elif defined(HAVE_LSTAT)
-      #define LSTAT lstat
-    #else
-      #define LSTAT STAT
-    #endif
-
-    if (follow_symlink ? STAT(pathname, &output->stat) : LSTAT(pathname, &output->stat)) {
-      return true;
-    } else {
-      return false;
-    }
-  #else
-    #error "unimplemented case for fileinfo_get_stat"
   #endif
 }
 
