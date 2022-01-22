@@ -27,10 +27,10 @@ if ls "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/nul
   echo Using GCC
   BIN_DIR="$ANDROID_SDK_ROOT/ndk/$NDK/toolchains"
   SYSROOT=""
-  SYSROOT="$SYSROOT -isystem $(echo "$ANDROID_SDK_ROOT/ndk/"*"/sysroot/usr/include/")"
-  SYSROOT="$SYSROOT -isysroot $(echo "$ANDROID_SDK_ROOT/ndk/"*"/sysroot")"
-  SYSROOT="$SYSROOT --sysroot=$(echo "$ANDROID_SDK_ROOT/ndk/"*"/platforms/android-$API")"
-  ARCH_INC="$(echo "$ANDROID_SDK_ROOT/ndk/"*"/sysroot/usr/include")"
+  SYSROOT="$SYSROOT -isystem $ANDROID_SDK_ROOT/ndk/$NDK/sysroot/usr/include/"
+  SYSROOT="$SYSROOT -isysroot$ANDROID_SDK_ROOT/ndk/$NDK/sysroot"
+  SYSROOT="$SYSROOT --sysroot=$ANDROID_SDK_ROOT/ndk/$NDK/platforms/android-$API"
+  ARCH_INC="$ANDROID_SDK_ROOT/ndk/$NDK/sysroot/usr/include"
   case "$ARCH" in
     armeabi-v7a)
       BIN_DIR="$(echo "$BIN_DIR/arm-linux-androideabi-"*)"
