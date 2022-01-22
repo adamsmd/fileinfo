@@ -14,47 +14,45 @@
   #endif
 #endif
 
-/* TODO: try 64 first */
+/* Taken from `man stat64` and `man lstat64` as the headers don't have these functions.*/
+extern int stat64(const char *pathname, struct stat *statbuf);
+extern int lstat64(const char *pathname, struct stat *statbuf);
+
+/******************************************************************************/
+
 static inline int fileinfo_get_stat_helper(const char *pathname, bool follow_symlink, struct stat *output) {
-  #if defined(HAVE_FSTATAT64) || defined(HAVE_FSTATAT)
-    #if defined(HAVE_FSTATAT64)
-      #define STAT fstatat64
-    #elif defined(HAVE_FSTATAT)
-      #define STAT fstatat
-    #else
-      #error "internal error: impossible case"
-    #endif
+  #define CALL_FSTATAT(func) return func(AT_FDCWD, pathname, output, follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW)
+  #define CALL_STAT(func, lfunc) return follow_symlink ? func(pathname, output) : lfunc(pathname, output)
 
-    return STAT(AT_FDCWD, pathname, output, follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW);
-    /* TODO: _stat32? */
-  #elif defined(HAVE_STAT64) || defined(HAVE__STAT64) || defined(HAVE_STAT)
-    #if defined(HAVE_STAT64)
-      #define STAT stat64
-    #elif defined(HAVE__STAT64)
-      #define STAT _stat64
-    #elif defined(HAVE_STAT)
-      #define STAT stat
-    #else
-      #error "internal error: impossible case"
+  /* TODO: _stat32? */
+  #if defined(HAVE_FSTATAT64)
+    CALL_FSTATAT(fstatat64);
+  #elif defined(HAVE_STAT64)
+    #if !defined(HAVE_LSTAT64)
+      #error "have stat64 but not lstat64"
     #endif
-
-    #if defined(HAVE_LSTAT64)
-      #define LSTAT lstat64
-    #elif defined(HAVE_LSTAT)
-      #define LSTAT lstat
-    #else
-      #define LSTAT STAT
+    CALL_STAT(stat64, lstat64);
+  #elif defined(HAVE__STAT64)
+    #if !defined(HAVE__LSTAT64)
+      #error "have _stat64 but not _lstat64"
     #endif
-
-    return follow_symlink ? STAT(pathname, output) : LSTAT(pathname, output);
+    CALL_STAT(_stat64, _lstat64);
+  #elif defined(HAVE_FSTATAT)
+    CALL_FSTATAT(fstatat);
+  #elif defined(HAVE_STAT)
+    #if !defined(HAVE__STAT)
+      #error "have stat but not lstat"
+    #endif
+    CALL_STAT(stat, lstat);
   #else
     #error "unimplemented case for fileinfo_get_stat_helper"
   #endif
 }
 
+/******************************************************************************/
+
 #ifdef HAVE_STRUCT_STATX
   /* Some glibc statx implementations do not support AT_SYMLINK_NOFOLLOW so we implement statx ourselves */
-  /* Older glibc didn't have a statx function, so we use syscall */
   static inline struct statx_timestamp statx_timestamp_from_timespec(struct timespec tv) {
     struct statx_timestamp ret;
     ret.tv_sec = (__s64)tv.tv_sec;
@@ -62,45 +60,48 @@ static inline int fileinfo_get_stat_helper(const char *pathname, bool follow_sym
     return ret;
   }
 
-  static inline int statx_syscall(const char *pathname, bool follow_symlink, struct statx *statxbuf) {
-    long ret = syscall(SYS_statx, AT_FDCWD, pathname, follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW, STATX_ALL, statxbuf);
+  static inline long statx_syscall(const char *pathname, bool follow_symlink, struct statx *statxbuf) {
+    int flags = follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW;
+    long ret = syscall(SYS_statx, AT_FDCWD, pathname, flags, STATX_ALL, statxbuf);
 
     if (ret == 0 || errno != ENOSYS) {
-      return (int) ret;
+      return (int)ret;
     } else {
       struct stat output;
 
       ret = fileinfo_get_stat_helper(pathname, follow_symlink, &output);
 
-      if (ret != 0) { return (int) ret; }
+      if (ret == 0) {
+        statxbuf->stx_mask = (__u32)STATX_BASIC_STATS;
+        statxbuf->stx_blksize = (__u32)output.st_blksize;
+        /* stx_attributes */
+        statxbuf->stx_nlink = (__u32)output.st_nlink;
+        statxbuf->stx_uid = (__u32)output.st_uid;
+        statxbuf->stx_gid = (__u32)output.st_gid;
+        statxbuf->stx_mode = (__u16)output.st_mode;
+        statxbuf->stx_ino = (__u64)output.st_ino;
+        statxbuf->stx_size = (__u64)output.st_size;
+        statxbuf->stx_blocks = (__u64)output.st_blocks;
+        statxbuf->stx_attributes_mask = (__u64)0;
 
-      statxbuf->stx_mask = (__u32)STATX_BASIC_STATS;
-      statxbuf->stx_blksize = (__u32)output.st_blksize;
-      /* stx_attributes */
-      statxbuf->stx_nlink = (__u32)output.st_nlink;
-      statxbuf->stx_uid = (__u32)output.st_uid;
-      statxbuf->stx_gid = (__u32)output.st_gid;
-      statxbuf->stx_mode = (__u16)output.st_mode;
-      statxbuf->stx_ino = (__u64)output.st_ino;
-      statxbuf->stx_size = (__u64)output.st_size;
-      statxbuf->stx_blocks = (__u64)output.st_blocks;
-      statxbuf->stx_attributes_mask = (__u64)0;
+        statxbuf->stx_atime = statx_timestamp_from_timespec(output.st_atim);
+        /* stx_btime */
+        statxbuf->stx_ctime = statx_timestamp_from_timespec(output.st_ctim);
+        statxbuf->stx_mtime = statx_timestamp_from_timespec(output.st_mtim);
 
-      statxbuf->stx_atime = statx_timestamp_from_timespec(output.st_atim);
-      /* stx_btime */
-      statxbuf->stx_ctime = statx_timestamp_from_timespec(output.st_ctim);
-      statxbuf->stx_mtime = statx_timestamp_from_timespec(output.st_mtim);
+        statxbuf->stx_rdev_major = (__u32)major(output.st_rdev);
+        statxbuf->stx_rdev_minor = (__u32)minor(output.st_rdev);
+        statxbuf->stx_dev_major = (__u32)major(output.st_dev);
+        statxbuf->stx_dev_minor = (__u32)minor(output.st_dev);
+        /* stx_mnt_id */
+      }
 
-      statxbuf->stx_rdev_major = (__u32)major(output.st_rdev);
-      statxbuf->stx_rdev_minor = (__u32)minor(output.st_rdev);
-      statxbuf->stx_dev_major = (__u32)major(output.st_dev);
-      statxbuf->stx_dev_minor = (__u32)minor(output.st_dev);
-      /* stx_mnt_id */
-
-      return 0;
+      return (int)ret;
     }
   }
 #endif
+
+/******************************************************************************/
 
 size_t const fileinfo_size = sizeof(fileinfo);
 
@@ -117,6 +118,8 @@ fileinfo_field const fileinfo_fields[] = { /* TODO: put in ro memory */
 size_t const fileinfo_fields_length = FILEINFO_FIELDS_LENGTH;
 
 /* TODO: define field accessors */
+
+/******************************************************************************/
 
 /**
  * @brief Get info about `pathname`

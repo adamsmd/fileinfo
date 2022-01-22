@@ -64,6 +64,8 @@ CHECK_INCLUDE_HEADERS([ \
 AC_CHECK_HEADERS([linux/fcntl.h])
 
 #### Checks for typedefs, structures, and compiler characteristics.
+AC_C_INLINE
+
 AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
@@ -114,13 +116,16 @@ preamble="
 #### Checks for library functions.
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([ \
+  _lstat64 \
   _stat64 \
-  fstat \
   fstatat \
   lstat \
+  lstat64 \
+  memset \
   stat \
   stat64 \
   statx \
+  strerror \
 ])
 
 #### Checks for system services.
