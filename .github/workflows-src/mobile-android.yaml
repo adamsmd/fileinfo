@@ -5,12 +5,12 @@
       fail-fast: false
       matrix:
         ndk:
-          - '16.1.4479499'
+          # - '16.1.4479499'
           - '23.1.7779620'
         arch:
-          - armeabi-v7a
-          - arm64-v8a # (require Android 4.2+ (API 17+) and are limited to fewer API levels (e.g. 30))
-          - x86
+          ## - armeabi-v7a # unsupported by android-emulator-runner
+          # - arm64-v8a # (require Android 4.2+ (API 17+) and are limited to fewer API levels (e.g. 30))
+          # - x86
           - x86_64 # (requires: API 21+)
         type: # Device type
           - default # works (API 29)
@@ -25,20 +25,20 @@
         api: # Minimum API android-emulator-runner supports is 15 (Android 4.0.3)
           # - 15 # clang missing from NDK 23 +
 
-          - 16 # works: x86/default/llvm
-          - 17 # works: x86/default/llvm
-          - 18 # works: x86/default/llvm +
-          - 19 # works: x86/default/llvm +
-          - 20 # Failed to find package 'system-images;android-20;default;x86'
-          - 21 # works: x86/default/llvm
-          - 22 # works: x86/default/llvm +
-          - 23 # works: x86/default/llvm
-          - 24 # works: x86/default/llvm
-          ##- 25 # clang missing from NDK 23
+          # - 16 # works: x86/default/llvm
+          # - 17 # works: x86/default/llvm
+          # - 18 # works: x86/default/llvm +
+          # - 19 # works: x86/default/llvm +
+          # - 20 # Failed to find package 'system-images;android-20;default;x86'
+          # - 21 # works: x86/default/llvm
+          # - 22 # works: x86/default/llvm +
+          # - 23 # works: x86/default/llvm
+          # - 24 # works: x86/default/llvm
+          # ##- 25 # clang missing from NDK 23
           - 26 # works: x86/default/llvm +
-          - 27 # works: x86/default/llvm?
-          - 28 # works: x86/default/llvm +
-          - 29 # works: x86/default/llvm +
+          # - 27 # works: x86/default/llvm?
+          # - 28 # works: x86/default/llvm +
+          # - 29 # works: x86/default/llvm +
           ## - 30 # Failed to find package 'system-images;android-30;default;x86'
           ## - 31 # Failed to find package 'system-images;android-31;default;x86'
     env:

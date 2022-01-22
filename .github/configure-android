@@ -17,6 +17,10 @@ check ANDROID_SDK_ROOT
 check ARCH
 check API
 
+echo "ARCH=$ARCH"
+echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+echo "API=$API"
+
 if ls "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/null 2>&1; then
   BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk/"*"/toolchains")"
   SYSROOT=""
@@ -24,7 +28,6 @@ if ls "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/null
   SYSROOT="$SYSROOT -isysroot $(echo "$ANDROID_SDK_ROOT/ndk/"*"/sysroot")"
   SYSROOT="$SYSROOT --sysroot=$(echo "$ANDROID_SDK_ROOT/ndk/"*"/platforms/android-$API")"
   ARCH_INC="$(echo "$ANDROID_SDK_ROOT/ndk/"*"/sysroot/usr/include")"
-  mips64el-linux-android/asm/types.h
   case "$ARCH" in
     armeabi-v7a)
       BIN_DIR="$(echo "$BIN_DIR/arm-linux-androideabi-"*)"
@@ -46,6 +49,9 @@ if ls "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/null
     *) echo "$script_name: error: unknown ARCH: $ARCH"; exit 1;;
   esac
   BIN_DIR="$(echo "$BIN_DIR/prebuilt/"*"/bin")"
+  echo "BIN_DIR=$BIN_DIR"
+  echo "TRIPLE=$TRIPLE"
+  echo "SYSROOT=$SYSROOT"
 
   AR="$BIN_DIR/$TRIPLE-ar"
   CC="$BIN_DIR/$TRIPLE-gcc $SYSROOT -isystem $ARCH_INC/$TRIPLE"
@@ -101,12 +107,15 @@ case "$ARCH" in
   *) echo "$script_name: error: unknown ARCH: $ARCH"; exit 1;;
 esac
 
-
 ## Chooses one of darwin-x86_64 or linux-x86_64 depending on your build machine
 BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/llvm/prebuilt/"*"/bin")"
 #BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/$GCC-"*"/prebuilt/"*"/bin")"
 # echo ls $BIN_DIR
 # ls -al "$BIN_DIR"
+
+echo "ABI=$ABI"
+echo "TRIPLE=$TRIPLE"
+echo "BIN_DIR=$BIN_DIR"
 
 # /usr/local/lib/android/sdk/ndk/16.1.4479499/toolchains/llvm/prebuilt/linux-x86_64/bin/clang
 
@@ -126,5 +135,13 @@ export AS
 export LD
 export RANLIB
 export STRIP
+
+echo "AR=$AR"
+echo "CC=$CC"
+echo "CXX=$CXX"
+echo "AS=$AS"
+echo "LD=$LD"
+echo "RANLIB=$RANLIB"
+echo "STRIP=$STRIP"
 
 ./configure --host="$TRIPLE" "$@" || { cat config.log; false; }
