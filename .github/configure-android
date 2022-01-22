@@ -23,13 +23,8 @@ echo "ARCH=$ARCH"
 echo "API=$API"
 echo "NDK=$NDK"
 
-echo -----
-echo "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/"
-echo "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/x86-"*"/prebuilt/"*"/bin"
-ls "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/x86-"*"/prebuilt/"*"/bin"
-echo -----
 if ls "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/null 2>&1; then
-  echo GCC
+  echo Using GCC
   BIN_DIR="$ANDROID_SDK_ROOT/ndk/$NDK/toolchains"
   SYSROOT=""
   SYSROOT="$SYSROOT -isystem $(echo "$ANDROID_SDK_ROOT/ndk/"*"/sysroot/usr/include/")"
@@ -69,7 +64,7 @@ if ls "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/nul
   RANLIB="$BIN_DIR/$TRIPLE-ranlib"
   STRIP="$BIN_DIR/$TRIPLE-strip"
 else
-  echo LLVM
+  echo Using LLVM
 
 # /usr/local/lib/android/sdk/ndk/16.1.4479499/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin/
 # aarch64-linux-android-gcc         aarch64-linux-android-gcc-ranlib  aarch64-linux-android-ld.bfd      aarch64-linux-android-ranlib      

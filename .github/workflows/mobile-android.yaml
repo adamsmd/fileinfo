@@ -79,8 +79,8 @@ jobs:
       fail-fast: false
       matrix:
         ndk:
-          # - '16.1.4479499'
-          - '23.1.7779620'
+          - '16.1.4479499'
+          # - '23.1.7779620'
         arch:
           ## - armeabi-v7a # unsupported by android-emulator-runner
           # - arm64-v8a # (require Android 4.2+ (API 17+) and are limited to fewer API levels (e.g. 30))
@@ -105,11 +105,11 @@ jobs:
           # - 19 # works: x86/default/llvm +
           # - 20 # Failed to find package 'system-images;android-20;default;x86'
           # - 21 # works: x86/default/llvm
-          # - 22 # works: x86/default/llvm +
+          - 22 # works: x86/default/llvm +
           # - 23 # works: x86/default/llvm
           # - 24 # works: x86/default/llvm
           # ##- 25 # clang missing from NDK 23
-          - 26 # works: x86/default/llvm +
+          # - 26 # works: x86/default/llvm +
           # - 27 # works: x86/default/llvm?
           # - 28 # works: x86/default/llvm +
           # - 29 # works: x86/default/llvm +
