@@ -24,11 +24,11 @@ echo "API=$API"
 echo "NDK=$NDK"
 
 echo -----
-echo "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/"
-echo "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/x86-"*"/prebuilt/"*"/bin"
-ls "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/x86-"*"/prebuilt/"*"/bin"
+echo "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/"
+echo "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/x86-"*"/prebuilt/"*"/bin"
+ls "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/x86-"*"/prebuilt/"*"/bin"
 echo -----
-if ls "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/null 2>&1; then
+if ls "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/null 2>&1; then
   echo GCC
   BIN_DIR="$ANDROID_SDK_ROOT/ndk/$NDK/toolchains"
   SYSROOT=""
