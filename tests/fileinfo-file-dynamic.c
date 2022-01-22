@@ -10,10 +10,16 @@
 
 int main(int argc, char **argv) {
   int arg;
+
   char *stat = (char*)malloc(fileinfo_size);
+  if (stat == NULL) {
+    printf("error: malloc failed: %s\n", strerror(errno));
+    return 1;
+  }
+
   for (arg = 1; arg < argc; arg++) {
     size_t field_index;
-    memset(stat, fileinfo_size, 1);
+    memset(stat, 0, fileinfo_size);
 
     errno = 0;
     bool result = fileinfo_get_stat(argv[arg], false, (fileinfo*)stat);
@@ -21,19 +27,18 @@ int main(int argc, char **argv) {
     printf("file: %s\n", argv[arg]);
     printf("status: %d\n", result);
 
-
     for (field_index = 0; field_index < fileinfo_fields_length; field_index++) {
       fileinfo_field field = fileinfo_fields[field_index];
       uintmax_t value;
       void *base = stat + field.offset;
       switch (8 * field.size) {
-        case   8: value = *(uint8_t*)  base; break;
-        case  16: value = *(uint16_t*) base; break;
-        case  32: value = *(uint32_t*) base; break;
-        case  64: value = *(uint64_t*) base; break;
-        /* case 128: value = *(uint128_t*)base; */
+        case   8: value = *( uint8_t*)base; break;
+        case  16: value = *(uint16_t*)base; break;
+        case  32: value = *(uint32_t*)base; break;
+        case  64: value = *(uint64_t*)base; break;
+        /* case 128: value = *(uint128_t*)base; break; */
         default:
-          /* fprintf(stderr, "error: unknown field size: %"PRIuMAX"\n", (uintmax_t)field.size); */
+          printf("error: unknown field size: %"PRIuMAX"\n", (uintmax_t)field.size);
           exit(1);
           break;
       }
