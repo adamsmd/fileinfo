@@ -733,7 +733,7 @@ AC_CHECK_DECLS([
 # ext4.5
 # xfs.5
 
-#bsm/macos: chflags, specific ls flags
+#bsd/macos: chflags, specific ls flags
 #Solaris: chmod[1] and ls[2]
 #similar-sounding but unrelated commands: chatr (from HP-UX) and lsattr (from AIX)
 
