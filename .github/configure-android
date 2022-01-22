@@ -16,12 +16,14 @@ check ANDROID_SDK_ROOT
 ## Set by the workflow
 check ARCH
 check API
+check NDK
 
-echo "ARCH=$ARCH"
 echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+echo "ARCH=$ARCH"
 echo "API=$API"
+echo "NDK=$NDK"
 
-if ls "$ANDROID_SDK_ROOT/ndk/"*"/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/null 2>&1; then
+if ls "$ANDROID_SDK_ROOT/ndk/$NDK/toolchains/x86-"*"/prebuilt/"*"/bin" >/dev/null 2>&1; then
   BIN_DIR="$(echo "$ANDROID_SDK_ROOT/ndk/"*"/toolchains")"
   SYSROOT=""
   SYSROOT="$SYSROOT -isystem $(echo "$ANDROID_SDK_ROOT/ndk/"*"/sysroot/usr/include/")"
