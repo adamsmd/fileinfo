@@ -5,11 +5,13 @@
       fail-fast: false
       matrix:
         ndk:
-          - '16.1.4479499'
-          - '23.1.7779620'
+          ## https://developer.android.com/ndk/downloads/revision_history
+          ## https://github.com/android/ndk/wiki/Unsupported-Downloads
+          - '16.1.4479499' ## Android NDK r16b (December 2017) (API 14-27) NDK: 16.1.4479499
+          - '23.1.7779620' ## Android NDK r23 LTS (August 2021) (API 16+) NDK: 23.1.7779620
         arch:
           ## - armeabi-v7a # unsupported by reactivecircus/android-emulator-runner
-          - arm64-v8a # (require Android 4.2+ (API 17+) and are limited to fewer API levels (e.g. 30))
+          # - arm64-v8a # (require Android 4.2+ (API 17+) and are limited to fewer API levels (e.g. 30))
           - x86
           - x86_64 # (requires: API 21+)
         type: # Device type
@@ -22,35 +24,31 @@
           # - google-tv
           ## - aosp_atd (requires: api-level: 30, arch: x86)
           ## - google_atd (requires: api-level: 30, arch: x86)
-        api: # Minimum API android-emulator-runner supports is 15 (Android 4.0.3)
-          # - 15 # clang missing from NDK 23 +
-          # - 16 # works: x86/default/llvm
-          # - 17 # works: x86/default/llvm
-          # - 18 # works: x86/default/llvm +
-          # - 19 # works: x86/default/llvm +
-          - 20 #
-          # - 21 # works: x86/default/llvm
-          # - 22 # works: x86/default/llvm +
-          # - 23 # works: x86/default/llvm
-          # - 24 # works: x86/default/llvm
-          - 25 # clang missing from NDK 23
-          # - 26 # works: x86/default/llvm +
-          # - 27 # works: x86/default/llvm?
-          # - 28 # works: x86/default/llvm +
-          # - 29 # works: x86/default/llvm +
+        api:
+          ## Minimum API reactivecircus/android-emulator-runner supports is 15 (Android 4.0.3)
+          - 15
+          - 16
+          - 17
+          - 18
+          - 19
+          - 20
+          - 21
+          - 22
+          - 23
+          - 24
+          - 25
+          - 26
+          - 27
+          - 28
+          - 29
           - 30 # Failed to find package 'system-images;android-30;default;x86'
           - 31 # Failed to find package 'system-images;android-31;default;x86'
         exclude:
           - { arch: x86, api: 20 } ## Failed to find package 'system-images;android-20;default;x86'
     env:
-      API: ${{ matrix.api }}
-      ARCH: ${{ matrix.arch }}
       NDK: ${{ matrix.ndk }}
-      # NDK: ${{ matrix.api <= 19 && '16.1.4479499' || '23.1.7779620' }}
-        # https://developer.android.com/ndk/downloads/revision_history
-        # https://github.com/android/ndk/wiki/Unsupported-Downloads
-        # Android NDK r16b (December 2017) (API 14-27) NDK: 16.1.4479499
-        # Android NDK r23 LTS (August 2021) (API 16+) NDK: 23.1.7779620
+      ARCH: ${{ matrix.arch }}
+      API: ${{ matrix.api }}
 
       DEST_DIR: /data/local/tmp # An Android directory which is writable and not noexec
 
@@ -71,13 +69,12 @@
         with: { name: bootstrap-output }
       - run: tar -xvf fileinfo.tar
 
-      # TODO: message that skipped
+      # TODO: a message for when a config is skipped
       - if: >
           (!(matrix.ndk == '16.1.4479499' && matrix.api > 27)) &&
           (!(matrix.ndk == '23.1.7779620' && matrix.api < 16)) &&
           (!(matrix.arch == 'arm64-v8a' && matrix.api < 28)) &&
           (!(matrix.arch == 'x86_64' && matrix.api < 21))
-        id: foo
         uses: reactivecircus/android-emulator-runner@v2
         with:
           arch: ${{ matrix.arch }}
@@ -86,14 +83,13 @@
           ndk: ${{ env.NDK }}
           script: |
             .github/configure-android
+
             cat src/config.h
             cat src/headers.h
             cat src/fileinfo/static.h
+
             make
             make check
-
-            file fileinfo-fields-dynamic
-            file fileinfo-file-dynamic
 
             adb push fileinfo-fields-dynamic "$DEST_DIR"/
             adb shell chmod a+x "$DEST_DIR"/fileinfo-fields-dynamic
@@ -101,5 +97,4 @@
 
             adb push fileinfo-file-dynamic "$DEST_DIR"/
             adb shell chmod a+x "$DEST_DIR"/fileinfo-file-dynamic
-            adb shell ls -al "$DEST_DIR"/fileinfo-file-dynamic
             adb shell "$DEST_DIR"/fileinfo-file-dynamic "$DEST_DIR"/fileinfo-file-dynamic
